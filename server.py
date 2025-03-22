@@ -58,7 +58,7 @@ def handle_join_game(data):
         if result:
             print(f'Client {name} a rejoint la Team {team}')
             emit('join_success', {'message': f'Vous avez rejoint la Team {team} !'})
-            emit('game_info', currentGame.dumpGameInfo(), broadcast=True)
+            currentGame.broadcastGameInfo()
         else:
             emit('join_error', {'message': message})
     else:
@@ -82,6 +82,8 @@ def handle_start_game():
         result, message = currentGame.start()
         if not(result):
             emit('start_game_error', {'message': message})
+            return
+        currentGame.broadcastGameInfo()
     else:
         emit('start_game_error', {'message': 'Vous devez d\'abord vous connecter'})
 

@@ -1,5 +1,9 @@
 import player
+import round
+
 import random
+
+from flask_socketio import emit
 
 GAME_STATUS_WAITING = 0
 GAME_STATUS_PLAYING = 1
@@ -25,6 +29,7 @@ class Game:
         self._players = []
         self._status = GAME_STATUS_WAITING
         self._readyToStart = False
+        self._currentRound = None
 
     def setupDeck(self):
         colors = [CARD_COLOR_SPADES, CARD_COLOR_HEARTS, CARD_COLOR_DIAMONDS, CARD_COLOR_CLUBS]
@@ -74,6 +79,9 @@ class Game:
             "readyToStart": self._readyToStart
         }
 
+    def broadcastGameInfo(self):
+        emit('game_info', self.dumpGameInfo(), broadcast=True)
+
     def start(self):
         # _____________________________________________________
         # Intial Check
@@ -89,23 +97,12 @@ class Game:
         team0 = self.getTeam(0)
         team1 = self.getTeam(1)
         self._players = [team0[0], team1[0], team0[1], team1[1]]
-        print(self.dumpPlayers())
-
-        self.setupDeck()
-        print(self._cards)
-
-        # Distribution des cartes
-        schem = [3, 2, 3]
-        for nbCard in schem:
-            for p in self._players:
-                for i in range(nbCard):
-                    p.cards.append(self._cards.pop())
-
-        for p in self._players:
-            print(p.cards)
-            p.sendDeck()
 
         self._status = GAME_STATUS_PLAYING
+
+        self.setupDeck()
+        self._currentRound = round.Round(self._players, 0, self._cards)
+        self._currentRound.cardsDistrib()
 
         return (True, "Starting game")
 
