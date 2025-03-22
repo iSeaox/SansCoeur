@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SocketIO Login + Team Selection</title>
+</head>
+<body>
+    <h1>Connexion</h1>
+    <div id="login">
+        <label for="name">Nom :</label>
+        <input type="text" id="name" placeholder="Votre nom">
+        <button id="loginBtn">Se connecter</button>
+    </div>
+
+    <div id="gameSection" style="display: none;">
+        <h2>Rejoindre une partie</h2>
+        <label for="team">Team :</label>
+        <select id="team">
+            <option value="0">Team 0</option>
+            <option value="1">Team 1</option>
+        </select>
+        <button id="joinBtn">Rejoindre la partie</button>
+    </div>
+
+    <h2>Informations de la partie</h2>
+    <div id="gameInfo" style="margin-top: 20px;">
+        <p>En attente des informations...</p>
+    </div>
+
+    <!-- Bouton pour lancer la partie -->
+    <div id="startGameSection" style="display: none; margin-top: 20px;">
+        <button id="startGameBtn">Lancer la partie</button>
+    </div>
+    <div id="deck" style="margin-top: 20px;">
+        <p>Votre deck apparaîtra ici...</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script>
+        const socket = io.connect('http://localhost:5000');
+
+        // Constantes pour le statut de la partie
+        const GAME_STATUS_WAITING = 0;
+        const GAME_STATUS_PLAYING = 1;
+        const GAME_STATUS_END = 2;
+
+        // Fonction pour traduire le statut de la partie
+        function getGameStatusText(status) {
+            switch (status) {
+                case GAME_STATUS_WAITING:
+                    return 'En attente de joueurs';
+                case GAME_STATUS_PLAYING:
+                    return 'En cours';
+                case GAME_STATUS_END:
+                    return 'Terminée';
+                default:
+                    return 'Statut inconnu';
+            }
+        }
+
+        const CARD_COLOR_SPADES = 0
+        const CARD_COLOR_HEARTS = 1
+        const CARD_COLOR_DIAMONDS = 2
+        const CARD_COLOR_CLUBS = 3
+
+        function getSuitName(suit) {
+            switch (suit) {
+                case CARD_COLOR_SPADES:
+                    return 'Pique';
+                case CARD_COLOR_HEARTS:
+                    return 'Coeur';
+                case CARD_COLOR_DIAMONDS:
+                    return 'Carreau';
+                case CARD_COLOR_CLUBS:
+                    return 'Trèfle';
+                default:
+                    return 'Statut inconnu';
+            }
+        }
+
+        // Éléments du DOM
+        const nameInput = document.getElementById('name');
+        const loginBtn = document.getElementById('loginBtn');
+        const gameSection = document.getElementById('gameSection');
+        const teamSelect = document.getElementById('team');
+        const joinBtn = document.getElementById('joinBtn');
+        const gameInfoDiv = document.getElementById('gameInfo');
+        const startGameSection = document.getElementById('startGameSection');
+        const startGameBtn = document.getElementById('startGameBtn');
+
+        // Gestionnaire de connexion
+        loginBtn.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                alert('Veuillez entrer un nom');
+                return;
+            }
+
+            // Envoie le nom au serveur
+            socket.emit('login', { name });
+        });
+
+        // Gestionnaire pour rejoindre une partie
+        joinBtn.addEventListener('click', () => {
+            const team = parseInt(teamSelect.value);
+
+            // Envoie la team au serveur
+            socket.emit('join_game', { team });
+        });
+
+        // Gestionnaire pour lancer la partie
+        startGameBtn.addEventListener('click', () => {
+            socket.emit('start_game');  // Envoie une demande de lancement de partie
+        });
+
+        // Écouteurs d'événements
+        socket.on('login_success', (data) => {
+            gameSection.style.display = 'block';  // Affiche la section de jeu
+            socket.emit('request_game_info');  // Demande les infos de la partie
+        });
+
+        socket.on('login_error', (data) => {
+            alert(`Erreur : ${data.message}`);
+        });
+
+        socket.on('join_success', (data) => {
+            alert(data.message);
+        });
+
+        socket.on('join_error', (data) => {
+            alert(`Erreur : ${data.message}`);
+        });
+
+        socket.on('game_info', (data) => {
+            // Affiche les informations de la partie
+            gameInfoDiv.innerHTML = `
+                <p>Statut de la partie : ${getGameStatusText(data.status)}</p>
+                <p>Prêt à lancer : ${data.readyToStart ? "Oui" : "Non"}</p>
+                <ul>
+                    ${data.players.map(player => `
+                        <li>${player.name} (Team ${player.team ?? 'Non définie'})</li>
+                    `).join('')}
+                </ul>
+            `;
+
+            // Affiche ou masque le bouton "Lancer la partie"
+            startGameSection.style.display = data.readyToStart ? 'block' : 'none';
+        });
+
+        socket.on('start_game_error', (data) => {
+            alert(`Erreur : ${data.message}`);
+        });
+
+        socket.on('connect', () => {
+            console.log('Connecté au serveur');
+        });
+
+        // _________________________________________________________
+
+        // Élément du DOM pour afficher le deck
+        const deckDiv = document.getElementById('deck');
+
+        // Écouteur d'événement pour mettre à jour le deck
+        socket.on('update_deck', (cards) => {
+            // Efface le contenu précédent
+            deckDiv.innerHTML = '';
+
+            // Affiche chaque carte
+            cards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.textContent = `${card.value} de ${getSuitName(card.color)}`;
+                deckDiv.appendChild(cardElement);
+            });
+        });
+
+        socket.on('connect', () => {
+            console.log('Connecté au serveur');
+        });
+    </script>
+    <style>
+        .card {
+            display: inline-block;
+            border: 1px solid #000;
+            padding: 10px;
+            margin: 5px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
+</body>
+</html>
