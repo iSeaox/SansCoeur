@@ -4,9 +4,8 @@ class Round:
     def __init__(self, players, firstDistribIndex, cards):
         self.players = players
         self.firstDistribIndex = firstDistribIndex
+        self.currentTurn = 0
         self.cards = cards
-
-
 
     def sendRoundInfo(self):
         pass
