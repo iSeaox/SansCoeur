@@ -37,6 +37,18 @@ def register_handlers(socketio, connected_clients, currentGame):
             return
         currentGame.broadcastGameInfo()
 
+    @socketio.on('card_clicked')
+    @socketio_login_required
+    def handle_card_clicked(data):
+        # TODO : CHECK FORMAT
+        player_name = current_user.username
+        player = currentGame.getPlayerByName(player_name)
+        card_index = int(data['card_id'].split("card-")[-1])
+        card = player.cards[card_index]
+
+        currentGame.getCurrentRound().cardPlayed(player, card, card_index)
+
+
     @socketio.on('disconnect')
     def handle_disconnect():
         pass

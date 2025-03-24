@@ -91,6 +91,9 @@ class Game:
     def start(self):
         # _____________________________________________________
         # Intial Check
+        if(self._status == GAME_STATUS_PLAYING):
+            return (False, "Already started")
+        
         if(len(self._players) < 4):
             return (False, "Not enough players")
 
@@ -113,3 +116,6 @@ class Game:
         return (True, "Starting game")
 
         # _____________________________________________________
+
+    def getCurrentRound(self):
+        return self._currentRound

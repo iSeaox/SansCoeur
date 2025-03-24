@@ -19,6 +19,12 @@
     <div id="gameInfo" style="margin-top: 20px;">
         <p>En attente des informations...</p>
     </div>
+    <div id="roundInfo" style="margin-top: 20px;">
+        <p>En attente des informations...</p>
+    </div>
+    <div id="cardTable" style="margin-top: 20px;">
+
+    </div>
 
     <!-- Bouton pour lancer la partie -->
     <div id="startGameSection" style="display: none; margin-top: 20px;">
@@ -40,6 +46,9 @@
         const GAME_STATUS_PLAYING = 1;
         const GAME_STATUS_END = 2;
 
+        const ROUND_STATE_SETUP = 0
+        const ROUND_STATE_PLAYING = 1
+
         // Fonction pour traduire le statut de la partie
         function getGameStatusText(status) {
             switch (status) {
@@ -49,6 +58,17 @@
                     return 'En cours';
                 case GAME_STATUS_END:
                     return 'Terminée';
+                default:
+                    return 'Statut inconnu';
+            }
+        }
+
+        function getRoundStatusText(status) {
+            switch (state) {
+                case ROUND_STATE_SETUP:
+                    return 'Distribution';
+                case ROUND_STATE_PLAYING:
+                    return 'Jouez !';
                 default:
                     return 'Statut inconnu';
             }
@@ -79,6 +99,8 @@
         const teamSelect = document.getElementById('team');
         const joinBtn = document.getElementById('joinBtn');
         const gameInfoDiv = document.getElementById('gameInfo');
+        const roundInfoDiv = document.getElementById('roundInfo');
+        const cardTableDiv = document.getElementById('cardTable');
         const startGameSection = document.getElementById('startGameSection');
         const startGameBtn = document.getElementById('startGameBtn');
 
@@ -111,6 +133,26 @@
             startGameSection.style.display = data.readyToStart ? 'block' : 'none';
         });
 
+        socket.on('round_info', (data) => {
+            console.log(data)
+            roundInfoDiv.innerHTML = `
+                <p>Statut de la manche : ${getRoundStatusText(data.status)}</p>
+                <p>Prochain à jouer : ${data.next_turn}</p>
+            `;
+
+            cardTableDiv.innerHTML = '';
+            cards = data.card_on_table;
+            cards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.id = `card-${index}`;
+                cardElement.textContent = `${card.value} de ${getSuitName(card.color)}`;
+                cardTableDiv.appendChild(cardElement);
+            });
+
+            cardTableDiv.innerHTML
+        });
+
         socket.on('start_game_error', (data) => {
             alert(`Erreur : ${data.message}`);
         });
@@ -130,13 +172,19 @@
             deckDiv.innerHTML = '';
 
             // Affiche chaque carte
-            cards.forEach(card => {
+            cards.forEach((card, index) => {
                 const cardElement = document.createElement('div');
                 cardElement.className = 'card';
+                cardElement.id = `card-${index}`;
                 cardElement.textContent = `${card.value} de ${getSuitName(card.color)}`;
                 deckDiv.appendChild(cardElement);
+
+                cardElement.addEventListener('click', () => {
+                    socket.emit('card_clicked', {"card_id": cardElement.id});
+                });
             });
         });
+
 
         socket.on('connect', () => {
             console.log('Connecté au serveur');
