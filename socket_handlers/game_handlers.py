@@ -4,6 +4,12 @@ from auth import socketio_login_required
 from flask_login import current_user
 
 def register_handlers(socketio, connected_clients, currentGame):
+
+    @socketio.on("connect")
+    @socketio_login_required
+    def handle_connect():
+        currentGame.broadcastGameInfo()
+
     @socketio.on('join_game')
     @socketio_login_required
     def handle_join_game(data):
@@ -23,12 +29,14 @@ def register_handlers(socketio, connected_clients, currentGame):
             emit('join_error', {'message': message})
 
     @socketio.on('start_game')
+    @socketio_login_required
     def handle_start_game():
-        if request.sid in connected_clients:
-            result, message = currentGame.start()
-            if not(result):
-                emit('start_game_error', {'message': message})
-                return
-            currentGame.broadcastGameInfo()
-        else:
-            emit('start_game_error', {'message': 'Vous devez d\'abord vous connecter'})
+        result, message = currentGame.start()
+        if not(result):
+            emit('start_game_error', {'message': message})
+            return
+        currentGame.broadcastGameInfo()
+
+    @socketio.on('disconnect')
+    def handle_disconnect():
+        pass

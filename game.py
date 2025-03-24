@@ -65,6 +65,12 @@ class Game:
                 out.append(pl)
         return out
 
+    def getPlayerByName(self, name):
+        for p in self._players:
+            if p.name == name:
+                return p
+        return None
+
     def dumpPlayers(self):
         out = []
         print(self._players)

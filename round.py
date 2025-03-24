@@ -20,5 +20,5 @@ class Round:
                     p.cards.append(self.cards.pop())
 
         # Notifier les joueurs
-        for p in self._players:
+        for p in self.players:
             p.sendDeck()
