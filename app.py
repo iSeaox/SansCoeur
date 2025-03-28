@@ -37,7 +37,8 @@ users = {
     1: User(1, 'guillaume', generate_password_hash('g')),
     2: User(2, 'mathias', generate_password_hash('m')),
     3: User(3, 'helios', generate_password_hash('h')),
-    4: User(4, 'magathe', generate_password_hash('m'))
+    4: User(4, 'magathe', generate_password_hash('m')),
+    5: User(5, 'jocelyn', generate_password_hash('j'))
 }
 
 # ################################################
