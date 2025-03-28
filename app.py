@@ -96,5 +96,8 @@ def logout():
 # Main
 
 if __name__ == "__main__":
+    currentGame.registerPlayer("magathe", 1, None)
+    currentGame.registerPlayer("helios", 0, None)
+    currentGame.registerPlayer("mathias", 1, None)
     socketio.run(app, debug=True)
 

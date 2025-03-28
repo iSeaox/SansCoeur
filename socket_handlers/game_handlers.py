@@ -10,6 +10,10 @@ def register_handlers(socketio, connected_clients, currentGame):
     def handle_connect():
         currentGame.broadcastGameInfo()
 
+        # Check if player is register in a game
+        if currentGame.getPlayerByName(current_user.username) != None:
+            currentGame.resumePlayer(current_user.username, request.sid)
+
     @socketio.on('join_game')
     @socketio_login_required
     def handle_join_game(data):

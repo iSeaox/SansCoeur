@@ -48,6 +48,7 @@ class Game:
     def registerPlayer(self, name, team, sid):
         for p in self._players:
             if p.name == name:
+                print("euhh")
                 return (False, "Already connected")
         if(len(self.getTeam(team)) == 2):
             return (False, f"Team {team} is full")
@@ -56,6 +57,16 @@ class Game:
         if len(self._players) == 4:
             self._readyToStart = True
         return (True, "Success")
+
+    def resumePlayer(self, name, sid):
+        player = self.getPlayerByName(name)
+        player.sid = sid
+        if player != None:
+            self.broadcastGameInfo()
+            self.getCurrentRound().sendRoundInfo()
+            player.sendDeck()
+
+
 
 
     def getTeam(self, team):
@@ -93,7 +104,7 @@ class Game:
         # Intial Check
         if(self._status == GAME_STATUS_PLAYING):
             return (False, "Already started")
-        
+
         if(len(self._players) < 4):
             return (False, "Not enough players")
 

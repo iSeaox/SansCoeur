@@ -14,7 +14,8 @@ class Player:
         self.emit("update_deck", self.cards)
 
     def emit(self, type, data):
-        emit(type, data, room=self.sid)
+        if self.sid != None:
+            emit(type, data, room=self.sid)
 
     def __repr__(self):
         return str(self.dump())
