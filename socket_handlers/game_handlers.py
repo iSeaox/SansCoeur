@@ -52,6 +52,34 @@ def register_handlers(socketio, connected_clients, currentGame):
 
         currentGame.getCurrentRound().cardPlayed(player, card, card_index)
 
+    @socketio.on("talk_click")
+    @socketio_login_required
+    def handle_talk_click(data):
+        player_name = current_user.username
+        player = currentGame.getPlayerByName(player_name)
+        currentGame.getCurrentRound().registerTalk(player, data)
+
+    @socketio.on("pass_click")
+    @socketio_login_required
+    def handle_talk_pass_click():
+        player_name = current_user.username
+        player = currentGame.getPlayerByName(player_name)
+        currentGame.getCurrentRound().registerTalkPass(player)
+
+    @socketio.on("contrer_click")
+    @socketio_login_required
+    def handle_talk_contrer_click():
+        player_name = current_user.username
+        player = currentGame.getPlayerByName(player_name)
+        currentGame.getCurrentRound().registerTalkContrer(player)
+
+    @socketio.on("sur_contrer_click")
+    @socketio_login_required
+    def handle_talk_sur_contrer_click():
+        player_name = current_user.username
+        player = currentGame.getPlayerByName(player_name)
+        currentGame.getCurrentRound().registerTalkSurContrer(player)
+
 
     @socketio.on('disconnect')
     def handle_disconnect():

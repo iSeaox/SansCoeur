@@ -41,7 +41,6 @@ export function getSuitName(suit) {
 }
 
 export function getRoundStatusText(state) {
-    console.log(state)
     switch (state) {
         case ROUND_STATE_SETUP:
             return 'Distribution';
@@ -52,4 +51,20 @@ export function getRoundStatusText(state) {
         default:
             return 'Statut inconnu';
     }
+}
+
+export function getFormattedTalk(data) {
+    let out = data.current_talk.value.toString() + " " +  getSuitName(data.current_talk.color);
+
+    if("contrer" in data && data.contrer){
+        out += " Contré"
+    }
+
+    if("surcontrer" in data && data.surcontrer){
+        out += " Sur Contré"
+    }
+
+    out += " (" + data.current_talk.player + ")"
+
+    return out
 }

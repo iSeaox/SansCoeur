@@ -65,9 +65,6 @@ class Game:
             self.getCurrentRound().sendRoundInfo()
             player.sendDeck()
 
-
-
-
     def getTeam(self, team):
         out = []
         for pl in self._players:
@@ -123,7 +120,7 @@ class Game:
 
         self.setupDeck()
         self._currentRound = round.Round(self._players, 0, self._cards)
-        self._currentRound.cardsDistrib()
+        self._currentRound.start()
         self.broadcastGameInfo()
         return (True, "Starting game")
 
