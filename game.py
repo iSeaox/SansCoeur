@@ -117,6 +117,8 @@ class Game:
         team0 = self.getTeam(0)
         team1 = self.getTeam(1)
         self._players = [team0[0], team1[0], team0[1], team1[1]]
+        # TODO : la ligne du dessous sert à debug
+        self._players.reverse()
 
         self._status = GAME_STATUS_PLAYING
 

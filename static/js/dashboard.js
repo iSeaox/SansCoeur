@@ -137,7 +137,7 @@ socket.on('update_deck', (cards) => {
     // Affiche chaque carte
     cards.forEach((card, index) => {
         const cardElement = document.createElement('div');
-        cardElement.className = 'card';
+        cardElement.className = 'playing-card';
         cardElement.id = `card-${index}`;
         cardElement.textContent = `${card.value} de ${getSuitName(card.color)}`;
         deckDiv.appendChild(cardElement);
