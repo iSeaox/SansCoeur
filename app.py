@@ -64,6 +64,11 @@ def load_user(user_id):
 @app.route("/")
 @login_required
 def index():
+    currentRound = currentGame.getCurrentRound()
+    if currentRound:
+        roundInfo = currentRound.dumpRoundInfo()
+    else:
+        roundInfo = {}
     return render_template("dashboard.html", username=current_user.username)
 
 

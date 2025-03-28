@@ -48,7 +48,6 @@ class Game:
     def registerPlayer(self, name, team, sid):
         for p in self._players:
             if p.name == name:
-                print("euhh")
                 return (False, "Already connected")
         if(len(self.getTeam(team)) == 2):
             return (False, f"Team {team} is full")
@@ -125,7 +124,7 @@ class Game:
         self.setupDeck()
         self._currentRound = round.Round(self._players, 0, self._cards)
         self._currentRound.cardsDistrib()
-
+        self.broadcastGameInfo()
         return (True, "Starting game")
 
         # _____________________________________________________
