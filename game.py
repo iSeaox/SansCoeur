@@ -89,6 +89,7 @@ class Game:
         return out
 
     def dumpGameInfo(self):
+        # TODO : Afficher le détail des points et des manches
         return {
             "players": self.dumpPlayers(),
             "status": self._status,
@@ -121,6 +122,7 @@ class Game:
             return (False, "Team error")
         # _____________________________________________________
         # Setup
+        # TODO : Pouvoir ajuster le nombre de point de la partie
         team0 = self.getTeam(0)
         team1 = self.getTeam(1)
         self._players = [team0[0], team1[0], team0[1], team1[1]]

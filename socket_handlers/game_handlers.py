@@ -49,7 +49,8 @@ def register_handlers(socketio, connected_clients, currentGame):
             player = currentGame.getPlayerByName(player_name)
             if player:
                 card_index = int(data['card_id'].split("card-")[-1])
-                card = player.cards[card_index]
+                if card_index < len(player.cards):
+                    card = player.cards[card_index]
 
                 currentGame.getCurrentRound().cardPlayed(player, card, card_index)
 

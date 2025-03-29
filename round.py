@@ -18,6 +18,7 @@ def getBelotePoint(card, trump):
 class Round:
 
     def __init__(self, players, firstDistribIndex, cards, game):
+        print("Create new round...")
         self.attachedGame = game
         self.players = players
         self.firstDistribIndex = firstDistribIndex
@@ -125,13 +126,10 @@ class Round:
         #     self.heapTeam = [[[{'card': {'color': 3, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 10}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 12}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 0, 'value': 13}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 0, 'value': 8}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 2, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 2, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 11}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 2, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 0, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 3, 'value': 13}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 2, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}], [{'card': {'color': 2, 'value': 13}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}]], [[{'card': {'color': 1, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 1, 'value': 11}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 13}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 3, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 3, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 0, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 10}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}]]]
         #     self.flushCardOnTable()
         #     self.computeTableAck(self.nextTurn)
-
-        print("-" * 40)
-        print(self.dumpRoundInfo())
-        print("-" * 40)
         self.sendRoundInfo()
 
     def restart(self):
+        # TODO : Probleme d'ordre et de disparition d'un joueur après restart par 4x pass
         self.state = ROUND_STATE_SETUP
 
         # Get all card
@@ -183,7 +181,7 @@ class Round:
                 if flag_next:
                     self.nextTalkIndex += 1
                     self.nextTalkIndex %= 4
-                    if self.nextTalkIndex == 0 and self.talk == {}:
+                    if self.nextTalkIndex == self.firstDistribIndex + 1 and self.talk == {}:
                         self.restart()
                         return
 
