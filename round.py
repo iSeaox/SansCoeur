@@ -110,7 +110,9 @@ class Round:
         self.registerTalk(player, {}, type="surcontrer")
 
     def registerTalk(self, player, talk, type=None):
-        # TODO : Pensez à checker le format
+        if not(type != None or ("color" in talk and "value" in talk)):
+            # Mauvais format de talk
+            return
         if self.state == ROUND_STATE_TALKING:
             if self.nextTalk == player:
                 flag_next = 0

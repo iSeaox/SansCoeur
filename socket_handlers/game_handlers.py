@@ -64,21 +64,24 @@ def register_handlers(socketio, connected_clients, currentGame):
     def handle_talk_pass_click():
         player_name = current_user.username
         player = currentGame.getPlayerByName(player_name)
-        currentGame.getCurrentRound().registerTalkPass(player)
+        if player:
+            currentGame.getCurrentRound().registerTalkPass(player)
 
     @socketio.on("contrer_click")
     @socketio_login_required
     def handle_talk_contrer_click():
         player_name = current_user.username
         player = currentGame.getPlayerByName(player_name)
-        currentGame.getCurrentRound().registerTalkContrer(player)
+        if player:
+            currentGame.getCurrentRound().registerTalkContrer(player)
 
     @socketio.on("sur_contrer_click")
     @socketio_login_required
     def handle_talk_sur_contrer_click():
         player_name = current_user.username
         player = currentGame.getPlayerByName(player_name)
-        currentGame.getCurrentRound().registerTalkSurContrer(player)
+        if player:
+            currentGame.getCurrentRound().registerTalkSurContrer(player)
 
 
     @socketio.on('disconnect')
