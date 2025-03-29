@@ -1,4 +1,5 @@
 from flask_socketio import emit
+from round import getBeloteValue
 
 class Player:
     def __init__(self, name, team, sid):
@@ -16,6 +17,19 @@ class Player:
     def emit(self, type, data):
         if self.sid != None:
             emit(type, data, room=self.sid)
+
+    def hasColor(self, color):
+        for c in self.cards:
+            if c["color"] == color:
+                return True
+        return False
+
+    def hasUpper(self, card, trump):
+        for c in self.cards:
+            if c["color"] == card['color']:
+                if getBeloteValue(c, trump) > getBeloteValue(card, trump):
+                    return True, c
+        return False, {}
 
     def __repr__(self):
         return str(self.dump())

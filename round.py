@@ -3,6 +3,12 @@ from flask_socketio import emit
 ROUND_STATE_SETUP = 0
 ROUND_STATE_TALKING = 1
 ROUND_STATE_PLAYING = 2
+
+TRUMP_CONVERT_TABLE = {7: 15, 8: 16, 12: 17, 13: 18, 10: 19, 14: 20, 9: 21, 11: 22}
+CLASSIC_CONVERT_TABLE = {7: 15, 8: 16, 9: 17, 11: 18, 12: 19, 13: 20, 10: 21, 14: 22}
+
+def getBeloteValue(card, trump):
+    return (TRUMP_CONVERT_TABLE if card["color"] == trump else CLASSIC_CONVERT_TABLE)[card["value"]]
 class Round:
 
     def __init__(self, players, firstDistribIndex, cards):
@@ -13,15 +19,20 @@ class Round:
         self.state = ROUND_STATE_SETUP
         self.nextTurnIndex = 0
         self.nextTurn = self.players[self.nextTurnIndex]
-        self.cardOnTable = []
+
         self.nextTalkIndex = 0
         self.nextTalk = self.players[self.nextTalkIndex]
         self.talk = {}
         self.contrer = 0
         self.surcontrer = 0
 
+        # Hand variable
+        self.cardOnTable = []
+        self.winningTeam = None # Savoir qui a la main
+        self.askedColor = None
+        self.winningCard = None
+
     def dumpRoundInfo(self):
-        print(self.talk)
         out = {
             "state": self.state,
         }
@@ -57,8 +68,10 @@ class Round:
         elif self.state == ROUND_STATE_PLAYING:
             out.update({
                 "next_turn": self.nextTurn.name,
-                "card_on_table": self.cardOnTable
+                "card_on_table": []
             })
+            for c in self.cardOnTable:
+                out["card_on_table"].append({"card": c["card"], "player": c["player"].name})
         else:
             pass
         return out
@@ -85,9 +98,9 @@ class Round:
     def start(self):
         self.cardsDistrib()
         # TODO : DEBUG
-        # self.state = ROUND_STATE_PLAYING
-        # self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
-        # self.sendRoundInfo()
+        self.state = ROUND_STATE_PLAYING
+        self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
+        self.sendRoundInfo()
 
     def restart(self):
         self.state = ROUND_STATE_SETUP
@@ -161,8 +174,74 @@ class Round:
                     self.state = ROUND_STATE_PLAYING
                     self.sendRoundInfo()
 
+    @staticmethod
+    def compareCard(card1, card2, trump):
+        card1FakeValue = getBeloteValue(card1, trump)
+        card2FakeValue = getBeloteValue(card2, trump)
+
+        if card1FakeValue < card2FakeValue:
+            return -1
+        if card1FakeValue > card2FakeValue:
+            return 1
+        if card1FakeValue == card2FakeValue:
+            return 0
+
     def computeNewCard(self, player, card):
-        pass
+        currentTrump = self.talk['color']
+        # Premier tour
+        if len(self.cardOnTable) == 0:
+            self.askedColor = card['color']
+            self.winningTeam = player.team
+            self.winningCard = card
+            print("Asked: ", self.askedColor, "Team: ", self.winningTeam)
+            return True
+        else:
+            # Atout
+            if self.askedColor == currentTrump:
+                print("Tour Atout")
+                if card["color"] == self.askedColor:
+                    if self.compareCard(card, self.winningCard, currentTrump) > 0:
+                        self.winningCard = card
+                        self.winningTeam = player.team
+                    else:
+                        res, upperCard = player.hasUpper(self.winningCard, currentTrump)
+                        if res and upperCard != card:
+                            print(player.name, " il faut monter à l'atout")
+                            return False
+                    return True
+                else:
+                    return not(player.hasColor(self.askedColor))
+
+
+            # Non-atout
+            else:
+                print("Tour Non atout")
+                if card['color'] == self.askedColor:
+                    if self.compareCard(card, self.winningCard, currentTrump) > 0:
+                        self.winningCard = card
+                        self.winningTeam = player.team
+                    return True
+                elif card['color'] == currentTrump:
+                    if player.hasColor(self.askedColor):
+                        print(player.name, " a essayé de tricher")
+                        return False
+
+                    if self.compareCard(card, self.winningCard, currentTrump) > 0:
+                        self.winningCard = card
+                        self.winningTeam = player.team
+                    else:
+                        res, upperCard = player.hasUpper(self.winningCard, currentTrump)
+                        if res and upperCard != card:
+                            print(player.name, " il faut monter à l'atout")
+                            return False
+                    return True
+
+                else:
+                    if self.winningTeam == player.team:
+                        return not(player.hasColor(self.askedColor))
+                    else:
+                        return not(player.hasColor(self.askedColor) or player.hasColor(currentTrump))
+
 
     def cardPlayed(self, player, card, index):
         # TODO : argument card used only for print
@@ -173,12 +252,15 @@ class Round:
                     # TODO : END THE HAND
                     pass
                 else:
-                    played_card = player.cards.pop(index)
+                    #Verifier si la carte est dans le jeu du joueur
+                    if card == player.cards[index]:
+                        result = self.computeNewCard(player, card)
+                        print(self.winningCard, self.winningTeam)
+                        if result:
+                            played_card = player.cards.pop(index)
+                            player.sendDeck()
 
-                    result = self.computeNewCard(player, played_card)
-                    player.sendDeck()
-
-                    self.cardOnTable.append(played_card)
-                    self.nextTurnIndex = (self.nextTurnIndex + 1) % 4
-                    self.nextTurn = self.players[self.nextTurnIndex]
+                            self.cardOnTable.append({"card": played_card, "player": player})
+                            self.nextTurnIndex = (self.nextTurnIndex + 1) % 4
+                            self.nextTurn = self.players[self.nextTurnIndex]
                 self.sendRoundInfo()
