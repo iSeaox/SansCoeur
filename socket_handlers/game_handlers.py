@@ -84,6 +84,14 @@ def register_handlers(socketio, connected_clients, currentGame):
         if player:
             currentGame.getCurrentRound().registerTalkSurContrer(player)
 
+    @socketio.on("table_ack_click")
+    @socketio_login_required
+    def handle_table_ack_click():
+        player_name = current_user.username
+        player = currentGame.getPlayerByName(player_name)
+        if player:
+            currentGame.getCurrentRound().computeTableAck(player)
+
 
     @socketio.on('disconnect')
     def handle_disconnect():

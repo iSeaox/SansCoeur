@@ -27,6 +27,7 @@ socket.on('round_info', (data) => {
             <p>Statut de la manche : ${getRoundStatusText(data.state)}</p>
             <p>Prochain à jouer : ${data.next_turn}</p>
             <p>Contrat : ${("current_talk" in data ? getFormattedTalk(data) : "")}</p>
+            <p>Plis: ${data.trick[0]} - ${data.trick[1]}</p>
         `;
         talkInfoDiv.style.display = 'none';
         // -------------------------------------------------------
@@ -44,6 +45,10 @@ socket.on('round_info', (data) => {
             });
         }
     }
+});
+
+cardTableDiv.addEventListener('click', function() {
+    socket.emit('table_ack_click');
 });
 
 talkInfoConfirmBtn.addEventListener('click', function() {

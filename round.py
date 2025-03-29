@@ -4,28 +4,35 @@ ROUND_STATE_SETUP = 0
 ROUND_STATE_TALKING = 1
 ROUND_STATE_PLAYING = 2
 
-TRUMP_CONVERT_TABLE = {7: 15, 8: 16, 12: 17, 13: 18, 10: 19, 14: 20, 9: 21, 11: 22}
+TRUMP_CONVERT_TABLE   = {7: 15, 8: 16, 12: 17, 13: 18, 10: 19, 14: 20, 9: 21, 11: 22}
 CLASSIC_CONVERT_TABLE = {7: 7, 8: 8, 9: 9, 11: 10, 12: 11, 13: 12, 10: 13, 14: 14}
+
+TRUMP_POINT_TABLE   = {7: 0, 8: 0, 9: 14, 10: 10, 11: 20, 12: 3, 13: 4, 14: 11}
+CLASSIC_POINT_TABLE = {7: 0, 8: 0, 9: 0 , 10: 10, 11: 2 , 12: 3, 13: 4, 14: 11}
 
 def getBeloteValue(card, trump):
     return (TRUMP_CONVERT_TABLE if card["color"] == trump else CLASSIC_CONVERT_TABLE)[card["value"]]
+
+def getBelotePoint(card, trump):
+    return (TRUMP_POINT_TABLE if card["color"] == trump else CLASSIC_POINT_TABLE)[card["value"]]
 class Round:
 
     def __init__(self, players, firstDistribIndex, cards, game):
         self.attachedGame = game
         self.players = players
         self.firstDistribIndex = firstDistribIndex
-        self.currentTurn = 0
         self.cards = cards
         self.state = ROUND_STATE_SETUP
-        self.nextTurnIndex = 0
+        self.nextTurnIndex = self.firstDistribIndex + 1
         self.nextTurn = self.players[self.nextTurnIndex]
 
-        self.nextTalkIndex = 0
+        self.nextTalkIndex = self.firstDistribIndex + 1
         self.nextTalk = self.players[self.nextTalkIndex]
         self.talk = {}
         self.contrer = 0
         self.surcontrer = 0
+
+        self.needTableAck = 0 # ACK to remove cards from the table
 
         # Hand variable
         self.cardOnTable = []
@@ -34,7 +41,7 @@ class Round:
         self.askedColor = None
         self.winningCard = None
 
-        self.heatTeam = [[], []]
+        self.heapTeam = [[], []]
 
     def dumpRoundInfo(self):
         out = {
@@ -72,7 +79,8 @@ class Round:
         elif self.state == ROUND_STATE_PLAYING:
             out.update({
                 "next_turn": self.nextTurn.name,
-                "card_on_table": []
+                "card_on_table": [],
+                "trick": [len(self.heapTeam[0]), len(self.heapTeam[1])]
             })
             for c in self.cardOnTable:
                 out["card_on_table"].append({"card": c["card"], "player": c["player"].name})
@@ -101,9 +109,26 @@ class Round:
 
     def start(self):
         self.cardsDistrib()
-        # TODO : DEBUG
-        self.state = ROUND_STATE_PLAYING
-        self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
+
+        # # TODO : DEBUG
+        # if self.firstDistribIndex == 0:
+        #     print("A" * 30)
+        #     # TODO : DEBUG
+        #     self.state = ROUND_STATE_PLAYING
+        #     self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
+        #     self.sendRoundInfo()
+
+        #     # TODO : DEBUG
+
+        #     self.winningTeam = 0
+        #     self.needTableAck = 1
+        #     self.heapTeam = [[[{'card': {'color': 3, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 10}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 12}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 0, 'value': 13}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 0, 'value': 8}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 2, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 2, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 11}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 2, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 0, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 3, 'value': 13}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 2, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}], [{'card': {'color': 2, 'value': 13}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}]], [[{'card': {'color': 1, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 1, 'value': 11}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 13}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 3, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 3, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 0, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 10}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}]]]
+        #     self.flushCardOnTable()
+        #     self.computeTableAck(self.nextTurn)
+
+        print("-" * 40)
+        print(self.dumpRoundInfo())
+        print("-" * 40)
         self.sendRoundInfo()
 
     def restart(self):
@@ -127,7 +152,7 @@ class Round:
         self.registerTalk(player, {}, type="surcontrer")
 
     def registerTalk(self, player, talk, type=None):
-        if not(type != None or ("color" in talk and "value" in talk)):
+        if not(type != None or ("selectedColor" in talk and "selectedValue" in talk)):
             # Mauvais format de talk
             return
         if self.state == ROUND_STATE_TALKING:
@@ -182,8 +207,6 @@ class Round:
     def compareCard(card1, card2, trump):
         card1FakeValue = getBeloteValue(card1, trump)
         card2FakeValue = getBeloteValue(card2, trump)
-        print("COMP : ", card1, "\n\t", card1FakeValue)
-        print("COMP : ", card2, "\n\t", card2FakeValue)
         if card1FakeValue < card2FakeValue:
             return -1
         if card1FakeValue > card2FakeValue:
@@ -232,7 +255,6 @@ class Round:
                         return False
 
                     if self.compareCard(card, self.winningCard, currentTrump) > 0:
-                        print("a pris la main")
                         self.winningCard = card
                         self.winningTeam = player.team
                         self.winningPlayer = player
@@ -249,10 +271,30 @@ class Round:
                     else:
                         return not(player.hasColor(self.askedColor) or player.hasColor(currentTrump))
 
+    def computeTableAck(self, player):
+        if self.needTableAck:
+            if player == self.nextTurn:
+                self.needTableAck = 0
+                self.cardOnTable = []
+
+                if len(self.heapTeam[0]) + len(self.heapTeam[1]) >= 8:
+                    # TODO : Ajouter le compte de la belote
+                    score = [0, 0]
+                    for t in (0, 1):
+                        if self.winningTeam == t:
+                            score[t] += 10 # 10 de Der
+                        for trick in self.heapTeam[t]:
+                            for c in trick:
+                                score[t] += getBelotePoint(c["card"], self.talk["color"])
+
+                    self.attachedGame.registerScore(score)
+
+        self.sendRoundInfo()
+
     def flushCardOnTable(self):
-        self.heatTeam[self.winningTeam].append(self.cardOnTable)
-        self.cardOnTable = []
-        print(len(self.heatTeam[0]), len(self.heatTeam[1]))
+        self.heapTeam[self.winningTeam].append(self.cardOnTable)
+        self.needTableAck = 1
+
         for index, p in enumerate(self.players):
             if p == self.winningPlayer:
                 return index
@@ -260,9 +302,9 @@ class Round:
 
 
     def cardPlayed(self, player, card, index):
-        # TODO : argument card used only for print
-        print("CARD PLAYED : ", player, " | ", card)
         if(self.state == ROUND_STATE_PLAYING):
+            if self.needTableAck:
+                return # Is used as a lock
             if(player == self.nextTurn):
                 #Verifier si la carte est dans le jeu du joueur
                 if card == player.cards[index]:
@@ -278,7 +320,6 @@ class Round:
                             self.nextTurnIndex = self.flushCardOnTable()
 
                             self.nextTurn = self.players[self.nextTurnIndex]
-                            # TODO : Mettre un système d'alerte et une tempo
                             self.sendRoundInfo()
                             return
 
