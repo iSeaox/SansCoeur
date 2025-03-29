@@ -1,0 +1,42 @@
+.row {
+  color: #000;
+  text-align: center;
+}
+
+h1 {
+  padding-bottom: 30px;
+}
+
+#dashboard {
+  margin-top: -2rem !important;
+}
+
+.deck {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.playing-card {
+  padding: 20px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+}
+
+.card-header h5 {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  padding: 10px 0px;
+}
+
+li {
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    padding-top: 30px;
+  }
+}

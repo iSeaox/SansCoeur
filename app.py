@@ -22,6 +22,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+login_manager.login_message = ''
 
 # ################################################
 # BDD
@@ -83,7 +84,7 @@ def login():
 
         if user and check_password_hash(user.password, password):
             login_user(user)
-            flash('Connexion réussie!', 'success')
+            flash('Connexion réussie !', 'success')
             next_page = request.args.get('next')
             return redirect(next_page or url_for('index'))
         else:
@@ -95,7 +96,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('Vous avez été déconnecté.', 'info')
+    flash('Vous avez été déconnecté.', 'secondary')
     return redirect(url_for('index'))
 
 # ################################################
@@ -107,4 +108,4 @@ if __name__ == "__main__":
     currentGame.registerPlayer("helios", 1, None)
     currentGame.registerPlayer("mathias", 0, None)
     socketio.run(app, debug=True)
-
+    # socketio.run(app, host="0.0.0.0", port=5000, debug=True)

@@ -1,0 +1,150 @@
+@import url("https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap");
+
+.title {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-style: normal;
+  text-align: center;
+  font-size: 7rem;
+  padding-top: -20px;
+  margin-top: -20px;
+}
+
+.login {
+  position: relative;
+  height: auto;
+  display: grid;
+  align-items: center;
+  background: none;
+  padding-top: 80px;
+}
+
+.login-form {
+  margin: 0 auto;
+  background-color: hsla(0, 5%, 8%, 0.13);
+  border: 2px solid hsla(0, 0%, 100%, 0.7);
+  padding: 2.8rem 2rem;
+  color: #fff;
+  border-radius: 1rem;
+  backdrop-filter: blur(5px);
+  max-width: 450px;
+  width: 100%;
+}
+
+.login-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 3rem;
+}
+
+.login-inputs {
+  display: grid;
+  row-gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.login-box {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  column-gap: 0.75rem;
+  align-items: center;
+  border: 2px solid hsla(0, 0%, 100%, 0.7);
+  padding: 0 1.25rem;
+  border-radius: 4rem;
+}
+
+.login-input,
+.login-button {
+  border: none;
+  outline: none;
+}
+
+.login-input {
+  width: 100%;
+  background: none;
+  color: #fff;
+  padding: 1rem 0;
+}
+
+.login-input::placeholder {
+  color: #fff;
+}
+
+.login-box i {
+  font-size: 1.25rem;
+}
+
+.login-check {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.813rem;
+}
+
+.login-check-box {
+  display: flex;
+  column-gap: 0.5rem;
+  align-items: center;
+}
+
+.login-check-input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #fff;
+}
+
+.login-forgot {
+  color: #fff;
+}
+
+.login-forgot:hover {
+  text-decoration: underline;
+}
+
+.login-button {
+  width: 100%;
+  padding: 1rem;
+  margin: 1.1rem 0;
+  background-color: #fff;
+  border-radius: 4rem;
+  color: #000;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.login-register {
+  font-size: 0.813rem;
+  text-align: center;
+}
+
+.login-register a {
+  color: #fff;
+  font-weight: 500;
+}
+
+.login-register a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 3rem;
+    margin-top: 50px;
+    padding-top: 0;
+  }
+  .login {
+    padding-top: 50px;
+  }
+  .login-input {
+    padding: 0.8rem 0;
+  }
+  .login-inputs {
+    row-gap: 1rem;
+    margin-bottom: 1.8rem;
+  }
+  .login-title {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+  }
+}

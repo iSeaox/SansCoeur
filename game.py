@@ -62,8 +62,9 @@ class Game:
         player.sid = sid
         if player != None:
             self.broadcastGameInfo()
-            self.getCurrentRound().sendRoundInfo()
-            player.sendDeck()
+            if self._currentRound != None:
+                self.getCurrentRound().sendRoundInfo()
+                player.sendDeck()
 
     def getTeam(self, team):
         out = []
