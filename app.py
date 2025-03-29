@@ -83,7 +83,8 @@ def login():
         user = next((u for u in users.values() if u.username == username), None)
 
         if user and check_password_hash(user.password, password):
-            login_user(user)
+            remember = request.form.get('remember') == 'on'
+            login_user(user, remember=remember)
             flash('Connexion réussie !', 'success')
             next_page = request.args.get('next')
             return redirect(next_page or url_for('index'))
