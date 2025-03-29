@@ -108,6 +108,6 @@ Le projet est organisé comme suit :
 
 3. Commitez vos modifications (git commit -am 'Ajoute une nouvelle fonctionnalité').
 
-4. Pushez sur votre branche (git push origin feature/ma-fonctionnalité).
+4. Pushez sur votre branche (git push origin f-ma-fonctionnalité).
 
 5. Ouvrez une pull request.
