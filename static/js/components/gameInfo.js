@@ -3,6 +3,7 @@ import { GAME_STATUS_WAITING, GAME_STATUS_PLAYING, GAME_STATUS_END } from "../ut
 
 const gameInfoDiv = document.getElementById('gameInfo');
 const startGameBtn = document.getElementById('startGameBtn');
+const startGameSection = document.getElementById("startGameSection");
 
 // Gestionnaire pour lancer la partie
 startGameBtn.addEventListener('click', () => {
@@ -27,6 +28,6 @@ socket.on('game_info', (data) => {
   `;
 
   // Affiche le bouton uniquement lorsque le jeu est en attente et prêt à démarrer
-  startGameBtn.style.display =
-    data.readyToStart && data.status === GAME_STATUS_WAITING ? 'block' : 'none';
+  startGameSection.style.display =
+    data.readyToStart && data.status === GAME_STATUS_WAITING ? "block" : "none";
 });
