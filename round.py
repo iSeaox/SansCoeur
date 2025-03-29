@@ -5,13 +5,14 @@ ROUND_STATE_TALKING = 1
 ROUND_STATE_PLAYING = 2
 
 TRUMP_CONVERT_TABLE = {7: 15, 8: 16, 12: 17, 13: 18, 10: 19, 14: 20, 9: 21, 11: 22}
-CLASSIC_CONVERT_TABLE = {7: 15, 8: 16, 9: 17, 11: 18, 12: 19, 13: 20, 10: 21, 14: 22}
+CLASSIC_CONVERT_TABLE = {7: 7, 8: 8, 9: 9, 11: 10, 12: 11, 13: 12, 10: 13, 14: 14}
 
 def getBeloteValue(card, trump):
     return (TRUMP_CONVERT_TABLE if card["color"] == trump else CLASSIC_CONVERT_TABLE)[card["value"]]
 class Round:
 
-    def __init__(self, players, firstDistribIndex, cards):
+    def __init__(self, players, firstDistribIndex, cards, game):
+        self.attachedGame = game
         self.players = players
         self.firstDistribIndex = firstDistribIndex
         self.currentTurn = 0
@@ -29,8 +30,11 @@ class Round:
         # Hand variable
         self.cardOnTable = []
         self.winningTeam = None # Savoir qui a la main
+        self.winningPlayer = None
         self.askedColor = None
         self.winningCard = None
+
+        self.heatTeam = [[], []]
 
     def dumpRoundInfo(self):
         out = {
@@ -178,7 +182,8 @@ class Round:
     def compareCard(card1, card2, trump):
         card1FakeValue = getBeloteValue(card1, trump)
         card2FakeValue = getBeloteValue(card2, trump)
-
+        print("COMP : ", card1, "\n\t", card1FakeValue)
+        print("COMP : ", card2, "\n\t", card2FakeValue)
         if card1FakeValue < card2FakeValue:
             return -1
         if card1FakeValue > card2FakeValue:
@@ -192,17 +197,17 @@ class Round:
         if len(self.cardOnTable) == 0:
             self.askedColor = card['color']
             self.winningTeam = player.team
+            self.winningPlayer = player
             self.winningCard = card
-            print("Asked: ", self.askedColor, "Team: ", self.winningTeam)
             return True
         else:
             # Atout
             if self.askedColor == currentTrump:
-                print("Tour Atout")
                 if card["color"] == self.askedColor:
                     if self.compareCard(card, self.winningCard, currentTrump) > 0:
                         self.winningCard = card
                         self.winningTeam = player.team
+                        self.winningPlayer = player
                     else:
                         res, upperCard = player.hasUpper(self.winningCard, currentTrump)
                         if res and upperCard != card:
@@ -215,11 +220,11 @@ class Round:
 
             # Non-atout
             else:
-                print("Tour Non atout")
                 if card['color'] == self.askedColor:
                     if self.compareCard(card, self.winningCard, currentTrump) > 0:
                         self.winningCard = card
                         self.winningTeam = player.team
+                        self.winningPlayer = player
                     return True
                 elif card['color'] == currentTrump:
                     if player.hasColor(self.askedColor):
@@ -227,8 +232,10 @@ class Round:
                         return False
 
                     if self.compareCard(card, self.winningCard, currentTrump) > 0:
+                        print("a pris la main")
                         self.winningCard = card
                         self.winningTeam = player.team
+                        self.winningPlayer = player
                     else:
                         res, upperCard = player.hasUpper(self.winningCard, currentTrump)
                         if res and upperCard != card:
@@ -242,25 +249,39 @@ class Round:
                     else:
                         return not(player.hasColor(self.askedColor) or player.hasColor(currentTrump))
 
+    def flushCardOnTable(self):
+        self.heatTeam[self.winningTeam].append(self.cardOnTable)
+        self.cardOnTable = []
+        print(len(self.heatTeam[0]), len(self.heatTeam[1]))
+        for index, p in enumerate(self.players):
+            if p == self.winningPlayer:
+                return index
+        return 0
+
 
     def cardPlayed(self, player, card, index):
         # TODO : argument card used only for print
         print("CARD PLAYED : ", player, " | ", card)
         if(self.state == ROUND_STATE_PLAYING):
             if(player == self.nextTurn):
-                if len(self.cardOnTable) >= 4:
-                    # TODO : END THE HAND
-                    pass
-                else:
-                    #Verifier si la carte est dans le jeu du joueur
-                    if card == player.cards[index]:
-                        result = self.computeNewCard(player, card)
-                        print(self.winningCard, self.winningTeam)
-                        if result:
-                            played_card = player.cards.pop(index)
-                            player.sendDeck()
+                #Verifier si la carte est dans le jeu du joueur
+                if card == player.cards[index]:
+                    result = self.computeNewCard(player, card)
+                    print(self.winningCard, self.winningTeam)
+                    if result:
+                        played_card = player.cards.pop(index)
+                        player.sendDeck()
 
-                            self.cardOnTable.append({"card": played_card, "player": player})
-                            self.nextTurnIndex = (self.nextTurnIndex + 1) % 4
+                        self.cardOnTable.append({"card": played_card, "player": player})
+
+                        if len(self.cardOnTable) >= 4:
+                            self.nextTurnIndex = self.flushCardOnTable()
+
                             self.nextTurn = self.players[self.nextTurnIndex]
+                            # TODO : Mettre un système d'alerte et une tempo
+                            self.sendRoundInfo()
+                            return
+
+                        self.nextTurnIndex = (self.nextTurnIndex + 1) % 4
+                        self.nextTurn = self.players[self.nextTurnIndex]
                 self.sendRoundInfo()
