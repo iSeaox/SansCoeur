@@ -1,4 +1,4 @@
-import { getRoundStatusText, getSuitName, getFormattedTalk } from "../utils.js"
+import { getRoundStatusText, getSuitName, getFormattedTalk, getCardElement } from "../utils.js"
 import { ROUND_STATE_SETUP, ROUND_STATE_TALKING, ROUND_STATE_PLAYING } from "../utils.js";
 
 const roundInfoDiv = document.getElementById('roundInfo');
@@ -35,11 +35,12 @@ socket.on('round_info', (data) => {
             cardTableDiv.innerHTML = '';
             const cards = data.card_on_table;
             cards.forEach((card, index) => {
-                const cardElement = document.createElement('div');
-                cardElement.className = 'card';
-                cardElement.id = `card-${index}`;
-                cardElement.textContent = `${card.value} de ${getSuitName(card.color)}`;
-                cardTableDiv.appendChild(cardElement);
+                    const cardElement = getCardElement(card, index);
+                    cardTableDiv.appendChild(cardElement);
+
+                    cardElement.addEventListener('click', () => {
+                        socket.emit('card_clicked', {"card_id": cardElement.id});
+                    });
             });
         }
     }

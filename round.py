@@ -78,9 +78,9 @@ class Round:
     def start(self):
         self.cardsDistrib()
         # TODO : DEBUG
-        # self.state = ROUND_STATE_PLAYING
-        # self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
-        # self.sendRoundInfo()
+        self.state = ROUND_STATE_PLAYING
+        self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
+        self.sendRoundInfo()
 
     def restart(self):
         self.state = ROUND_STATE_SETUP
@@ -121,6 +121,7 @@ class Round:
                     elif self.talk != {} and type == "contrer":
                         self.contrer = 1
                         # TODO : Gere le fait qu'on ne puisse pas contrer son equipe
+                        # TODO : On doit attendre pour le sur contrer
                         flag_end = 1
                     elif self.talk != {} and type == "surcontrer":
                         self.surcontrer = 1

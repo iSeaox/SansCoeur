@@ -103,8 +103,8 @@ def logout():
 
 if __name__ == "__main__":
     # TODO : DEBUG Connexion auto des joueurs
-    # currentGame.registerPlayer("magathe", 0, None)
-    # currentGame.registerPlayer("helios", 1, None)
-    # currentGame.registerPlayer("mathias", 0, None)
+    currentGame.registerPlayer("magathe", 0, None)
+    currentGame.registerPlayer("helios", 1, None)
+    currentGame.registerPlayer("mathias", 0, None)
     socketio.run(app, debug=True)
 

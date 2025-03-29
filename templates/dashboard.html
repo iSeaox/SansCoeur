@@ -6,7 +6,7 @@
     <title>Sans Coeur</title>
     <!-- Lien vers la feuille de style Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/card.css') }}">
 </head>
 <body>
     <div class="container mt-5">
@@ -15,7 +15,7 @@
         <!-- Tableau aligné avec des cases -->
         <div class="row mt-4">
             <!-- Case pour rejoindre une partie -->
-            <div class="col-md-3 mb-4">
+            <div class="col-md-4 mb-4">
                 <div class="card h-100">
                     <div class="card-header">
                         <h5>Rejoindre une partie</h5>
@@ -37,7 +37,7 @@
             </div>
 
             <!-- Case pour les informations de la partie -->
-            <div class="col-md-3 mb-4">
+            <div class="col-md-4 mb-4">
                 <div class="card h-100">
                     <div class="card-header">
                         <h5>Informations de la partie</h5>
@@ -49,7 +49,7 @@
             </div>
 
             <!-- Case pour les informations du round -->
-            <div class="col-md-3 mb-4">
+            <div class="col-md-4 mb-4">
                 <div class="card h-100">
                     <div class="card-header">
                         <h5>Round actuel</h5>
@@ -59,21 +59,32 @@
                     </div>
                 </div>
             </div>
-
+        </div>
+        <div class="row  mt-5">
             <!-- Case pour les cartes du jeu -->
-            <div class="col-md-3 mb-4">
+            <div class="col-md-12">
                 <div class="card h-100">
                     <div class="card-header">
                         <h5>Cartes jouée(s)</h5>
                     </div>
-                    <div class="card-body" id="cardTable">
+                    <div class="card-body card-table" id="cardTable">
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Section du deck -->
-        <div id="deck" class="mt-4 deck">
-            <p>Votre deck apparaîtra ici...</p>
+        <div class="row mt-5">
+            <!-- Case pour les cartes du jeu -->
+            <div class="col-md-12">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5>Vos cartes</h5>
+                    </div>
+                     <!-- Section du deck -->
+                    <div id="deck" class="card-body deck">
+                        <p>Votre deck apparaîtra ici...</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

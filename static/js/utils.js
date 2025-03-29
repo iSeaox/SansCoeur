@@ -68,3 +68,18 @@ export function getFormattedTalk(data) {
 
     return out
 }
+
+export function getCardElement(card, index) {
+    const cardElement = document.createElement('div');
+    cardElement.className = 'playing-card';
+    cardElement.id = `card-${index}`;
+
+    const imgCardElement = document.createElement('img');
+    const imagePath = `static/img/${card.value}_${card.color}.png`;
+
+    imgCardElement.src = imagePath;
+    imgCardElement.alt = `${card.value} de ${getSuitName(card.color)}`;
+
+    cardElement.appendChild(imgCardElement);
+    return cardElement;
+}
