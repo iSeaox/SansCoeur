@@ -64,18 +64,41 @@ SansCoeur est un jeu de contrée en ligne permettant aux joueurs de s'affronter 
 
 Le projet est organisé comme suit :
 
-SansCoeur/
-│
-├── app.py                # Point d'entrée de l'application Flask
-├── auth.py               # Gestion de l'authentification
-├── config.py             # Configuration de l'application
-├── game.py               # Logique du jeu
-├── player.py             # Gestion des profils joueurs
-├── round.py              # Gestion des tours de jeu
-├── requirements.txt     # Liste des dépendances Python
-├── .gitignore           # Fichiers à ignorer par Git
-├── static/              # Fichiers statiques (CSS, images, JS)
-└── templates/           # Templates HTML
+```txt
+└── 📁SansCoeur
+    └── 📁socket_handlers
+        └── __init__.py
+        └── game_handlers.py
+    └── 📁static                    # Fichiers statiques (CSS, images, JS)
+        └── 📁css
+            └── card.css
+        └── 📁img
+            └── ...
+        └── 📁js
+            └── 📁components
+                └── deck.js
+                └── gameInfo.js
+                └── roundInfo.js
+            └── dashboard.js
+            └── utils.js
+    └── 📁templates                 # Templates HTML
+        └── base.html
+        └── 📁components
+            └── gameInfo.html
+            └── roundInfo.html
+        └── dashboard.html
+        └── index.html
+        └── login.html
+    └── .gitignore
+    └── app.py                      # Point d'entrée de l'application Flask
+    └── auth.py                     # Gestion de l'authentification
+    └── config.py                   # Configuration de l'application
+    └── game.py                     # Logique du jeu
+    └── player.py                   # Gestion des joueurs
+    └── README.md
+    └── requirement.txt             # Liste des dépendances Python
+    └── round.py                    # Gestion des tours de jeu
+```
 
 ## Contribuer
 
