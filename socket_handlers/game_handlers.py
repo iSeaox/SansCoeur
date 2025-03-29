@@ -44,13 +44,14 @@ def register_handlers(socketio, connected_clients, currentGame):
     @socketio.on('card_clicked')
     @socketio_login_required
     def handle_card_clicked(data):
-        # TODO : CHECK FORMAT
-        player_name = current_user.username
-        player = currentGame.getPlayerByName(player_name)
-        card_index = int(data['card_id'].split("card-")[-1])
-        card = player.cards[card_index]
+        if "card_id" in data:
+            player_name = current_user.username
+            player = currentGame.getPlayerByName(player_name)
+            if player:
+                card_index = int(data['card_id'].split("card-")[-1])
+                card = player.cards[card_index]
 
-        currentGame.getCurrentRound().cardPlayed(player, card, card_index)
+                currentGame.getCurrentRound().cardPlayed(player, card, card_index)
 
     @socketio.on("talk_click")
     @socketio_login_required
