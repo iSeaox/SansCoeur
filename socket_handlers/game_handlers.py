@@ -44,13 +44,14 @@ def register_handlers(socketio, connected_clients, currentGame):
     @socketio.on('card_clicked')
     @socketio_login_required
     def handle_card_clicked(data):
-        # TODO : CHECK FORMAT
-        player_name = current_user.username
-        player = currentGame.getPlayerByName(player_name)
-        card_index = int(data['card_id'].split("card-")[-1])
-        card = player.cards[card_index]
+        if "card_id" in data:
+            player_name = current_user.username
+            player = currentGame.getPlayerByName(player_name)
+            if player:
+                card_index = int(data['card_id'].split("card-")[-1])
+                card = player.cards[card_index]
 
-        currentGame.getCurrentRound().cardPlayed(player, card, card_index)
+                currentGame.getCurrentRound().cardPlayed(player, card, card_index)
 
     @socketio.on("talk_click")
     @socketio_login_required
@@ -64,21 +65,24 @@ def register_handlers(socketio, connected_clients, currentGame):
     def handle_talk_pass_click():
         player_name = current_user.username
         player = currentGame.getPlayerByName(player_name)
-        currentGame.getCurrentRound().registerTalkPass(player)
+        if player:
+            currentGame.getCurrentRound().registerTalkPass(player)
 
     @socketio.on("contrer_click")
     @socketio_login_required
     def handle_talk_contrer_click():
         player_name = current_user.username
         player = currentGame.getPlayerByName(player_name)
-        currentGame.getCurrentRound().registerTalkContrer(player)
+        if player:
+            currentGame.getCurrentRound().registerTalkContrer(player)
 
     @socketio.on("sur_contrer_click")
     @socketio_login_required
     def handle_talk_sur_contrer_click():
         player_name = current_user.username
         player = currentGame.getPlayerByName(player_name)
-        currentGame.getCurrentRound().registerTalkSurContrer(player)
+        if player:
+            currentGame.getCurrentRound().registerTalkSurContrer(player)
 
 
     @socketio.on('disconnect')

@@ -3,9 +3,16 @@ from flask_socketio import emit
 ROUND_STATE_SETUP = 0
 ROUND_STATE_TALKING = 1
 ROUND_STATE_PLAYING = 2
+
+TRUMP_CONVERT_TABLE = {7: 15, 8: 16, 12: 17, 13: 18, 10: 19, 14: 20, 9: 21, 11: 22}
+CLASSIC_CONVERT_TABLE = {7: 7, 8: 8, 9: 9, 11: 10, 12: 11, 13: 12, 10: 13, 14: 14}
+
+def getBeloteValue(card, trump):
+    return (TRUMP_CONVERT_TABLE if card["color"] == trump else CLASSIC_CONVERT_TABLE)[card["value"]]
 class Round:
 
-    def __init__(self, players, firstDistribIndex, cards):
+    def __init__(self, players, firstDistribIndex, cards, game):
+        self.attachedGame = game
         self.players = players
         self.firstDistribIndex = firstDistribIndex
         self.currentTurn = 0
@@ -13,12 +20,21 @@ class Round:
         self.state = ROUND_STATE_SETUP
         self.nextTurnIndex = 0
         self.nextTurn = self.players[self.nextTurnIndex]
-        self.cardOnTable = []
+
         self.nextTalkIndex = 0
         self.nextTalk = self.players[self.nextTalkIndex]
         self.talk = {}
         self.contrer = 0
         self.surcontrer = 0
+
+        # Hand variable
+        self.cardOnTable = []
+        self.winningTeam = None # Savoir qui a la main
+        self.winningPlayer = None
+        self.askedColor = None
+        self.winningCard = None
+
+        self.heatTeam = [[], []]
 
     def dumpRoundInfo(self):
         out = {
@@ -35,12 +51,18 @@ class Round:
 
         if self.contrer:
             out.update({
-                "contrer": 1
+                "contrer": {
+                    "player": self.talk['contrer'].name,
+                    "team": self.talk['contrer'].team,
+                }
             })
 
         if self.surcontrer:
             out.update({
-                "surcontrer": 1
+                "surcontrer": {
+                    "player": self.talk['surcontrer'].name,
+                    "team": self.talk['surcontrer'].team,
+                }
             })
 
         if self.state == ROUND_STATE_TALKING:
@@ -50,8 +72,10 @@ class Round:
         elif self.state == ROUND_STATE_PLAYING:
             out.update({
                 "next_turn": self.nextTurn.name,
-                "card_on_table": self.cardOnTable
+                "card_on_table": []
             })
+            for c in self.cardOnTable:
+                out["card_on_table"].append({"card": c["card"], "player": c["player"].name})
         else:
             pass
         return out
@@ -103,8 +127,9 @@ class Round:
         self.registerTalk(player, {}, type="surcontrer")
 
     def registerTalk(self, player, talk, type=None):
-        # TODO : Pensez à checker le format
-        print(player, talk)
+        if not(type != None or ("color" in talk and "value" in talk)):
+            # Mauvais format de talk
+            return
         if self.state == ROUND_STATE_TALKING:
             if self.nextTalk == player:
                 flag_next = 0
@@ -112,54 +137,151 @@ class Round:
                 if type == None:
                     newValue = int(talk['selectedValue'])
 
-                    if self.talk == {} or self.talk['value'] < newValue:
+                    if self.talk == {} or self.talk['value'] < newValue and not("contrer" in self.talk):
                         self.talk = {"color": int(talk['selectedColor']), "value": newValue, "player": player}
                         flag_next = 1
                 else:
                     if type == "pass":
                         flag_next = 1
                     elif self.talk != {} and type == "contrer":
-                        self.contrer = 1
-                        # TODO : Gere le fait qu'on ne puisse pas contrer son equipe
-                        # TODO : On doit attendre pour le sur contrer
-                        flag_end = 1
+                        if self.talk['player'].team != player.team:
+                            self.talk['contrer'] = player
+                            self.contrer = 1
+                            flag_next = 1
                     elif self.talk != {} and type == "surcontrer":
-                        self.surcontrer = 1
-                        flag_end = 1
+                        if "contrer" in self.talk.keys() and self.talk['contrer'].team != player.team:
+                            self.talk['surcontrer'] = player
+                            self.surcontrer = 1
+                            print("END SUR CONTERR")
+                            flag_end = 1
 
                 if flag_next:
                     self.nextTalkIndex += 1
                     self.nextTalkIndex %= 4
-                    print(self.nextTalkIndex)
                     if self.nextTalkIndex == 0 and self.talk == {}:
                         self.restart()
-                        print("ENNNNNND")
                         return
 
                     self.nextTalk = self.players[self.nextTalkIndex]
-                    if self.talk != {} and self.nextTalk == self.talk['player']:
+
+                    if self.talk != {} and "contrer" in self.talk and self.talk['contrer'] == self.nextTalk:
+                        print("END CONTREE")
                         flag_end = 1
 
-                    print("NEXTTT")
+                    if self.talk != {} and self.nextTalk == self.talk['player'] and not("contrer" in self.talk):
+                        print("END CLASSIC")
+                        flag_end = 1
+
                     self.sendRoundInfo()
 
                 if flag_end:
                     self.state = ROUND_STATE_PLAYING
                     self.sendRoundInfo()
 
+    @staticmethod
+    def compareCard(card1, card2, trump):
+        card1FakeValue = getBeloteValue(card1, trump)
+        card2FakeValue = getBeloteValue(card2, trump)
+        print("COMP : ", card1, "\n\t", card1FakeValue)
+        print("COMP : ", card2, "\n\t", card2FakeValue)
+        if card1FakeValue < card2FakeValue:
+            return -1
+        if card1FakeValue > card2FakeValue:
+            return 1
+        if card1FakeValue == card2FakeValue:
+            return 0
+
+    def computeNewCard(self, player, card):
+        currentTrump = self.talk['color']
+        # Premier tour
+        if len(self.cardOnTable) == 0:
+            self.askedColor = card['color']
+            self.winningTeam = player.team
+            self.winningPlayer = player
+            self.winningCard = card
+            return True
+        else:
+            # Atout
+            if self.askedColor == currentTrump:
+                if card["color"] == self.askedColor:
+                    if self.compareCard(card, self.winningCard, currentTrump) > 0:
+                        self.winningCard = card
+                        self.winningTeam = player.team
+                        self.winningPlayer = player
+                    else:
+                        res, upperCard = player.hasUpper(self.winningCard, currentTrump)
+                        if res and upperCard != card:
+                            print(player.name, " il faut monter à l'atout")
+                            return False
+                    return True
+                else:
+                    return not(player.hasColor(self.askedColor))
+
+
+            # Non-atout
+            else:
+                if card['color'] == self.askedColor:
+                    if self.compareCard(card, self.winningCard, currentTrump) > 0:
+                        self.winningCard = card
+                        self.winningTeam = player.team
+                        self.winningPlayer = player
+                    return True
+                elif card['color'] == currentTrump:
+                    if player.hasColor(self.askedColor):
+                        print(player.name, " a essayé de tricher")
+                        return False
+
+                    if self.compareCard(card, self.winningCard, currentTrump) > 0:
+                        print("a pris la main")
+                        self.winningCard = card
+                        self.winningTeam = player.team
+                        self.winningPlayer = player
+                    else:
+                        res, upperCard = player.hasUpper(self.winningCard, currentTrump)
+                        if res and upperCard != card:
+                            print(player.name, " il faut monter à l'atout")
+                            return False
+                    return True
+
+                else:
+                    if self.winningTeam == player.team:
+                        return not(player.hasColor(self.askedColor))
+                    else:
+                        return not(player.hasColor(self.askedColor) or player.hasColor(currentTrump))
+
+    def flushCardOnTable(self):
+        self.heatTeam[self.winningTeam].append(self.cardOnTable)
+        self.cardOnTable = []
+        print(len(self.heatTeam[0]), len(self.heatTeam[1]))
+        for index, p in enumerate(self.players):
+            if p == self.winningPlayer:
+                return index
+        return 0
+
+
     def cardPlayed(self, player, card, index):
+        # TODO : argument card used only for print
         print("CARD PLAYED : ", player, " | ", card)
         if(self.state == ROUND_STATE_PLAYING):
             if(player == self.nextTurn):
-                if len(self.cardOnTable) >= 4:
-                    # TODO : END THE HAND
-                    pass
-                else:
-                    # TODO : CHECK IF CARD CAN BE PLAYED
-                    played_card = player.cards.pop(index)
-                    player.sendDeck()
+                #Verifier si la carte est dans le jeu du joueur
+                if card == player.cards[index]:
+                    result = self.computeNewCard(player, card)
+                    print(self.winningCard, self.winningTeam)
+                    if result:
+                        played_card = player.cards.pop(index)
+                        player.sendDeck()
 
-                    self.cardOnTable.append(played_card)
-                    self.nextTurnIndex = (self.nextTurnIndex + 1) % 4
-                    self.nextTurn = self.players[self.nextTurnIndex]
+                        self.cardOnTable.append({"card": played_card, "player": player})
+
+                        if len(self.cardOnTable) >= 4:
+                            self.nextTurnIndex = self.flushCardOnTable()
+
+                            self.nextTurn = self.players[self.nextTurnIndex]
+                            # TODO : Mettre un système d'alerte et une tempo
+                            self.sendRoundInfo()
+                            return
+
+                        self.nextTurnIndex = (self.nextTurnIndex + 1) % 4
+                        self.nextTurn = self.players[self.nextTurnIndex]
                 self.sendRoundInfo()

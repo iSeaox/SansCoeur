@@ -120,12 +120,15 @@ class Game:
         self._status = GAME_STATUS_PLAYING
 
         self.setupDeck()
-        self._currentRound = round.Round(self._players, 0, self._cards)
+        self._currentRound = round.Round(self._players, 0, self._cards, self)
         self._currentRound.start()
         self.broadcastGameInfo()
         return (True, "Starting game")
 
         # _____________________________________________________
+
+    def registerScore(self, score):
+        pass
 
     def getCurrentRound(self):
         return self._currentRound
