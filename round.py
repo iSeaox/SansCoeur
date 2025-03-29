@@ -21,6 +21,7 @@ class Round:
         self.surcontrer = 0
 
     def dumpRoundInfo(self):
+        print(self.talk)
         out = {
             "state": self.state,
         }
@@ -35,12 +36,18 @@ class Round:
 
         if self.contrer:
             out.update({
-                "contrer": 1
+                "contrer": {
+                    "player": self.talk['contrer'].name,
+                    "team": self.talk['contrer'].team,
+                }
             })
 
         if self.surcontrer:
             out.update({
-                "surcontrer": 1
+                "surcontrer": {
+                    "player": self.talk['surcontrer'].name,
+                    "team": self.talk['surcontrer'].team,
+                }
             })
 
         if self.state == ROUND_STATE_TALKING:
@@ -78,9 +85,9 @@ class Round:
     def start(self):
         self.cardsDistrib()
         # TODO : DEBUG
-        self.state = ROUND_STATE_PLAYING
-        self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
-        self.sendRoundInfo()
+        # self.state = ROUND_STATE_PLAYING
+        # self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
+        # self.sendRoundInfo()
 
     def restart(self):
         self.state = ROUND_STATE_SETUP
@@ -104,7 +111,6 @@ class Round:
 
     def registerTalk(self, player, talk, type=None):
         # TODO : Pensez à checker le format
-        print(player, talk)
         if self.state == ROUND_STATE_TALKING:
             if self.nextTalk == player:
                 flag_next = 0
@@ -112,35 +118,41 @@ class Round:
                 if type == None:
                     newValue = int(talk['selectedValue'])
 
-                    if self.talk == {} or self.talk['value'] < newValue:
+                    if self.talk == {} or self.talk['value'] < newValue and not("contrer" in self.talk):
                         self.talk = {"color": int(talk['selectedColor']), "value": newValue, "player": player}
                         flag_next = 1
                 else:
                     if type == "pass":
                         flag_next = 1
                     elif self.talk != {} and type == "contrer":
-                        self.contrer = 1
-                        # TODO : Gere le fait qu'on ne puisse pas contrer son equipe
-                        # TODO : On doit attendre pour le sur contrer
-                        flag_end = 1
+                        if self.talk['player'].team != player.team:
+                            self.talk['contrer'] = player
+                            self.contrer = 1
+                            flag_next = 1
                     elif self.talk != {} and type == "surcontrer":
-                        self.surcontrer = 1
-                        flag_end = 1
+                        if "contrer" in self.talk.keys() and self.talk['contrer'].team != player.team:
+                            self.talk['surcontrer'] = player
+                            self.surcontrer = 1
+                            print("END SUR CONTERR")
+                            flag_end = 1
 
                 if flag_next:
                     self.nextTalkIndex += 1
                     self.nextTalkIndex %= 4
-                    print(self.nextTalkIndex)
                     if self.nextTalkIndex == 0 and self.talk == {}:
                         self.restart()
-                        print("ENNNNNND")
                         return
 
                     self.nextTalk = self.players[self.nextTalkIndex]
-                    if self.talk != {} and self.nextTalk == self.talk['player']:
+
+                    if self.talk != {} and "contrer" in self.talk and self.talk['contrer'] == self.nextTalk:
+                        print("END CONTREE")
                         flag_end = 1
 
-                    print("NEXTTT")
+                    if self.talk != {} and self.nextTalk == self.talk['player'] and not("contrer" in self.talk):
+                        print("END CLASSIC")
+                        flag_end = 1
+
                     self.sendRoundInfo()
 
                 if flag_end:
