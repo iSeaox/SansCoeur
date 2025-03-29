@@ -1,6 +1,7 @@
-![SC](https://github.com/user-attachments/assets/8dd98300-82de-46c2-ae8d-dfb8cfd5b6c0)
-
-**Description** : Jeu de contrée en ligne développé avec Python, HTML, JavaScript et CSS.
+<div  id="sanscoeur" align="center">
+  <img src="https://github.com/user-attachments/assets/d086a10b-e21c-401d-aca7-d9b09b41ebd6" alt="Sans Coeur">
+  <p>Jeu de contrée en ligne développé avec Python, HTML, JavaScript et CSS.</p>
+</div>
 
 ## Table des matières
 
