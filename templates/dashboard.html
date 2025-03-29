@@ -1,90 +1,72 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sans Coeur</title>
-    <!-- Lien vers la feuille de style Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1 class="text-center">Bienvenue, <span id="username">{{ username }}</span> !</h1>
-
-        <!-- Tableau aligné avec des cases -->
-        <div class="row mt-4">
-            <!-- Case pour rejoindre une partie -->
-            <div class="col-md-3 mb-4">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h5>Rejoindre une partie</h5>
-                    </div>
-                    <div class="card-body">
-                        <form>
-                            <div class="mb-3">
-                                <label for="team" class="form-label">Sélectionner une équipe :</label>
-                                <select id="team" class="form-select">
-                                    <option value="0">Team 0</option>
-                                    <option value="1">Team 1</option>
-                                </select>
-                            </div>
-
-                            <button type="button" id="joinBtn" class="btn btn-primary">Rejoindre la partie</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Case pour les informations de la partie -->
-            <div class="col-md-3 mb-4">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h5>Informations de la partie</h5>
-                    </div>
-                    <div class="card-body">
-                        {% include "components/gameInfo.html" %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Case pour les informations du round -->
-            <div class="col-md-3 mb-4">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h5>Round actuel</h5>
-                    </div>
-                    <div class="card-body">
-                        {% include "components/roundInfo.html" %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Case pour les cartes du jeu -->
-            <div class="col-md-3 mb-4">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h5>Cartes jouée(s)</h5>
-                    </div>
-                    <div class="card-body" id="cardTable">
-                    </div>
-                </div>
-            </div>
+{% extends "base.html" %} {% block title %}Sans Cœur Online{% endblock %} {% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+{% endblock %} {% block content %}
+<div class="container mt-5">
+  <h1 class="text-center">Bienvenue, {{ current_user.username }} !</h1>
+  <!-- Tableau aligné avec des cases -->
+  <div class="row mt-4">
+    <!-- Case pour rejoindre une partie -->
+    <div class="col-md-3 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5>Rejoindre une partie</h5>
         </div>
-        <!-- Section du deck -->
-        <div id="deck" class="mt-4 deck">
-            <p>Votre deck apparaîtra ici...</p>
+        <div class="card-body">
+          <form>
+            <div class="mb-3">
+              <label for="team" class="form-label">Sélectionner une équipe :</label>
+              <select id="team" class="form-select">
+                <option value="0">Team 0</option>
+                <option value="1">Team 1</option>
+              </select>
+            </div>
+            <button type="button" id="joinBtn" class="btn btn-primary">Rejoindre la partie</button>
+          </form>
         </div>
+      </div>
     </div>
 
-    <!-- Liens vers les fichiers JavaScript nécessaires -->
-    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-    <script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/components/gameInfo.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/components/roundInfo.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/components/deck.js') }}"></script>
-
-    <!-- Lien vers le script Bootstrap JS (nécessaire pour les composants interactifs) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <!-- Informations de la partie -->
+    <div class="col-md-3 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5>Informations de la partie</h5>
+        </div>
+        <div class="card-body" id="gameInfo">{% include "components/gameInfo.html" %}</div>
+      </div>
+    </div>
+    <!-- Round actuel -->
+    <div class="col-md-3 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5>Round actuel</h5>
+        </div>
+        <div class="card-body" id="roundInfo">{% include "components/roundInfo.html" %}</div>
+      </div>
+    </div>
+    <!-- Cartes jouée(s) -->
+    <div class="col-md-3 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5>Cartes jouée(s)</h5>
+        </div>
+        <div class="card-body" id="cardTable"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Section du deck -->
+  <div id="deck" class="mt-4 deck">
+    <p>Votre deck apparaîtra ici...</p>
+  </div>
+</div>
+{% endblock %} {% block scripts %} {{ super() }}
+<script
+  type="module"
+  src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"
+></script>
+<script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/components/gameInfo.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/components/roundInfo.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/components/deck.js') }}"></script>
+{% endblock %}
