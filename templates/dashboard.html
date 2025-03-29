@@ -2,8 +2,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/card.css') }}" />
+{% endblock %}
 
-{% endblock %} {% block content %}
+{% block content %}
 <div class="container mt-5" id="dashboard">
   <h1 class="text-center">Bienvenue, <span id="username">{{ username }}</span> !</h1>
   <!-- Tableau aligné avec des cases -->
@@ -38,6 +39,7 @@
         <div class="card-body">{% include "components/gameInfo.html" %}</div>
       </div>
     </div>
+    
     <!-- Round actuel -->
     <div class="col-md-4 mb-4">
       <div class="card h-100">
@@ -47,35 +49,41 @@
         <div class="card-body">{% include "components/roundInfo.html" %}</div>
       </div>
     </div>
-    <!-- Cartes jouée(s) -->
-    <div class="row mt-5">
+  </div>
+
+  <!-- Cartes jouée(s) -->
+  <div class="row mt-5">
       <!-- Case pour les cartes du jeu -->
-      <div class="col-md-12">
-        <div class="card h-100">
-          <div class="card-header">
-            <h5>Cartes jouée(s)</h5>
-          </div>
-          <div class="card-body card-table" id="cardTable"></div>
+    <div class="col-md-12">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5>Cartes jouée(s)</h5>
         </div>
+        <div class="card-body card-table" id="cardTable"></div>
       </div>
     </div>
-    <div class="row mt-5">
+  </div>
+
+  <!-- Vos cartes -->
+  <div class="row mt-5">
       <!-- Case pour les cartes du jeu -->
-      <div class="col-md-12">
-        <div class="card h-100">
-          <div class="card-header">
-            <h5>Vos cartes</h5>
-          </div>
+    <div class="col-md-12">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5>Vos cartes</h5>
+        </div>
           <!-- Section du deck -->
-          <div id="deck" class="card-body deck">
-            <p>Votre deck apparaîtra ici...</p>
-          </div>
+        <div id="deck" class="card-body deck">
+          <p>Votre deck apparaîtra ici...</p>
         </div>
       </div>
     </div>
   </div>
 </div>
-{% endblock %} {% block scripts %} {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
 <script
   type="module"
   src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"
