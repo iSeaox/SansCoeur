@@ -1,4 +1,4 @@
-# SansCoeur
+![SC](https://github.com/user-attachments/assets/8dd98300-82de-46c2-ae8d-dfb8cfd5b6c0)
 
 **Description** : Jeu de contrée en ligne développé avec Python, HTML, JavaScript et CSS.
 
