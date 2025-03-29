@@ -37,15 +37,17 @@ SansCoeur est un jeu de contrée en ligne permettant aux joueurs de s'affronter 
    ```bash
    git clone https://github.com/iSeaox/SansCoeur.git
    ```
+
 2. Accédez au répertoire du projet :
 
     ```bash
     cd SansCoeur
     ```
+
 3. Installez les dépendances :
 
     ```bash
-        pip install -r requirements.txt
+    pip install -r requirements.txt
     ```
 
 ## Utilisation
