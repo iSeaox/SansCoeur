@@ -49,7 +49,8 @@ def register_handlers(socketio, connected_clients, currentGame):
             player = currentGame.getPlayerByName(player_name)
             if player:
                 card_index = int(data['card_id'].split("card-")[-1])
-                card = player.cards[card_index]
+                if card_index < len(player.cards):
+                    card = player.cards[card_index]
 
                 currentGame.getCurrentRound().cardPlayed(player, card, card_index)
 
@@ -83,6 +84,14 @@ def register_handlers(socketio, connected_clients, currentGame):
         player = currentGame.getPlayerByName(player_name)
         if player:
             currentGame.getCurrentRound().registerTalkSurContrer(player)
+
+    @socketio.on("table_ack_click")
+    @socketio_login_required
+    def handle_table_ack_click():
+        player_name = current_user.username
+        player = currentGame.getPlayerByName(player_name)
+        if player:
+            currentGame.getCurrentRound().computeTableAck(player)
 
 
     @socketio.on('disconnect')

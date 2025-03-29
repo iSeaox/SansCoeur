@@ -30,6 +30,8 @@ class Game:
         self._status = GAME_STATUS_WAITING
         self._readyToStart = False
         self._currentRound = None
+        self.nbRound = 0
+        self.score = [0, 0]
 
     def setupDeck(self):
         colors = [CARD_COLOR_SPADES, CARD_COLOR_HEARTS, CARD_COLOR_DIAMONDS, CARD_COLOR_CLUBS]
@@ -87,14 +89,23 @@ class Game:
         return out
 
     def dumpGameInfo(self):
+        # TODO : Afficher le détail des points et des manches
         return {
             "players": self.dumpPlayers(),
             "status": self._status,
-            "readyToStart": self._readyToStart
+            "readyToStart": self._readyToStart,
+            "score": self.score
         }
 
     def broadcastGameInfo(self):
         emit('game_info', self.dumpGameInfo(), broadcast=True)
+
+    def startNewRound(self):
+        self.setupDeck()
+        del self._currentRound
+        self._currentRound = round.Round(self._players, self.nbRound % 4, self._cards, self)
+        self._currentRound.start()
+        self.broadcastGameInfo()
 
     def start(self):
         # _____________________________________________________
@@ -111,6 +122,7 @@ class Game:
             return (False, "Team error")
         # _____________________________________________________
         # Setup
+        # TODO : Pouvoir ajuster le nombre de point de la partie
         team0 = self.getTeam(0)
         team1 = self.getTeam(1)
         self._players = [team0[0], team1[0], team0[1], team1[1]]
@@ -119,16 +131,42 @@ class Game:
 
         self._status = GAME_STATUS_PLAYING
 
-        self.setupDeck()
-        self._currentRound = round.Round(self._players, 0, self._cards, self)
-        self._currentRound.start()
-        self.broadcastGameInfo()
+        self.startNewRound()
         return (True, "Starting game")
 
         # _____________________________________________________
 
     def registerScore(self, score):
-        pass
+        currentTalk = self._currentRound.talk
+        talkTeam = currentTalk["player"].team
+
+        # TODO : DEBUG
+        print("-----------------------------------------------------")
+        print("Talk: \n\tColor:", currentTalk["color"], "\n\tValue: ", currentTalk["value"], "\n\tTeam: ", currentTalk["player"].team)
+        print("\tContrer: ", self._currentRound.contrer)
+        print("\tSur-contrer: ", self._currentRound.surcontrer)
+
+        print("Score: \n\tTeam ", self.getTeam(0)[0].name + " - " + self.getTeam(0)[1].name, "(0): ", score[0])
+        print("\tTeam ", self.getTeam(1)[0].name + " - " + self.getTeam(1)[1].name, "(1): ", score[1])
+        print("\tTotal: ", score[0] + score[1])
+
+        multi = (2 if "contrer" in currentTalk else 1)
+        multi *= (2 if "surcontrer" in currentTalk else 1)
+
+        if currentTalk["value"] == 162 or currentTalk["value"] == 182:
+            if currentTalk["value"] == score[talkTeam]:
+                self.score[talkTeam] += (320 + score[talkTeam]) * multi
+            else:
+                self.score[not(talkTeam)] += ((320 + 162) // 10 * 10) * multi
+
+        if currentTalk["value"] <= score[talkTeam] and score[talkTeam] > 80:
+            self.score[talkTeam] += ((currentTalk["value"] + score[talkTeam]) // 10 * 10) * multi
+            self.score[not(talkTeam)] += (score[not(talkTeam)]) // 10 * 10
+        else:
+            self.score[not(talkTeam)] += ((162 + currentTalk["value"]) // 10 * 10) * multi
+
+        self.nbRound += 1
+        self.startNewRound()
 
     def getCurrentRound(self):
         return self._currentRound

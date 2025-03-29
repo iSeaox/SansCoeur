@@ -39,7 +39,9 @@ users = {
     2: User(2, 'mathias', generate_password_hash('m')),
     3: User(3, 'helios', generate_password_hash('h')),
     4: User(4, 'magathe', generate_password_hash('m')),
-    5: User(5, 'jocelyn', generate_password_hash('j'))
+    5: User(5, 'jocelyn', generate_password_hash('j')),
+    6: User(6, 'esthelle', generate_password_hash('e')),
+    7: User(7, 'pauline', generate_password_hash('p'))
 }
 
 # ################################################
@@ -108,5 +110,5 @@ if __name__ == "__main__":
     currentGame.registerPlayer("magathe", 0, None)
     currentGame.registerPlayer("helios", 1, None)
     currentGame.registerPlayer("mathias", 0, None)
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True, host="192.168.1.182")
     # socketio.run(app, host="0.0.0.0", port=5000, debug=True)
