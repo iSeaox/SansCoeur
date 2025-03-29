@@ -56,3 +56,14 @@ nav {
   stroke-linejoin: round;
   stroke-miterlimit: 10;
 }
+
+@media (max-width: 768px) {
+  .navbar-logo {
+    display: none;
+  }
+  #logout-svg {
+    width: 50px;
+    padding-right: 0px;
+    padding-top: 10px;
+  }
+}

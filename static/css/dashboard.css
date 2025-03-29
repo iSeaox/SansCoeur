@@ -34,3 +34,9 @@ li {
 .mt-5 {
   margin-top: -2rem !important;
 }
+
+@media (max-width: 768px) {
+  h1 {
+    padding-top: 30px;
+  }
+}

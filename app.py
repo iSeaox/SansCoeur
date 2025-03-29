@@ -108,3 +108,4 @@ if __name__ == "__main__":
     # currentGame.registerPlayer("helios", 1, None)
     # currentGame.registerPlayer("mathias", 0, None)
     socketio.run(app, debug=True)
+    # socketio.run(app, host="0.0.0.0", port=5000, debug=True)
