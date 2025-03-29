@@ -161,7 +161,11 @@ class Round:
                     self.state = ROUND_STATE_PLAYING
                     self.sendRoundInfo()
 
+    def computeNewCard(self, player, card):
+        pass
+
     def cardPlayed(self, player, card, index):
+        # TODO : argument card used only for print
         print("CARD PLAYED : ", player, " | ", card)
         if(self.state == ROUND_STATE_PLAYING):
             if(player == self.nextTurn):
@@ -169,8 +173,9 @@ class Round:
                     # TODO : END THE HAND
                     pass
                 else:
-                    # TODO : CHECK IF CARD CAN BE PLAYED
                     played_card = player.cards.pop(index)
+
+                    result = self.computeNewCard(player, played_card)
                     player.sendDeck()
 
                     self.cardOnTable.append(played_card)
