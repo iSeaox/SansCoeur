@@ -24,6 +24,7 @@ class Round:
         self.cards = cards
         self.state = ROUND_STATE_SETUP
         self.nextTurnIndex = self.firstDistribIndex + 1
+        self.nextTurnIndex %= 4
         self.nextTurn = self.players[self.nextTurnIndex]
 
         self.nextTalkIndex = self.firstDistribIndex + 1
