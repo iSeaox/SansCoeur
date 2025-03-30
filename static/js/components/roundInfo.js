@@ -11,6 +11,7 @@ const talkInfoContrerBtn = document.getElementById('contrerBtn');
 const talkInfoSurContrerBtn = document.getElementById('surContreeBtn');
 
 
+// TODO : Afficher les anciens talks avec les pseudo à coté
 socket.on('round_info', (data) => {
     console.log("round_info: ", data)
     const roundState = data.state;

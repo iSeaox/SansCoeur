@@ -144,6 +144,7 @@ class Game:
         # _____________________________________________________
 
     def end(self):
+        # TODO : Passer en mode GAME_END et afficher les scores avec un btn pour relancer une game
         self.gameManager.overrideGame(self)
 
     def registerScore(self, score):

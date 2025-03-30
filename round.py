@@ -25,9 +25,11 @@ class Round:
         self.cards = cards
         self.state = ROUND_STATE_SETUP
         self.nextTurnIndex = self.firstDistribIndex + 1
+        self.nextTurnIndex %= 4
         self.nextTurn = self.players[self.nextTurnIndex]
 
         self.nextTalkIndex = self.firstDistribIndex + 1
+        self.nextTalkIndex %= 4
         self.nextTalk = self.players[self.nextTalkIndex]
         self.talk = {}
         self.contrer = 0
@@ -181,6 +183,7 @@ class Round:
                     self.nextTalkIndex += 1
                     self.nextTalkIndex %= 4
                     if self.nextTalkIndex == self.firstDistribIndex + 1 and self.talk == {}:
+                        # TODO : problème y'a un joueur en trop
                         self.restart()
                         return
 
@@ -198,6 +201,7 @@ class Round:
 
                 if flag_end:
                     self.state = ROUND_STATE_PLAYING
+                    # TODO : problème de trie
                     # Trier les cartes des joueurs
                     for p in self.players:
                         p.cards = sorted(p.cards, key=lambda x: (x["color"], x["value"]))
@@ -273,6 +277,7 @@ class Round:
                         return not(player.hasColor(self.askedColor) or player.hasColor(currentTrump))
 
     def computeTableAck(self, player):
+        # TODO : Empecher les cartes de partir toutes seules, ptetre fixer la taille de la div
         if self.needTableAck:
             if player == self.nextTurn:
                 self.needTableAck = 0
@@ -326,4 +331,4 @@ class Round:
 
                         self.nextTurnIndex = (self.nextTurnIndex + 1) % 4
                         self.nextTurn = self.players[self.nextTurnIndex]
-                self.sendRoundInfo()
+                self.sendRoundInfo()#
