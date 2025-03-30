@@ -33,7 +33,7 @@ class Game:
         self._readyToStart = False
         self.roundManager = roundManager.RoundManager()
         self.nbRound = 0
-        self.score = [0, 0]
+        self.score = [480, 270]
         self.roundScore = []
 
     def setupDeck(self):
