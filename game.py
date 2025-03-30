@@ -34,6 +34,7 @@ class Game:
         self.roundManager = roundManager.RoundManager()
         self.nbRound = 0
         self.score = [0, 0]
+        self.roundScore = []
 
     def setupDeck(self):
         # TODO : gérer la distribution des cartes mieux que ça
@@ -97,7 +98,8 @@ class Game:
             "players": self.dumpPlayers(),
             "status": self._status,
             "readyToStart": self._readyToStart,
-            "score": self.score
+            "score": self.score,
+            "round_score": self.roundScore
         }
 
     def broadcastGameInfo(self):
@@ -109,6 +111,7 @@ class Game:
         self.roundManager.deleteRound(self.getCurrentRound())
         self.roundManager.registerNewRound(self._players, self.nbRound % 4, self._cards, self.gameManager)
         self.getCurrentRound().start()
+        self.getCurrentRound().sendRoundInfo()
         self.broadcastGameInfo()
 
     def start(self, maxPoints):
@@ -174,6 +177,16 @@ class Game:
             self.score[not(talkTeam)] += ((162 + currentTalk["value"]) // 10 * 10) * multi
 
         self.nbRound += 1
+
+        # Mise à jour du tableau des scores
+        self.roundScore.append({
+            "score": [score[0], score[1]],
+            "talk": {
+                "value": currentTalk["value"],
+                "team": talkTeam
+            }
+        })
+        print("SCORE TABLE: ", self.roundScore)
 
         # Verifier si la game est finie
         if self.score[0] >= self.maxPoints or self.score[1] > self.maxPoints:

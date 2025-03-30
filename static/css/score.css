@@ -1,0 +1,10 @@
+/* .score {
+    font-size: 20px;
+    margin: 5px 0;
+} */
+.loose {
+    color: red;
+}
+.win {
+    color: green;
+}

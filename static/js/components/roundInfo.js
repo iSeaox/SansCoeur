@@ -12,7 +12,7 @@ const talkInfoSurContrerBtn = document.getElementById('surContreeBtn');
 
 
 socket.on('round_info', (data) => {
-    console.log(data)
+    console.log("round_info: ", data)
     const roundState = data.state;
     if(roundState == ROUND_STATE_TALKING) {
         roundInfoDiv.innerHTML = `

@@ -24,6 +24,7 @@ function getSuitName(suit) {
 
 // Écouteur d'événement pour mettre à jour le deck
 socket.on('update_deck', (cards) => {
+    console.log("deck_info: ", cards)
     // Efface le contenu précédent
     deckDiv.innerHTML = '';
 

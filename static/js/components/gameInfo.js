@@ -4,6 +4,7 @@ import { GAME_STATUS_WAITING, GAME_STATUS_PLAYING, GAME_STATUS_END } from "../ut
 const gameInfoDiv = document.getElementById('gameInfo');
 const startGameBtn = document.getElementById('startGameBtn');
 const startGameSection = document.getElementById("startGameSection");
+const scoreTableDiv = document.getElementById("scoreTable");
 
 startGameBtn.addEventListener('click', () => {
   const startGameMaxPointInput = document.getElementById("startGameMaxPointInput");
@@ -29,6 +30,35 @@ socket.on('game_info', (data) => {
   let scoreText = "";
   if(data.status == GAME_STATUS_PLAYING) {
     scoreText = `<p>Score: ${data.score[0]} - ${data.score[1]}</p>`;
+
+    scoreTableDiv.innerHTML = ''; // Clear previous scores
+    if("round_score" in data) {
+      data.round_score.forEach(item => {
+        const scoreTeam0 = item.score[0];
+        const scoreTeam1 = item.score[1];
+        const talkValue = item.talk.value;
+        const team = item.talk.team;
+
+        // Créer les éléments pour les scores
+        const scoreElement = document.createElement('div');
+        scoreElement.classList.add('score');
+        let scoreTeam0Color = '';
+        let scoreTeam1Color = '';
+        if (team == 0) {
+          scoreTeam0Color = (team === 1 && scoreTeam0 < talkValue) ? 'loose' : 'win';
+        }
+        else {
+          scoreTeam1Color = (team === 1 && scoreTeam1 < talkValue) ? 'loose' : 'win';
+        }
+
+        // Ajouter le score dans le format demandé
+        scoreElement.innerHTML = `
+          <span class="${scoreTeam0Color}">${scoreTeam0}</span> -
+          <span class="${scoreTeam1Color}">${scoreTeam1}</span>
+        `;
+        scoreTableDiv.appendChild(scoreElement);
+      });
+    }
   }
   gameInfoDiv.innerHTML = `
     <p>Statut de la partie : <br/>${getGameStatusText(data.status)}</p>
