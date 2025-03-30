@@ -67,18 +67,26 @@ export function getFormattedTalk(data) {
 
   return out;
 }
-
 export function getCardElement(card, index) {
-    const cardElement = document.createElement('div');
-    cardElement.className = 'playing-card';
-    cardElement.id = `card-${index}`;
+  const cardElement = document.createElement('div');
+  cardElement.className = 'playing-card';
+  cardElement.id = `card-${index}`;
 
-    const imgCardElement = document.createElement('img');
-    const imagePath = `static/img/${card.value}_${card.color}.png`;
+  const imgCardElement = document.createElement('img');
+  const imagePath = `static/img/${card.value}_${card.color}.png`;
 
-    imgCardElement.src = imagePath;
-    imgCardElement.alt = `${card.value} de ${getSuitName(card.color)}`;
+  imgCardElement.src = imagePath;
+  imgCardElement.alt = `${card.value} de ${getSuitName(card.color)}`;
 
-    cardElement.appendChild(imgCardElement);
-    return cardElement;
+  cardElement.appendChild(imgCardElement);
+
+  // Ajouter le nom du joueur sous la carte
+  const playerNameElement = document.createElement('div');
+  playerNameElement.className = 'player-name';
+  playerNameElement.textContent = card.player;
+
+  cardElement.appendChild(playerNameElement);
+
+  return cardElement;
 }
+
