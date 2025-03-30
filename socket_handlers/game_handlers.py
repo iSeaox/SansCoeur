@@ -91,7 +91,9 @@ def register_handlers(socketio, connected_clients, gameManager):
         player_name = current_user.username
         player = gameManager.getGame().getPlayerByName(player_name)
         if player:
-            gameManager.getGame().getCurrentRound().computeTableAck(player)
+            currentRound = gameManager.getGame().getCurrentRound()
+            if currentRound:
+                currentRound.computeTableAck(player)
 
 
     @socketio.on('disconnect')
