@@ -45,10 +45,10 @@ socket.on('game_info', (data) => {
         let scoreTeam0Color = '';
         let scoreTeam1Color = '';
         if (team == 0) {
-          scoreTeam0Color = (team === 1 && scoreTeam0 < talkValue) ? 'loose' : 'win';
+          scoreTeam0Color = (scoreTeam0 < talkValue) ? 'loose' : 'win';
         }
         else {
-          scoreTeam1Color = (team === 1 && scoreTeam1 < talkValue) ? 'loose' : 'win';
+          scoreTeam1Color = (scoreTeam1 < talkValue) ? 'loose' : 'win';
         }
 
         // Ajouter le score dans le format demandé
