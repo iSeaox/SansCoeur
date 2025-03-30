@@ -7,10 +7,9 @@ sys.path.append(str(Path(__file__).parent))
 
 import game
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import SocketIO
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from auth import socketio_login_required
 
 # ################################################
 # Flask Setup
@@ -41,7 +40,8 @@ users = {
     4: User(4, 'magathe', generate_password_hash('m')),
     5: User(5, 'jocelyn', generate_password_hash('j')),
     6: User(6, 'esthelle', generate_password_hash('e')),
-    7: User(7, 'pauline', generate_password_hash('p'))
+    7: User(7, 'pauline', generate_password_hash('p')),
+    8: User(8, 'christian', generate_password_hash('c')),
 }
 
 # ################################################
@@ -107,8 +107,8 @@ def logout():
 
 if __name__ == "__main__":
     # TODO : DEBUG Connexion auto des joueurs
-    currentGame.registerPlayer("magathe", 0, None)
-    currentGame.registerPlayer("helios", 1, None)
-    currentGame.registerPlayer("mathias", 0, None)
+    # currentGame.registerPlayer("magathe", 0, None)
+    # currentGame.registerPlayer("helios", 1, None)
+    # currentGame.registerPlayer("mathias", 0, None)
     socketio.run(app, debug=True, host="192.168.1.182")
     # socketio.run(app, host="0.0.0.0", port=5000, debug=True)

@@ -52,7 +52,7 @@ def register_handlers(socketio, connected_clients, currentGame):
                 if card_index < len(player.cards):
                     card = player.cards[card_index]
 
-                currentGame.getCurrentRound().cardPlayed(player, card, card_index)
+                    currentGame.getCurrentRound().cardPlayed(player, card, card_index)
 
     @socketio.on("talk_click")
     @socketio_login_required

@@ -102,7 +102,6 @@ class Game:
 
     def startNewRound(self):
         self.setupDeck()
-        del self._currentRound
         self._currentRound = round.Round(self._players, self.nbRound % 4, self._cards, self)
         self._currentRound.start()
         self.broadcastGameInfo()
