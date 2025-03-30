@@ -5,12 +5,22 @@ const gameInfoDiv = document.getElementById('gameInfo');
 const startGameBtn = document.getElementById('startGameBtn');
 const startGameSection = document.getElementById("startGameSection");
 
-// Gestionnaire pour lancer la partie
 startGameBtn.addEventListener('click', () => {
-  socket.emit('start_game'); // Envoie une demande de lancement de partie
+  const startGameMaxPointInput = document.getElementById("startGameMaxPointInput");
+  if (startGameMaxPointInput) {
+    const inputValue = startGameMaxPointInput.value.trim();
+
+    if (/^\d+$/.test(inputValue)) {
+      socket.emit('start_game', { maxPoints: parseInt(inputValue) });
+    } else {
+      alert("Veuillez entrer un nombre valide.");
+    }
+  }
 });
 
+
 socket.on('game_info', (data) => {
+  console.log("game_info: ", data)
   // Affiche les informations de la partie
   const readyText =
     data.status !== GAME_STATUS_PLAYING

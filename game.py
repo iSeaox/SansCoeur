@@ -1,5 +1,5 @@
 import player
-import round
+import roundManager
 
 import random
 
@@ -24,16 +24,20 @@ CARD_VALUE_KING = 13
 CARD_VALUE_ACE = 14
 # _____________________________________________________
 class Game:
-    def __init__(self):
+    def __init__(self, gameManager):
+        self.gameManager = gameManager
+        self.maxPoints = 0
         self._cards = []
         self._players = []
         self._status = GAME_STATUS_WAITING
         self._readyToStart = False
-        self._currentRound = None
+        self.roundManager = roundManager.RoundManager()
         self.nbRound = 0
         self.score = [0, 0]
 
     def setupDeck(self):
+        # TODO : gérer la distribution des cartes mieux que ça
+        self._cards = []
         colors = [CARD_COLOR_SPADES, CARD_COLOR_HEARTS, CARD_COLOR_DIAMONDS, CARD_COLOR_CLUBS]
 
         values = [
@@ -64,7 +68,7 @@ class Game:
         player.sid = sid
         if player != None:
             self.broadcastGameInfo()
-            if self._currentRound != None:
+            if self.getCurrentRound() != None:
                 self.getCurrentRound().sendRoundInfo()
                 player.sendDeck()
 
@@ -83,7 +87,6 @@ class Game:
 
     def dumpPlayers(self):
         out = []
-        print(self._players)
         for p in self._players:
             out.append(p.dump())
         return out
@@ -102,11 +105,13 @@ class Game:
 
     def startNewRound(self):
         self.setupDeck()
-        self._currentRound = round.Round(self._players, self.nbRound % 4, self._cards, self)
-        self._currentRound.start()
+        # Pour eviter les doublons lors du restart
+        self.roundManager.deleteRound(self.getCurrentRound())
+        self.roundManager.registerNewRound(self._players, self.nbRound % 4, self._cards, self.gameManager)
+        self.getCurrentRound().start()
         self.broadcastGameInfo()
 
-    def start(self):
+    def start(self, maxPoints):
         # _____________________________________________________
         # Intial Check
         if(self._status == GAME_STATUS_PLAYING):
@@ -121,7 +126,7 @@ class Game:
             return (False, "Team error")
         # _____________________________________________________
         # Setup
-        # TODO : Pouvoir ajuster le nombre de point de la partie
+        self.maxPoints = maxPoints
         team0 = self.getTeam(0)
         team1 = self.getTeam(1)
         self._players = [team0[0], team1[0], team0[1], team1[1]]
@@ -135,19 +140,23 @@ class Game:
 
         # _____________________________________________________
 
+    def end(self):
+        self.gameManager.overrideGame(self)
+
     def registerScore(self, score):
-        currentTalk = self._currentRound.talk
+        currentTalk = self.getCurrentRound().talk
         talkTeam = currentTalk["player"].team
 
         # TODO : DEBUG
-        print("-----------------------------------------------------")
+        print("-"*60)
         print("Talk: \n\tColor:", currentTalk["color"], "\n\tValue: ", currentTalk["value"], "\n\tTeam: ", currentTalk["player"].team)
-        print("\tContrer: ", self._currentRound.contrer)
-        print("\tSur-contrer: ", self._currentRound.surcontrer)
+        print("\tContrer: ", self.getCurrentRound().contrer)
+        print("\tSur-contrer: ", self.getCurrentRound().surcontrer)
 
         print("Score: \n\tTeam ", self.getTeam(0)[0].name + " - " + self.getTeam(0)[1].name, "(0): ", score[0])
         print("\tTeam ", self.getTeam(1)[0].name + " - " + self.getTeam(1)[1].name, "(1): ", score[1])
         print("\tTotal: ", score[0] + score[1])
+        print("-"*60)
 
         multi = (2 if "contrer" in currentTalk else 1)
         multi *= (2 if "surcontrer" in currentTalk else 1)
@@ -165,7 +174,12 @@ class Game:
             self.score[not(talkTeam)] += ((162 + currentTalk["value"]) // 10 * 10) * multi
 
         self.nbRound += 1
+
+        # Verifier si la game est finie
+        if self.score[0] >= self.maxPoints or self.score[1] > self.maxPoints:
+            self.end()
+            return
         self.startNewRound()
 
     def getCurrentRound(self):
-        return self._currentRound
+        return self.roundManager.getRound()

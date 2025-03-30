@@ -17,9 +17,8 @@ def getBelotePoint(card, trump):
     return (TRUMP_POINT_TABLE if card["color"] == trump else CLASSIC_POINT_TABLE)[card["value"]]
 class Round:
 
-    def __init__(self, players, firstDistribIndex, cards, game):
-        print("Create new round...")
-        self.attachedGame = game
+    def __init__(self, players, firstDistribIndex, cards, gManager):
+        self.attachedGameManger = gManager
         self.players = players
         self.firstDistribIndex = firstDistribIndex
         self.cards = cards
@@ -111,17 +110,16 @@ class Round:
     def start(self):
         self.cardsDistrib()
 
-        # TODO : DEBUG
-        if self.firstDistribIndex == 0:
-            print("A" * 30)
-            # TODO : DEBUG
-            self.state = ROUND_STATE_PLAYING
-            self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
-            self.sendRoundInfo()
+        # # TODO : DEBUG
+        # if self.firstDistribIndex == 0:
+        #     # TODO : DEBUG
+        #     self.state = ROUND_STATE_PLAYING
+        #     self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
+        #     self.sendRoundInfo()
 
-            for p in self.players:
-                p.cards = sorted(p.cards, key=lambda x: (x["color"], x["value"]), reverse=True)
-                p.sendDeck()
+        #     for p in self.players:
+        #         p.cards = sorted(p.cards, key=lambda x: (x["color"], x["value"]), reverse=True)
+        #         p.sendDeck()
 
         #     # TODO : DEBUG
 
@@ -133,16 +131,12 @@ class Round:
         self.sendRoundInfo()
 
     def restart(self):
-        # TODO : Probleme d'ordre et de disparition d'un joueur après restart par 4x pass
-        self.state = ROUND_STATE_SETUP
-
         # Get all card
         for p in self.players:
             self.cards += p.cards.copy()
             p.cards = []
 
-        self.start()
-
+        self.attachedGameManger.getGame().startNewRound()
 
     def registerTalkPass(self, player):
         self.registerTalk(player, {}, type="pass")
@@ -202,7 +196,6 @@ class Round:
                     self.sendRoundInfo()
 
                 if flag_end:
-                    # TODO : Trier les cartes des joueurs
                     self.state = ROUND_STATE_PLAYING
                     # Trier les cartes des joueurs
                     for p in self.players:
@@ -294,7 +287,7 @@ class Round:
                             for c in trick:
                                 score[t] += getBelotePoint(c["card"], self.talk["color"])
 
-                    self.attachedGame.registerScore(score)
+                    self.attachedGameManger.getGame().registerScore(score)
 
         self.sendRoundInfo()
 

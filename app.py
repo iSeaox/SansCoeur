@@ -5,6 +5,7 @@ from pathlib import Path
 # To manage import to top-level
 sys.path.append(str(Path(__file__).parent))
 
+import gameManager
 import game
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_socketio import SocketIO
@@ -47,13 +48,29 @@ users = {
 # ################################################
 # Global Variables
 
-currentGame = game.Game()
+# currentGame = None
+currentGameManager = gameManager.GameManager()
+currentGameManager.registerNewGame()
+# print(currentGameManager.counter)
+
+# def getGame():
+#     return currentGame
+
+# def restartGame():
+#     currentGameManager.counter += 1
+#     print("RESTART ASKED")
+#     currentGame = game.Game(restartGame)
+#     print(currentGame)
+#     print(currentGame.dumpGameInfo())
+#     print(connected_clients)
+
+# currentGame = game.Game(restartGame)
 connected_clients = {}
 
 # ################################################
 # Socket Handlers
 from socket_handlers import init_socket_handlers
-init_socket_handlers(socketio, connected_clients, currentGame)
+init_socket_handlers(socketio, connected_clients, currentGameManager)
 
 # ################################################
 # App routine
@@ -68,11 +85,6 @@ def load_user(user_id):
 @app.route("/")
 @login_required
 def index():
-    currentRound = currentGame.getCurrentRound()
-    if currentRound:
-        roundInfo = currentRound.dumpRoundInfo()
-    else:
-        roundInfo = {}
     return render_template("dashboard.html", username=current_user.username)
 
 
@@ -107,8 +119,8 @@ def logout():
 
 if __name__ == "__main__":
     # TODO : DEBUG Connexion auto des joueurs
-    currentGame.registerPlayer("magathe", 0, None)
-    currentGame.registerPlayer("helios", 1, None)
-    currentGame.registerPlayer("mathias", 0, None)
+    currentGameManager.getGame().registerPlayer("magathe", 0, None)
+    currentGameManager.getGame().registerPlayer("helios", 1, None)
+    currentGameManager.getGame().registerPlayer("mathias", 0, None)
 
     socketio.run(app, debug=True, host="0.0.0.0")
