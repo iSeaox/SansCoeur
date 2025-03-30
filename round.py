@@ -111,13 +111,17 @@ class Round:
     def start(self):
         self.cardsDistrib()
 
-        # # TODO : DEBUG
-        # if self.firstDistribIndex == 0:
-        #     print("A" * 30)
-        #     # TODO : DEBUG
-        #     self.state = ROUND_STATE_PLAYING
-        #     self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
-        #     self.sendRoundInfo()
+        # TODO : DEBUG
+        if self.firstDistribIndex == 0:
+            print("A" * 30)
+            # TODO : DEBUG
+            self.state = ROUND_STATE_PLAYING
+            self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
+            self.sendRoundInfo()
+
+            for p in self.players:
+                p.cards = sorted(p.cards, key=lambda x: (x["color"], x["value"]), reverse=True)
+                p.sendDeck()
 
         #     # TODO : DEBUG
 
@@ -198,7 +202,12 @@ class Round:
                     self.sendRoundInfo()
 
                 if flag_end:
+                    # TODO : Trier les cartes des joueurs
                     self.state = ROUND_STATE_PLAYING
+                    # Trier les cartes des joueurs
+                    for p in self.players:
+                        p.cards = sorted(p.cards, key=lambda x: (x["color"], x["value"]))
+                        p.sendDeck()
                     self.sendRoundInfo()
 
     @staticmethod
