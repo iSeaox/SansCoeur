@@ -67,7 +67,7 @@ export function getFormattedTalk(data) {
 
   return out;
 }
-export function getCardElement(card, index) {
+export function getCardElement(card, index, player='') {
   const cardElement = document.createElement('div');
   cardElement.className = 'playing-card';
   cardElement.id = `card-${index}`;
@@ -83,7 +83,7 @@ export function getCardElement(card, index) {
   // Ajouter le nom du joueur sous la carte
   const playerNameElement = document.createElement('div');
   playerNameElement.className = 'player-name';
-  playerNameElement.textContent = card.player;
+  playerNameElement.textContent = player;
 
   cardElement.appendChild(playerNameElement);
 

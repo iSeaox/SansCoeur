@@ -9,7 +9,7 @@
 .playing-card {
   width: 150px;
   height: 225px; /* ratio : 2/3 */
-  display: flex;
+  display: block;
   justify-content: center;
   align-items: center;
 }

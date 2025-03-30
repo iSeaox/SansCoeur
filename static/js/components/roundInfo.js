@@ -36,7 +36,7 @@ socket.on('round_info', (data) => {
             cardTableDiv.innerHTML = '';
             const cards = data.card_on_table;
             cards.forEach((card, index) => {
-                    const cardElement = getCardElement(card.card, index);
+                    const cardElement = getCardElement(card.card, index, card.player);
                     cardTableDiv.appendChild(cardElement);
 
                     cardElement.addEventListener('click', () => {
