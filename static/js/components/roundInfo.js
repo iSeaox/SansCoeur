@@ -21,7 +21,9 @@ socket.on('round_info', (data) => {
             <p>Prochain à parler : ${data.next_talk}</p>
             <p>Contrat : ${("current_talk" in data ? getFormattedTalk(data) : "")}</p>
         `;
-        talkInfoDiv.style.display = 'flex';
+        if (talkInfoDiv) {
+          talkInfoDiv.style.display = "flex";
+        }
     }
     else if(roundState == ROUND_STATE_PLAYING) {
         roundInfoDiv.innerHTML = `
