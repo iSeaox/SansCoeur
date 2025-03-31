@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
     {% block head %}{% endblock %}
-  
   </head>
   <body>
     <div id="bg-wrapper">
@@ -38,6 +37,8 @@
       </svg>
       {% endif %}
     </nav>
+
+    <button id="music-btn" class="btn btn-primary">Lancer la musique</button>
 
     <div class="container">{% block content %}{% endblock %}</div>
 
@@ -84,9 +85,36 @@
           });
         }
       });
-    </script>
-    <!-- Shaders -->
 
+      // Bouton pour faire toggle play/pause de la musique
+      document.addEventListener("DOMContentLoaded", () => {
+        const musicBtn = document.getElementById("music-btn");
+        const musicFrame = document.getElementById("music-frame");
+
+        musicBtn.addEventListener("click", () => {
+          if (musicFrame.contentWindow) {
+            const audio = musicFrame.contentWindow.document.getElementById("background-music");
+            if (audio) {
+              if (audio.paused) {
+                audio
+                  .play()
+                  .then(() => {
+                    musicBtn.textContent = "Pause la musique";
+                  })
+                  .catch((err) => {
+                    console.error("Erreur lors du lancement de la musique", err);
+                  });
+              } else {
+                audio.pause();
+                musicBtn.textContent = "Lancer la musique";
+              }
+            }
+          }
+        });
+      });
+    </script>
+
+    <!-- Shaders -->
     <script id="vertex" type="x-shader/x-vertex">
             uniform float u_time;
             uniform sampler2D u_texture;

@@ -10,7 +10,6 @@
       id="background-music"
       src="{{ url_for('static', filename='sound/background-music2.mp3') }}"
       loop
-      autoplay
     >
       Ton navigateur ne supporte pas d'éléments audio.
     </audio>
@@ -19,7 +18,6 @@
       id="background-music"
       src="{{ url_for('static', filename='sound/background-music.mp3') }}"
       loop
-      autoplay
     >
       Ton navigateur ne supporte pas d'éléments audio.
     </audio>
@@ -37,10 +35,7 @@
             } else {
               sessionStorage.removeItem("audioTime");
             }
-            audio.play();
           });
-        } else {
-          audio.play();
         }
       });
 

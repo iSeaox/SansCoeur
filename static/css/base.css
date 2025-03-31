@@ -57,6 +57,13 @@ nav {
   stroke-miterlimit: 10;
 }
 
+#music-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+}
+
 @media (max-width: 768px) {
   .navbar-logo {
     display: none;
