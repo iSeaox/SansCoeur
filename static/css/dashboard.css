@@ -28,8 +28,21 @@ li {
   text-align: left;
 }
 
+#username,
+h1 {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  text-align: center;
+  font-size: 4rem;
+}
+
 @media (max-width: 768px) {
   h1 {
     padding-top: 30px;
+  }
+
+  #username,
+  h1 {
+    font-size: 3rem;
   }
 }
