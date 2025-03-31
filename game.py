@@ -24,8 +24,9 @@ CARD_VALUE_KING = 13
 CARD_VALUE_ACE = 14
 # _____________________________________________________
 class Game:
-    def __init__(self, gameManager):
+    def __init__(self, gameManager, logManager):
         self.gameManager = gameManager
+        self.logManager = logManager
         self.maxPoints = 0
         self._cards = []
         self._players = []
@@ -33,7 +34,7 @@ class Game:
         self._readyToStart = False
         self.roundManager = roundManager.RoundManager()
         self.nbRound = 0
-        self.score = []
+        self.score = [0, 0]
         self.roundScore = []
 
     def setupDeck(self):
@@ -93,14 +94,26 @@ class Game:
         return out
 
     def dumpGameInfo(self):
-        # TODO : Afficher le détail des points et des manches
-        return {
+        out = {
             "players": self.dumpPlayers(),
             "status": self._status,
             "readyToStart": self._readyToStart,
             "score": self.score,
             "round_score": self.roundScore
         }
+
+        if self._status == GAME_STATUS_WAITING:
+            lastGameData = self.logManager.getLastGameData()
+            if lastGameData:
+                out.update({
+                    "last_game_data": {
+                        "players": lastGameData["players"],
+                        "score": lastGameData["score"]
+                    }
+                })
+            print(out)
+
+        return out
 
     def broadcastGameInfo(self):
         emit('game_info', self.dumpGameInfo(), broadcast=True)
@@ -144,7 +157,9 @@ class Game:
         # _____________________________________________________
 
     def end(self):
-        # TODO : Passer en mode GAME_END et afficher les scores avec un btn pour relancer une game
+        self._status = GAME_STATUS_END
+        self.broadcastGameInfo()
+        self.logManager.logGame(self)
         self.gameManager.overrideGame(self)
 
     def registerScore(self, score):

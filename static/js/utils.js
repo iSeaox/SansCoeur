@@ -90,3 +90,20 @@ export function getCardElement(card, index, player='') {
   return cardElement;
 }
 
+export function formatLastTalks(talks) {
+
+  function dumpTalk(t) {
+    let out = t.value.toString() + " " + getSuitName(t.color);
+
+
+    return out += " (" + t.player + ")";
+  }
+
+  let out = "";
+  talks.forEach(function(talk) {
+    console.log(talk)
+    out += `<p>${dumpTalk(talk)}</p>`
+  });
+  return out
+}
+

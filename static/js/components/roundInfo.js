@@ -1,4 +1,4 @@
-import { getRoundStatusText, getSuitName, getFormattedTalk, getCardElement } from "../utils.js"
+import { getRoundStatusText, getSuitName, getFormattedTalk, getCardElement, formatLastTalks } from "../utils.js"
 import { ROUND_STATE_SETUP, ROUND_STATE_TALKING, ROUND_STATE_PLAYING } from "../utils.js";
 
 const roundInfoDiv = document.getElementById('roundInfo');
@@ -11,7 +11,6 @@ const talkInfoContrerBtn = document.getElementById('contrerBtn');
 const talkInfoSurContrerBtn = document.getElementById('surContreeBtn');
 
 
-// TODO : Afficher les anciens talks avec les pseudo à coté
 socket.on('round_info', (data) => {
     console.log("round_info: ", data)
     const roundState = data.state;
@@ -29,7 +28,10 @@ socket.on('round_info', (data) => {
         roundInfoDiv.innerHTML = `
             <p>Statut de la manche : ${getRoundStatusText(data.state)}</p>
             <p>Prochain à jouer : ${data.next_turn}</p>
+            <hr style="margin: 5% 20% 5% 20%">
+            ${("last_talk" in data ? formatLastTalks(data.last_talk) : "")}
             <p>Contrat : ${("current_talk" in data ? getFormattedTalk(data) : "")}</p>
+            <hr style="margin: 5% 20% 5% 20%">
             <p>Plis: ${data.trick[0]} - ${data.trick[1]}</p>
         `;
         talkInfoDiv.style.display = 'none';

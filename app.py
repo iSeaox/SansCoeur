@@ -6,7 +6,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent))
 
 import gameManager
-import game
+import logManager
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_socketio import SocketIO
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -51,23 +51,11 @@ users = {
 # ################################################
 # Global Variables
 
-# currentGame = None
-currentGameManager = gameManager.GameManager()
+logManager = logManager.LogManager("./logs", "logs.json")
+currentGameManager = gameManager.GameManager(logManager)
 currentGameManager.registerNewGame()
-# print(currentGameManager.counter)
 
-# def getGame():
-#     return currentGame
 
-# def restartGame():
-#     currentGameManager.counter += 1
-#     print("RESTART ASKED")
-#     currentGame = game.Game(restartGame)
-#     print(currentGame)
-#     print(currentGame.dumpGameInfo())
-#     print(connected_clients)
-
-# currentGame = game.Game(restartGame)
 connected_clients = {}
 
 # ################################################
@@ -121,7 +109,7 @@ def logout():
 # Main
 
 if __name__ == "__main__":
-    # TODO : DEBUG Connexion auto des joueurs
+    # # TODO : DEBUG Connexion auto des joueurs
     # currentGameManager.getGame().registerPlayer("magathe", 0, None)
     # currentGameManager.getGame().registerPlayer("helios", 1, None)
     # currentGameManager.getGame().registerPlayer("mathias", 0, None)
