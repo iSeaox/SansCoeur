@@ -3,7 +3,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
 
 {% endblock %} {% block content %}
-<h1 class="title">Sans Cœur Online</h1>
+<div id="toast-container"></div>
+
+<h1 class="title">Sans Coeur Online</h1>
 
 <div class="login">
   <form method="POST" action="{{ url_for('login') }}" class="login-form">
@@ -42,30 +44,5 @@
   </form>
 </div>
 {% endblock %} {% block scripts %} {{ super() }}
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const forgotLink = document.querySelector(".login-forgot");
-    forgotLink.addEventListener("click", function (e) {
-      e.preventDefault();
-      const toastContainer = document.getElementById("toast-container");
-      const toast = document.createElement("div");
-      toast.className = "toast align-items-center text-bg-info border-0 mb-2";
-      toast.setAttribute("role", "alert");
-      toast.setAttribute("aria-live", "assertive");
-      toast.setAttribute("aria-atomic", "true");
-      toast.innerHTML = `
-          <div class="d-flex">
-            <div class="toast-body">CHEHHHHH</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        `;
-      toastContainer.appendChild(toast);
-      const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
-      bsToast.show();
-      toast.addEventListener("hidden.bs.toast", function () {
-        toast.remove();
-      });
-    });
-  });
-</script>
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
 {% endblock %}

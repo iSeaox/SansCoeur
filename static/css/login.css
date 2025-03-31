@@ -3,11 +3,32 @@
 .title {
   font-family: "Great Vibes", cursive;
   font-weight: 400;
-  font-style: normal;
   text-align: center;
   font-size: 7rem;
   padding-top: -20px;
   margin-top: -20px;
+}
+
+.title span {
+  display: inline-block;
+  animation: highlight 7s infinite;
+  animation-delay: calc(var(--i) * 0.1s);
+}
+
+@keyframes highlight {
+  0%,
+  71.43% {
+    text-shadow: none;
+    color: #fff;
+  }
+  85.71% {
+    text-shadow: 0 0 14px rgba(158, 212, 140, 0.85);
+    color: rgb(255, 255, 255);
+  }
+  100% {
+    text-shadow: none;
+    color: #fff;
+  }
 }
 
 .login {
@@ -16,7 +37,7 @@
   display: grid;
   align-items: center;
   background: none;
-  padding-top: 80px;
+  padding-top: 90px;
 }
 
 .login-form {
@@ -111,6 +132,10 @@
   color: #000;
   font-weight: 500;
   cursor: pointer;
+}
+
+.login-button:hover {
+  background-color: #f3faf1;
 }
 
 .login-register {
