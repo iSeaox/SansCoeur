@@ -10,7 +10,6 @@ const talkInfoPassBtn = document.getElementById('passBtn');
 const talkInfoContrerBtn = document.getElementById('contrerBtn');
 const talkInfoSurContrerBtn = document.getElementById('surContreeBtn');
 
-
 socket.on('round_info', (data) => {
     console.log("round_info: ", data)
     const roundState = data.state;
@@ -21,7 +20,7 @@ socket.on('round_info', (data) => {
             <p>Contrat : ${("current_talk" in data ? getFormattedTalk(data) : "")}</p>
         `;
         if (talkInfoDiv) {
-          talkInfoDiv.style.display = "flex";
+            talkInfoDiv.className = talkInfoDiv.className.replace(/\bd-none\b/g, 'd-flex');
         }
     }
     else if(roundState == ROUND_STATE_PLAYING) {
@@ -34,7 +33,9 @@ socket.on('round_info', (data) => {
             <hr style="margin: 5% 20% 5% 20%">
             <p>Plis: ${data.trick[0]} - ${data.trick[1]}</p>
         `;
-        talkInfoDiv.style.display = 'none';
+        if (talkInfoDiv) {
+            talkInfoDiv.className = talkInfoDiv.className.replace(/\bd-flex\b/g, 'd-none');
+        }
         // -------------------------------------------------------
         // INTERACT ON TABLE CARD
         if("card_on_table" in data) {
@@ -48,6 +49,11 @@ socket.on('round_info', (data) => {
                         socket.emit('card_clicked', {"card_id": cardElement.id});
                     });
             });
+        }
+    }
+    else if(roundState == ROUND_STATE_SETUP) {
+        if (talkInfoDiv) {
+            talkInfoDiv.className = talkInfoDiv.className.replace(/\bd-flex\b/g, 'd-none');
         }
     }
 });
