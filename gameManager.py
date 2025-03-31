@@ -1,7 +1,8 @@
 import game
 
 class GameManager:
-    def __init__(self):
+    def __init__(self, logManager):
+        self.logManager = logManager
         self.games = []
 
     def overrideGame(self, game):
@@ -14,7 +15,7 @@ class GameManager:
         del game
 
     def registerNewGame(self):
-        newGame = game.Game(self)
+        newGame = game.Game(self, self.logManager)
         print("Création de ", newGame)
 
         self.games.append(newGame)

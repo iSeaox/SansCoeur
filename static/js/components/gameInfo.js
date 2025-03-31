@@ -71,9 +71,21 @@ socket.on('game_info', (data) => {
     ${scoreText}
   `;
 
+  if(data.status === GAME_STATUS_WAITING) {
+    if("last_game_data" in data) {
+      const players = data.last_game_data.players;
+      const scores = data.last_game_data.score;
 
+      const team0Players = players.filter(player => player.team === 0);
+      const team1Players = players.filter(player => player.team === 1);
+      gameInfoDiv.innerHTML += `<hr style="margin: 5% 20% 5% 20%">
+          <p>Dernière partie :</p>`
+      gameInfoDiv.innerHTML += `${team0Players[0].name} - ${team0Players[1].name} : ${scores[0]}<br>`
+      gameInfoDiv.innerHTML += `${team1Players[0].name} - ${team1Players[1].name} : ${scores[1]}`
+    }
+  }
 
   // Affiche le bouton uniquement lorsque le jeu est en attente et prêt à démarrer
   startGameSection.style.display =
-    data.readyToStart && data.status === GAME_STATUS_WAITING ? "block" : "none";
+    data.readyToStart && (data.status === GAME_STATUS_WAITING)  ? "block" : "none";
 });
