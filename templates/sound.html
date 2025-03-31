@@ -5,6 +5,16 @@
     <title>Musique</title>
   </head>
   <body>
+    {% if current_user.username == "mathias" %}
+    <audio
+      id="background-music"
+      src="{{ url_for('static', filename='sound/background-music2.mp3') }}"
+      loop
+      autoplay
+    >
+      Ton navigateur ne supporte pas d'éléments audio.
+    </audio>
+    {% else %}
     <audio
       id="background-music"
       src="{{ url_for('static', filename='sound/background-music.mp3') }}"
@@ -13,21 +23,24 @@
     >
       Ton navigateur ne supporte pas d'éléments audio.
     </audio>
-
+    {% endif %}
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const audio = document.getElementById("background-music");
         const savedTime = sessionStorage.getItem("audioTime");
+
         if (savedTime) {
-          if (audio.readyState > 0) {
-            audio.currentTime = parseFloat(savedTime);
+          const time = parseFloat(savedTime);
+          audio.addEventListener("loadedmetadata", function () {
+            if (!isNaN(time) && time < audio.duration) {
+              audio.currentTime = time;
+            } else {
+              sessionStorage.removeItem("audioTime");
+            }
             audio.play();
-          } else {
-            audio.addEventListener("loadedmetadata", function () {
-              audio.currentTime = parseFloat(savedTime);
-              audio.play();
-            });
-          }
+          });
+        } else {
+          audio.play();
         }
       });
 
