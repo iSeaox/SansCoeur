@@ -105,6 +105,10 @@ def logout():
     flash('Vous avez été déconnecté.', 'secondary')
     return redirect(url_for('index'))
 
+@app.route("/sound")
+def sound():
+    return render_template("sound.html")
+
 # ################################################
 # Main
 

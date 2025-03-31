@@ -16,6 +16,8 @@
       <canvas id="my-canvas"></canvas>
     </div>
 
+    <iframe id="music-frame" src="{{ url_for('sound') }}" style="display: none"></iframe>
+
     <nav class="navbar">
       <a href="{{ url_for('index') }}">
         <img src="{{ url_for('static', filename='img/sco_logo.png') }}" alt="" class="navbar-logo" />
