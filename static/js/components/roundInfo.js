@@ -17,7 +17,10 @@ socket.on('round_info', (data) => {
         roundInfoDiv.innerHTML = `
             <p>Statut de la manche : ${getRoundStatusText(data.state)}</p>
             <p>Prochain à parler : ${data.next_talk}</p>
+            <hr style="margin: 5% 20% 5% 20%">
+            ${("last_talk" in data ? formatLastTalks(data.last_talk) : "")}
             <p>Contrat : ${("current_talk" in data ? getFormattedTalk(data) : "")}</p>
+            <hr style="margin: 5% 20% 5% 20%">
         `;
         if (talkInfoDiv) {
             talkInfoDiv.className = talkInfoDiv.className.replace(/\bd-none\b/g, 'd-flex');
@@ -28,7 +31,6 @@ socket.on('round_info', (data) => {
             <p>Statut de la manche : ${getRoundStatusText(data.state)}</p>
             <p>Prochain à jouer : ${data.next_turn}</p>
             <hr style="margin: 5% 20% 5% 20%">
-            ${("last_talk" in data ? formatLastTalks(data.last_talk) : "")}
             <p>Contrat : ${("current_talk" in data ? getFormattedTalk(data) : "")}</p>
             <hr style="margin: 5% 20% 5% 20%">
             <p>Plis: ${data.trick[0]} - ${data.trick[1]}</p>
