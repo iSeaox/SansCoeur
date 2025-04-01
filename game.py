@@ -163,7 +163,7 @@ class Game:
     def registerScore(self, score, belote=-1):
         currentTalk = self.getCurrentRound().talk
         talkTeam = currentTalk["player"].team
-
+        print(score, belote)
         if belote == talkTeam:
             score[belote] += 20
 
@@ -194,7 +194,7 @@ class Game:
             self.score[not(talkTeam)] += ((162 + currentTalk["value"]) // 10 * 10) * multi
 
         self.nbRound += 1
-
+        print(self.score, belote)
         if belote != talkTeam:
             self.score[belote] += 20
 

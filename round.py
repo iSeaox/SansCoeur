@@ -301,7 +301,7 @@ class Round:
                 self.cardOnTable = []
 
                 if len(self.heapTeam[0]) + len(self.heapTeam[1]) >= 8:
-                    # TODO : Ajouter le compte de la belote
+                    # TESTME : Ajouter le compte de la belote
                     score = [0, 0]
                     for t in (0, 1):
                         if self.winningTeam == t:
