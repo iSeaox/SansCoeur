@@ -160,9 +160,12 @@ class Game:
         self.logManager.logGame(self)
         self.gameManager.overrideGame(self)
 
-    def registerScore(self, score):
+    def registerScore(self, score, belote=-1):
         currentTalk = self.getCurrentRound().talk
         talkTeam = currentTalk["player"].team
+
+        if belote == talkTeam:
+            score[belote] += 20
 
         #  ! DEBUG :
         print("-"*60)
@@ -191,6 +194,10 @@ class Game:
             self.score[not(talkTeam)] += ((162 + currentTalk["value"]) // 10 * 10) * multi
 
         self.nbRound += 1
+
+        if belote != talkTeam:
+            self.score[belote] += 20
+
 
         # Mise à jour du tableau des scores
         self.roundScore.append({

@@ -35,6 +35,7 @@ class Round:
         self.lastTalk = []
         self.contrer = 0
         self.surcontrer = 0
+        self.belote = -1 # Team si il y a une belote
 
         self.needTableAck = 0 # ACK to remove cards from the table
 
@@ -146,7 +147,6 @@ class Round:
         for p in self.players:
             self.cards += p.cards.copy()
             p.cards = []
-        # TODO : Tester le pass 4 fois
         self.attachedGameManger.getGame().startNewRound()
 
     def registerTalkPass(self, player):
@@ -210,10 +210,19 @@ class Round:
 
                 if flag_end:
                     self.state = ROUND_STATE_PLAYING
-                    # Trier les cartes des joueurs
+                    # Trier les cartes des joueurs et chercher une belote et compter les points
                     for p in self.players:
                         p.cards = sorted(p.cards, key=lambda x: (x["color"], getBeloteValue(x, self.talk["color"])), reverse=True)
                         p.sendDeck()
+
+                        idx = 0
+                        for c in p.cards:
+                            if c["color"] == self.talk["color"]:
+                                if c["value"] == 12 or c["value"] == 13:
+                                    idx += 1
+                        if idx == 2:
+                            self.belote = player.team
+
                     self.sendRoundInfo()
 
     @staticmethod
@@ -285,7 +294,7 @@ class Round:
                         return not(player.hasColor(self.askedColor) or player.hasColor(currentTrump))
 
     def computeTableAck(self, player):
-        # TODO : Empecher les cartes de partir toutes seules, ptetre fixer la taille de la div
+        # TESTME : Empecher les cartes de partir toutes seules, ptetre fixer la taille de la div
         if self.needTableAck:
             if player == self.nextTurn:
                 self.needTableAck = 0
@@ -301,7 +310,7 @@ class Round:
                             for c in trick:
                                 score[t] += getBelotePoint(c["card"], self.talk["color"])
 
-                    self.attachedGameManger.getGame().registerScore(score)
+                    self.attachedGameManger.getGame().registerScore(score, belote=self.belote)
 
         self.sendRoundInfo()
 
