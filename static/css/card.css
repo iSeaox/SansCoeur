@@ -10,7 +10,7 @@
 
 @media (min-width: 600px) {
   :root{
-    --card-height: 225px;
+    --card-height: 200px;
     --card-width: var(--card-height) * var(--card-ratio);
   }
 }
