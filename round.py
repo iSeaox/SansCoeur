@@ -221,6 +221,7 @@ class Round:
                                 if c["value"] == 12 or c["value"] == 13:
                                     idx += 1
                         if idx == 2:
+                            print("Belote détectée")
                             self.belote = player.team
 
                     self.sendRoundInfo()
