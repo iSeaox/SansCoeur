@@ -1,5 +1,6 @@
 import os
 import json
+import time
 
 class LogManager:
     def __init__(self, path, filename):
@@ -18,6 +19,9 @@ class LogManager:
 
     def logGame(self, game):
         game_data = game.dumpGameInfo()
+
+        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())  # temps actuel au format lisible
+        game_data.update({"time": current_time})
 
         with open(self.file_path, "r+") as file:
             logs = json.load(file)
