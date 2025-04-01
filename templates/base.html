@@ -11,10 +11,6 @@
     {% block head %}{% endblock %}
   </head>
   <body>
-    <div id="bg-wrapper">
-      <canvas id="my-canvas"></canvas>
-    </div>
-
     <iframe id="music-frame" src="{{ url_for('sound') }}" style="display: none"></iframe>
 
     <nav class="navbar">
@@ -66,9 +62,6 @@
 
     {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Inclusion de Three.js et dat.GUI -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r120/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
     <script>
       window.addEventListener("load", () => {
         document.querySelectorAll(".toast").forEach((toastNode) => {
@@ -113,93 +106,6 @@
         });
       });
     </script>
-
-    <!-- Shaders -->
-    <script id="vertex" type="x-shader/x-vertex">
-            uniform float u_time;
-            uniform sampler2D u_texture;
-            uniform vec2 u_pixels;
-            uniform int u_distortion;
-            uniform float u_strength;
-            uniform float u_speed;
-
-            varying vec2 v_uv;
-            varying vec4 v_position;
-            varying float v_progress;
-
-            void main(){
-                v_uv = uv;
-                float distance = length(v_uv - vec2(0.5));
-                float maxDistance = length(vec2(0.5));
-                float normalizedDistance = distance / maxDistance;
-                vec3 pos = position;
-      switch (u_distortion) {
-                    case 0:
-                        // static
-                        pos.z = 0.0 *  sin( normalizedDistance * u_strength + 1.0 * u_time * u_speed) * 0.2;
-                        break;
-                    case 1:
-                        // center Blow In
-                        pos.z = 0.2 *  sin( normalizedDistance * u_strength + 1.0 * u_time * u_speed) * 0.2;
-                        break;
-                    case 2:
-                        // center Blow Out
-                        pos.z = 0.2 *  sin( -normalizedDistance * u_strength + 1.0 * u_time * u_speed) * 0.2;
-                        break;
-                    case 3:
-                        // flow Left
-                        pos.z = 0.2 * sin( pos.x  * u_strength + 1.0 * u_time * u_speed) * 0.2;
-                        break;
-                    case 4:
-                        // Flow Right
-                        pos.z = 0.2 *  sin( -pos.x * u_strength + 1.0 * u_time * u_speed) * 0.2;
-                        break;
-                    case 5:
-                        // Flow down
-                        pos.z = 0.2 *  sin( pos.y  * u_strength + 1.0 * u_time * u_speed) * 0.2;
-                        break;
-                    case 6:
-                        // Flow Up
-                        pos.z = 0.2 *  sin( -pos.y  * u_strength + 1.0 * u_time * u_speed) * 0.2;
-                        break;
-                    case 7:
-                        // center Blow + flow left
-                        pos.z = 0.2 *  sin( pos.x  * normalizedDistance * u_strength + 1.0 * u_time * u_speed) * 0.2;
-                        break;
-                    case 8:
-                        // center Blow + flow right
-                        pos.z = 0.2 *  sin( -pos.x  * normalizedDistance * u_strength + 1.0 * u_time * u_speed) * 0.2;
-                        break;
-                    case 9:
-                        // center Blow + flow down
-                        pos.z = 0.2 *  sin( pos.y  * normalizedDistance * u_strength + 1.0 * u_time * u_speed) * 0.2;
-                        break;
-                    case 10:
-                        // center Blow + flow up
-                        pos.z = 0.2 *  sin( -pos.y  * normalizedDistance * u_strength + 1.0 * u_time * u_speed) * 0.2;
-                        break;
-                    case 11:
-                        // Vague diagonale du haut gauche vers le bas droit
-                        pos.z = 0.2 * sin((pos.x + pos.y) * u_strength + u_time * u_speed) * 0.2;
-                        break;
-                }
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-            }
-    </script>
-    <script id="fragment" type="x-shader/x-fragment">
-      uniform float u_time;
-      uniform vec4 u_resolution;
-      uniform float u_progress;
-      uniform sampler2D u_texture;
-
-      varying vec2 v_uv;
-      varying vec4 v_position;
-
-      void main(){
-          gl_FragColor = texture2D(u_texture, v_uv);
-      }
-    </script>
-    <script src="{{ url_for('static', filename='js/components/bg-animation.js') }}"></script>
     {% endblock %}
   </body>
 </html>
