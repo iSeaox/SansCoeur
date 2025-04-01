@@ -113,7 +113,7 @@ def sound():
 # Main
 
 if __name__ == "__main__":
-    # # TODO : DEBUG Connexion auto des joueurs
+    # ! DEBUG : Connexion auto des joueurs
     # currentGameManager.getGame().registerPlayer("magathe", 0, None)
     # currentGameManager.getGame().registerPlayer("helios", 1, None)
     # currentGameManager.getGame().registerPlayer("mathias", 0, None)

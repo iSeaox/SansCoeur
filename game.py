@@ -146,7 +146,7 @@ class Game:
         team0 = self.getTeam(0)
         team1 = self.getTeam(1)
         self._players = [team0[0], team1[0], team0[1], team1[1]]
-        # TODO : DEBUG la ligne du dessous sert à debug
+        # ! DEBUG : la ligne du dessous sert à debug
         self._players.reverse()
 
         self._status = GAME_STATUS_PLAYING
@@ -166,7 +166,7 @@ class Game:
         currentTalk = self.getCurrentRound().talk
         talkTeam = currentTalk["player"].team
 
-        # TODO : DEBUG
+        #  ! DEBUG :
         print("-"*60)
         print("Talk: \n\tColor:", currentTalk["color"], "\n\tValue: ", currentTalk["value"], "\n\tTeam: ", currentTalk["player"].team)
         print("\tContrer: ", self.getCurrentRound().contrer)
