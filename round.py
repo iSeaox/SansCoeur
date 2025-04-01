@@ -123,7 +123,7 @@ class Round:
         self.cardsDistrib()
         if self.firstDistribIndex == 0:
             for p in self.players:
-                p.cards = sorted(p.cards, key=lambda x: (x["color"], x["value"]), reverse=True)
+                p.cards = sorted(p.cards, key=lambda x: (x["color"], x["value"]), reverse=False)
                 p.sendDeck()
 
             # # TODO : DEBUG
@@ -144,8 +144,8 @@ class Round:
         for p in self.players:
             self.cards += p.cards.copy()
             p.cards = []
-
-        self.attachedGameManger.getGame().startNewRound()
+        # TODO : Tester le pass 4 fois
+        self.attachedGameManger.getGame().overrideRound(self)
 
     def registerTalkPass(self, player):
         self.registerTalk(player, {}, type="pass")

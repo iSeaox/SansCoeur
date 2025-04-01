@@ -45,6 +45,7 @@ socket.on('round_info', (data) => {
             const cards = data.card_on_table;
             cards.forEach((card, index) => {
                     const cardElement = getCardElement(card.card, index, card.player);
+                    cardElement.className += " mb-4"
                     cardTableDiv.appendChild(cardElement);
 
                     cardElement.addEventListener('click', () => {

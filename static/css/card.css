@@ -1,3 +1,24 @@
+:root {
+  --card-ratio: 2/3;
+}
+@media (max-width: 600px) {
+  :root{
+    --card-height: 150px;
+    --card-width: var(--card-height) * var(--card-ratio);
+  }
+}
+
+@media (min-width: 600px) {
+  :root{
+    --card-height: 225px;
+    --card-width: var(--card-height) * var(--card-ratio);
+  }
+}
+
+.card-table {
+  min-height: var(--card-height);
+}
+
 .card-table,
 #deck {
   display: flex;
@@ -7,18 +28,11 @@
 }
 
 .playing-card {
-  width: 150px;
-  height: 225px; /* ratio : 2/3 */
+  width: var(--card-width);
+  height: var(--card-height);
   display: block;
   justify-content: center;
   align-items: center;
-}
-
-@media (max-width: 600px) {
-  .playing-card {
-    width: 100px;
-    height: 150px; /* ratio : 2/3 */
-  }
 }
 
 .playing-card img {
