@@ -147,7 +147,7 @@ class Round:
             self.cards += p.cards.copy()
             p.cards = []
         # TODO : Tester le pass 4 fois
-        self.attachedGameManger.getGame().overrideRound(self)
+        self.attachedGameManger.getGame().startNewRound()
 
     def registerTalkPass(self, player):
         self.registerTalk(player, {}, type="pass")
@@ -192,8 +192,7 @@ class Round:
                 if flag_next:
                     self.nextTalkIndex += 1
                     self.nextTalkIndex %= 4
-                    if self.nextTalkIndex == self.firstDistribIndex + 1 and self.talk == {}:
-                        # TODO : problème y'a un joueur en trop
+                    if self.nextTalkIndex == (self.firstDistribIndex + 1) % 4 and self.talk == {}:
                         self.restart()
                         return
 

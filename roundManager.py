@@ -4,10 +4,6 @@ class RoundManager:
     def __init__(self):
         self.rounds = []
 
-    def overrideRound(self, round):
-        self.deleteRound(round)
-        self.registerNewRound()
-
     def deleteRound(self, round):
         if round in self.rounds:
             print("Supression de ", round)
