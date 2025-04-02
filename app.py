@@ -46,6 +46,7 @@ users = {
     9: User(9, 'bastien', generate_password_hash('b')),
     10: User(10, 'nico', generate_password_hash('n')),
     11: User(11, 'mathis', generate_password_hash('m')),
+    12: User(12, 'lucas', generate_password_hash('l')),
 }
 
 # ################################################
