@@ -13,7 +13,7 @@ function createGameCard(game) {
     const team1Players = game.players.filter(player => player.team === 1);
 
     const cardHTML = `
-    <div class="row justify-content-center">
+    <div class="row justify-content-center mb-5">
         <div class="card col-md-8">
             <div class="card-body">
                 <div class="row align-items-center">
