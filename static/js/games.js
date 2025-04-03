@@ -88,3 +88,14 @@ socket.on('join_success', (data) => {
         window.location.href = data.redirect;
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("MAINEZERFDgfw")
+    const usernameSpan = document.getElementById('username');
+    const username = usernameSpan.textContent;
+
+    const capitalizedUsername =
+      username.charAt(0).toUpperCase() + username.slice(1);
+    usernameSpan.textContent = capitalizedUsername;
+  });
+

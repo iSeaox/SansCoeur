@@ -3,6 +3,7 @@ import { GAME_STATUS_WAITING, GAME_STATUS_PLAYING, GAME_STATUS_END } from "../ut
 
 const gameInfoDiv = document.getElementById('gameInfo');
 const startGameBtn = document.getElementById('startGameBtn');
+const quitGameSection = document.getElementById('quitGameSection');
 const quitGameBtn = document.getElementById('quitGameBtn');
 const startGameSection = document.getElementById("startGameSection");
 const scoreTableDiv = document.getElementById("scoreTable");
@@ -93,6 +94,15 @@ socket.on('game_info', (data) => {
       gameInfoDiv.innerHTML += `${team1Players[0].name} - ${team1Players[1].name} : ${scores[1]}`
     }
   }
+
+    if(quitGameSection) {
+      if(data.status === GAME_STATUS_WAITING) {
+        quitGameSection.className = quitGameSection.className.replace(/\bd-none\b/g, 'd-flex');
+      }
+      else {
+        quitGameSection.className = quitGameSection.className.replace(/\bd-flex\b/g, 'd-none');
+      }
+    }
 
   // Affiche le bouton uniquement lorsque le jeu est en attente et prêt à démarrer
   if (startGameSection) {
