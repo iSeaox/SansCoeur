@@ -21,6 +21,19 @@ class GameManager:
         self.games.append(newGame)
         print("Stack de Game: ", self.games)
 
+    def getGameByID(self, id):
+        for g in self.games:
+            if g.id == id:
+                return g
+
+    # TODO : DEPRECATED FUNCTION
     def getGame(self):
         if len(self.games) > 0:
             return self.games[0]
+
+    def getGames(self):
+        out = []
+        for game in self.games:
+            out.append(game.dumpGameInfo())
+
+        return out

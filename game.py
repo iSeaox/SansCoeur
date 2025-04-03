@@ -4,6 +4,7 @@ import roundManager
 import random
 
 from flask_socketio import emit
+import uuid
 
 GAME_STATUS_WAITING = 0
 GAME_STATUS_PLAYING = 1
@@ -36,6 +37,7 @@ class Game:
         self.nbRound = 0
         self.score = [0, 0]
         self.roundScore = []
+        self.id = int(str(uuid.uuid4().int)[:8])
 
     def setupDeck(self):
         # TODO : gérer la distribution des cartes mieux que ça
@@ -105,6 +107,7 @@ class Game:
 
     def dumpGameInfo(self):
         out = {
+            "id": self.id,
             "players": self.dumpPlayers(),
             "status": self._status,
             "readyToStart": self._readyToStart,
@@ -121,8 +124,6 @@ class Game:
                         "score": lastGameData["score"]
                     }
                 })
-            print(out)
-
         return out
 
     def broadcastGameInfo(self):

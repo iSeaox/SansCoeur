@@ -11,6 +11,10 @@ quitGameBtn.addEventListener('click', () => {
   socket.emit('quit_game');
 })
 
+socket.on('quit_success', () => {
+  window.location.href = '/';
+});
+
 startGameBtn.addEventListener('click', () => {
   const startGameMaxPointInput = document.getElementById("startGameMaxPointInput");
   if (startGameMaxPointInput) {

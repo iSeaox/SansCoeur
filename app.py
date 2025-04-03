@@ -77,7 +77,7 @@ def load_user(user_id):
 @app.route("/")
 @login_required
 def index():
-    return render_template("dashboard.html", username=current_user.username)
+    return render_template("games.html", username=current_user.username)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -110,13 +110,18 @@ def logout():
 def sound():
     return render_template("sound.html")
 
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html", username=current_user.username)
+
 # ################################################
 # Main
 
 if __name__ == "__main__":
     # ! DEBUG : Connexion auto des joueurs
-    # currentGameManager.getGame().registerPlayer("magathe", 0, None)
-    # currentGameManager.getGame().registerPlayer("helios", 1, None)
-    # currentGameManager.getGame().registerPlayer("mathias", 0, None)
+    currentGameManager.getGame().registerPlayer("magathe", 0, None)
+    currentGameManager.getGame().registerPlayer("helios", 1, None)
+    currentGameManager.getGame().registerPlayer("mathias", 0, None)
 
     socketio.run(app, debug=True, host="0.0.0.0", port=25565)

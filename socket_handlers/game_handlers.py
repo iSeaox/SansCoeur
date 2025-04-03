@@ -1,5 +1,5 @@
 from flask_socketio import emit
-from flask import request
+from flask import request, url_for
 from auth import socketio_login_required
 from flask_login import current_user
 
@@ -13,6 +13,8 @@ def register_handlers(socketio, connected_clients, gameManager):
         # Check if player is register in a game
         if gameManager.getGame().getPlayerByName(current_user.username) != None:
             gameManager.getGame().resumePlayer(current_user.username, request.sid)
+            print(f'{current_user.username} est de retour')
+            emit('join_success', {'message': f'{current_user.username} est de retour', "redirect": url_for('dashboard')})
 
     @socketio.on('join_game')
     @socketio_login_required
@@ -20,14 +22,19 @@ def register_handlers(socketio, connected_clients, gameManager):
         name = current_user.username
         team = data.get('team')
 
+        if not("id" in data):
+            print("Deprecated button")
+            return
+        gameId = int(data.get('id'))
+
         if team not in [0, 1]:
             emit('join_error', {'message': 'Team doit être 0 ou 1'})
             return
 
-        result, message = gameManager.getGame().registerPlayer(name, team, request.sid)
+        result, message = gameManager.getGameByID(gameId).registerPlayer(name, team, request.sid)
         if result:
             print(f'Client {name} a rejoint la Team {team}')
-            emit('join_success', {'message': f'Vous avez rejoint la Team {team} !'})
+            emit('join_success', {'message': f'Vous avez rejoint la Team {team} !', "redirect": url_for('dashboard')})
             gameManager.getGame().broadcastGameInfo()
         else:
             emit('join_error', {'message': message})
@@ -39,6 +46,7 @@ def register_handlers(socketio, connected_clients, gameManager):
         result, message = gameManager.getGame().removePlayer(name)
         if result:
              print(f'Client {name} a quitté la game')
+             emit("quit_success")
              gameManager.getGame().broadcastGameInfo()
 
     @socketio.on('start_game')
@@ -104,6 +112,11 @@ def register_handlers(socketio, connected_clients, gameManager):
             if currentRound:
                 currentRound.computeTableAck(player)
 
+    @socketio.on('request_games_update')
+    @socketio_login_required
+    def handle_request_games_update():
+        games = gameManager.getGames()
+        emit('update_games', {'games': games})
 
     @socketio.on('disconnect')
     def handle_disconnect():
