@@ -4,9 +4,20 @@
 
 <div id="scoreTable"></div>
 
-<div id="startGameSection" class="mt-4">
-  <label for="startGameMaxPoint">Points pour gagner :</label>
-  <input type="number" value="1500" id="startGameMaxPointInput" style="max-width: 100%;">
-  <button id="startGameBtn" class="btn btn-success mt-3">Lancer la partie</button>
+<hr style="margin: 5% 20% 5% 20%">
+
+<div id="startGameSection" class="container mt-4 d-none flex-column">
+  <div class="row">
+    <div class="col-md-6">
+      <label for="startGameMaxPoint">Points pour gagner :</label>
+      <input type="number" value="1500" id="startGameMaxPointInput" style="max-width: 100%;">
+    </div>
+    <div class="col-md-6">
+      <button id="startGameBtn" class="btn btn-success mt-3">Lancer la partie</button>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <button id="quitGameBtn" class="btn btn-danger mt-3" style="width: 50%;">Quitter la partie</button>
+  </div>
 </div>
 

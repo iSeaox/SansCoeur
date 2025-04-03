@@ -3,8 +3,13 @@ import { GAME_STATUS_WAITING, GAME_STATUS_PLAYING, GAME_STATUS_END } from "../ut
 
 const gameInfoDiv = document.getElementById('gameInfo');
 const startGameBtn = document.getElementById('startGameBtn');
+const quitGameBtn = document.getElementById('quitGameBtn');
 const startGameSection = document.getElementById("startGameSection");
 const scoreTableDiv = document.getElementById("scoreTable");
+
+quitGameBtn.addEventListener('click', () => {
+  socket.emit('quit_game');
+})
 
 startGameBtn.addEventListener('click', () => {
   const startGameMaxPointInput = document.getElementById("startGameMaxPointInput");
@@ -86,6 +91,12 @@ socket.on('game_info', (data) => {
   }
 
   // Affiche le bouton uniquement lorsque le jeu est en attente et prêt à démarrer
-  startGameSection.style.display =
-    data.readyToStart && (data.status === GAME_STATUS_WAITING)  ? "block" : "none";
+  if (startGameSection) {
+    if(data.readyToStart && data.status === GAME_STATUS_WAITING) {
+      startGameSection.className = startGameSection.className.replace(/\bd-none\b/g, 'd-flex');
+    }
+    else {
+      startGameSection.className = startGameSection.className.replace(/\bd-flex\b/g, 'd-none');
+    }
+  }
 });

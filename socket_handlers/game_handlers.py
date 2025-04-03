@@ -32,6 +32,15 @@ def register_handlers(socketio, connected_clients, gameManager):
         else:
             emit('join_error', {'message': message})
 
+    @socketio.on('quit_game')
+    @socketio_login_required
+    def handle_quit_game():
+        name = current_user.username
+        result, message = gameManager.getGame().removePlayer(name)
+        if result:
+             print(f'Client {name} a quitté la game')
+             gameManager.getGame().broadcastGameInfo()
+
     @socketio.on('start_game')
     @socketio_login_required
     def handle_start_game(data):

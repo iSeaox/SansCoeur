@@ -52,6 +52,16 @@ class Game:
                 self._cards.append({"color": color, "value": value})
         random.shuffle(self._cards)
 
+    def removePlayer(self, name):
+        if self._status == GAME_STATUS_WAITING:
+            player = self.getPlayerByName(name)
+            if player:
+                self._players.remove(player)
+                self._readyToStart = False
+                self.broadcastGameInfo()
+                return (True, f"Game sucessfully quit")
+        else:
+            return (False, f"You can't quit a started game")
 
     def registerPlayer(self, name, team, sid):
         for p in self._players:
