@@ -36,6 +36,7 @@ def register_handlers(socketio, connected_clients, gameManager):
             print(f'Client {name} a rejoint la Team {team}')
             emit('join_success', {'message': f'Vous avez rejoint la Team {team} !', "redirect": url_for('dashboard')})
             gameManager.getGame().broadcastGameInfo()
+            gameManager.updateClients()
         else:
             emit('join_error', {'message': message})
 
@@ -48,6 +49,7 @@ def register_handlers(socketio, connected_clients, gameManager):
              print(f'Client {name} a quitté la game')
              emit("quit_success")
              gameManager.getGame().broadcastGameInfo()
+             gameManager.updateClients()
 
     @socketio.on('start_game')
     @socketio_login_required
@@ -57,6 +59,7 @@ def register_handlers(socketio, connected_clients, gameManager):
             emit('start_game_error', {'message': message})
             return
         gameManager.getGame().broadcastGameInfo()
+        gameManager.updateClients()
 
     @socketio.on('card_clicked')
     @socketio_login_required

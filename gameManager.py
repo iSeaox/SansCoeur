@@ -1,4 +1,5 @@
 import game
+from flask_socketio import emit
 
 class GameManager:
     def __init__(self, logManager):
@@ -37,3 +38,7 @@ class GameManager:
             out.append(game.dumpGameInfo())
 
         return out
+
+    def updateClients(self):
+        games = self.getGames()
+        emit('update_games', {'games': games}, broadcast=True)

@@ -90,7 +90,6 @@ socket.on('join_success', (data) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("MAINEZERFDgfw")
     const usernameSpan = document.getElementById('username');
     const username = usernameSpan.textContent;
 
