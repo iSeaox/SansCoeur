@@ -2,9 +2,9 @@ from flask_socketio import emit
 from flask import request, url_for
 from auth import socketio_login_required
 from flask_login import current_user
-import time
+import statisticManager
 
-def register_handlers(socketio, connected_clients, gameManager):
+def register_handlers(socketio, logManager, gameManager):
 
     @socketio.on("connect")
     @socketio_login_required
@@ -152,6 +152,11 @@ def register_handlers(socketio, connected_clients, gameManager):
             player = game.getPlayerByName(player_name)
             if player:
                 game.chat.registerChat(player, data)
+
+    @socketio.on('request_stat_update')
+    @socketio_login_required
+    def handle_request_games_update(data):
+        emit('stat_update', {"data": statisticManager.dumpData(logManager, data["type"]), "type": data["type"]})
 
     @socketio.on('disconnect')
     def handle_disconnect():

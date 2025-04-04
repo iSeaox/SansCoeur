@@ -79,3 +79,11 @@ class LogManager:
         if logs:
             return logs[-1]
         return None
+
+    def dumpGameLogs(self):
+        logs = None
+        with open(self.game_file_path, 'r') as file:
+            logs = json.load(file)
+        if logs:
+            return logs
+        return None

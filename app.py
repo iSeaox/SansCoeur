@@ -52,17 +52,14 @@ users = {
 # ################################################
 # Global Variables
 
-logManager = logManager.LogManager("./logs", "logs.json", "chat.log")
-currentGameManager = gameManager.GameManager(logManager)
+currentlogManager = logManager.LogManager("./logs", "logs.json", "chat.log")
+currentGameManager = gameManager.GameManager(currentlogManager)
 currentGameManager.registerNewGame()
-
-
-connected_clients = {}
 
 # ################################################
 # Socket Handlers
 from socket_handlers import init_socket_handlers
-init_socket_handlers(socketio, connected_clients, currentGameManager)
+init_socket_handlers(socketio, currentlogManager, currentGameManager)
 
 # ################################################
 # App routine
