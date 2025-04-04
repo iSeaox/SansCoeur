@@ -143,6 +143,16 @@ def register_handlers(socketio, connected_clients, gameManager):
         games = gameManager.getGames()
         emit('update_games', {'games': games})
 
+    @socketio.on('chat_message')
+    @socketio_login_required
+    def handle_request_games_update(data):
+        player_name = current_user.username
+        game = gameManager.getGameByPlayerName(player_name)
+        if game:
+            player = game.getPlayerByName(player_name)
+            if player:
+                game.chat.registerChat(player, data)
+
     @socketio.on('disconnect')
     def handle_disconnect():
         pass

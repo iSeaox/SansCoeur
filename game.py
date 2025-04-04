@@ -5,6 +5,7 @@ import random
 
 from flask_socketio import emit
 import uuid
+import chat
 
 GAME_STATUS_WAITING = 0
 GAME_STATUS_PLAYING = 1
@@ -38,6 +39,7 @@ class Game:
         self.score = [0, 0]
         self.roundScore = []
         self.id = int(str(uuid.uuid4().int)[:8])
+        self.chat = chat.Chat(self.gameManager, self.logManager, self.id)
 
     def setupDeck(self):
         # TODO : gérer la distribution des cartes mieux que ça

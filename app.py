@@ -52,7 +52,7 @@ users = {
 # ################################################
 # Global Variables
 
-logManager = logManager.LogManager("./logs", "logs.json")
+logManager = logManager.LogManager("./logs", "logs.json", "chat.log")
 currentGameManager = gameManager.GameManager(logManager)
 currentGameManager.registerNewGame()
 

@@ -3,27 +3,44 @@ import json
 import time
 
 class LogManager:
-    def __init__(self, path, filename):
+    def __init__(self, path, game_filename, chat_filename):
         self.path = path
-        self.filename = filename
-        self.file_path = os.path.join(self.path, self.filename)
-        print("[INFO] Log file:", self.file_path)
-        if not(os.path.exists(self.path)):
-            print(f"[INFO] Cant't find {self.path} => created")
-            os.makedirs(self.path)
+        self.game_filename = game_filename
+        self.chat_filename = chat_filename
+        self.game_file_path = os.path.join(self.path, self.game_filename)
+        self.chat_file_path = os.path.join(self.path, self.chat_filename)
 
-        if not(os.path.exists(self.file_path)):
-            print(f"[INFO] Cant't find {self.file_path} => created")
-            with open(self.file_path, "w") as file:
+        self.checkPath(self.path, self.game_file_path)
+        self.checkPath(self.path, self.chat_file_path)
+
+    @staticmethod
+    def checkPath(path, file_path):
+        print("[INFO] Log file:", file_path)
+        if not(os.path.exists(path)):
+            print(f"[INFO] Cant't find {path} => created")
+            os.makedirs(path)
+
+        if not(os.path.exists(file_path)):
+            print(f"[INFO] Cant't find {file_path} => created")
+            with open(file_path, "w") as file:
                 json.dump([], file, indent=4)
+
+    def logChat(self, chat):
+        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        data = f"[{current_time}] <{chat["player"]["name"]}> {chat["message"]}"
+
+        print(data)
+
+        with open(self.chat_file_path, "a") as file:
+            file.write(data + "\n")
 
     def logGame(self, game):
         game_data = game.dumpGameInfo()
 
-        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())  # temps actuel au format lisible
+        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         game_data.update({"time": current_time})
 
-        with open(self.file_path, "r+") as file:
+        with open(self.game_file_path, "r+") as file:
             logs = json.load(file)
             logs.append(game_data)
             file.seek(0)
@@ -57,7 +74,7 @@ class LogManager:
         print("\n==============================================================")
 
     def getLastGameData(self):
-        with open(self.file_path, 'r') as file:
+        with open(self.game_file_path, 'r') as file:
             logs = json.load(file)
         if logs:
             return logs[-1]

@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/card.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/score.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}" />
 {% endblock %}
 
 {% block content %}
@@ -14,11 +15,9 @@
     <div class="col-md-4 mb-4">
       <div class="card h-100">
         <div class="card-header">
-          <h5>Chat (en construction)</h5>
+          <h5>Chat (j'ai des logs)</h5>
         </div>
-        <div class="card-body">
-          <!-- TODO : Chat -->
-        </div>
+        {% include "components/chat.html" %}
       </div>
     </div>
 
@@ -84,5 +83,6 @@
 <script type="module" src="{{ url_for('static', filename='js/components/gameInfo.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/components/roundInfo.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/components/deck.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/components/chat.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/toaster.js') }}"></script>
 {% endblock %}
