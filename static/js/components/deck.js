@@ -31,6 +31,7 @@ socket.on('update_deck', (cards) => {
     // Affiche chaque carte
     cards.forEach((card, index) => {
         const cardElement = getCardElement(card, index);
+        cardElement.className += " mb-4"
         deckDiv.appendChild(cardElement);
 
         cardElement.addEventListener('click', (e) => {
