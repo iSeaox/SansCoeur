@@ -125,15 +125,15 @@ class Round:
         self.cardsDistrib()
 
         # #  ! DEBUG :
-        # if self.firstDistribIndex == 0:
+        if self.firstDistribIndex == 0:
 
-        #     self.state = ROUND_STATE_PLAYING
-        #     self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
-        #     self.sendRoundInfo()
+            self.state = ROUND_STATE_PLAYING
+            self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
+            self.sendRoundInfo()
 
-        #     for p in self.players:
-        #         p.cards = sorted(p.cards, key=lambda x: (x["color"], getBeloteValue(x, self.talk["color"])), reverse=True)
-        #         p.sendDeck()
+            for p in self.players:
+                p.cards = sorted(p.cards, key=lambda x: (x["color"], getBeloteValue(x, self.talk["color"])), reverse=True)
+                p.sendDeck()
 
         #     self.winningTeam = 0
         #     self.needTableAck = 1

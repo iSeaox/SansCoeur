@@ -48,7 +48,7 @@ socket.on('round_info', (data) => {
                     cardElement.className += " mb-4"
                     cardTableDiv.appendChild(cardElement);
 
-                    cardElement.addEventListener('click', () => {
+                    cardElement.addEventListener('mouseup', () => {
                         socket.emit('card_clicked', {"card_id": cardElement.id});
                     });
             });

@@ -34,7 +34,7 @@ socket.on('update_deck', (cards) => {
         cardElement.className += " mb-4"
         deckDiv.appendChild(cardElement);
 
-        cardElement.addEventListener('click', (e) => {
+        cardElement.addEventListener('mouseup', (e) => {
             e.stopImmediatePropagation();
             socket.emit('card_clicked', {"card_id": cardElement.id});
         });
