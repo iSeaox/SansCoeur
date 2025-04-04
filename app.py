@@ -117,8 +117,8 @@ def dashboard():
 
 if __name__ == "__main__":
     # ! DEBUG : Connexion auto des joueurs
-    currentGameManager.getGame().registerPlayer("magathe", 0, None)
-    currentGameManager.getGame().registerPlayer("helios", 1, None)
-    currentGameManager.getGame().registerPlayer("mathias", 0, None)
+    # currentGameManager.getGame().registerPlayer("magathe", 0, None)
+    # currentGameManager.getGame().registerPlayer("helios", 1, None)
+    # currentGameManager.getGame().registerPlayer("mathias", 0, None)
 
     socketio.run(app, debug=True, host="0.0.0.0", port=25565)
