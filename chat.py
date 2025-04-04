@@ -18,9 +18,9 @@ class Chat:
             self.cachedMessage = self.cachedMessage[1:]
 
     def resumeChat(self, player):
-        for player, msg in self.cachedMessage:
+        for p, msg in self.cachedMessage:
             current_time = time.strftime("%H:%M", time.localtime())
-            emit("receive_chat_message", {"message": msg, "player": player.name, "time": current_time}, room=player.sid)
+            emit("receive_chat_message", {"message": msg, "player": p.name, "time": current_time}, room=player.sid)
 
     def broadcastMessage(self, player, message):
         current_time = time.strftime("%H:%M", time.localtime())
