@@ -15,6 +15,7 @@ class RoundManager:
         print("[", gManager.getGameByID(gameId), "] Création de ", newRound)
 
         self.rounds.append(newRound)
+        newRound.sendRoundInfo()
         print("[", gManager.getGameByID(gameId), "] Stack de Round: ", self.rounds)
 
     def getRound(self):
