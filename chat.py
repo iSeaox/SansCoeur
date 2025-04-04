@@ -7,11 +7,20 @@ class Chat:
         self.attachedLogManager = logManager
         self.attachedGameID = attachedgameID
         self.messages = []
+        self.cachedMessage = []
 
     def registerChat(self, player, message):
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.logMessage(player, message["message"])
         self.broadcastMessage(player,  message["message"])
+        self.cachedMessage.append((player, message["message"]))
+        if len(self.cachedMessage) > 8:
+            self.cachedMessage = self.cachedMessage[1:]
+
+    def resumeChat(self, player):
+        for player, msg in self.cachedMessage:
+            current_time = time.strftime("%H:%M", time.localtime())
+            emit("receive_chat_message", {"message": msg, "player": player.name, "time": current_time}, room=player.sid)
 
     def broadcastMessage(self, player, message):
         current_time = time.strftime("%H:%M", time.localtime())

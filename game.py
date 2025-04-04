@@ -87,6 +87,7 @@ class Game:
             self.broadcastGameInfo()
             if self.getCurrentRound() != None:
                 self.getCurrentRound().sendRoundInfo()
+                self.chat.resumeChat(player)
                 player.sendDeck()
 
     def getTeam(self, team):
