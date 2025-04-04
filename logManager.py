@@ -27,7 +27,7 @@ class LogManager:
 
     def logChat(self, chat):
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        data = f"[{current_time}] <{chat["player"]["name"]}> {chat["message"]}"
+        data = f'[{current_time}] <{chat["player"]["name"]}> {chat["message"]}'
 
         print(data)
 
