@@ -11,3 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
     username.charAt(0).toUpperCase() + username.slice(1);
   usernameSpan.textContent = capitalizedUsername;
 });
+
+socket.on('end_game', (data) => {
+  if (data.redirect) {
+      window.location.href = data.redirect;
+  }
+});
+

@@ -4,6 +4,7 @@ import roundManager
 import random
 
 from flask_socketio import emit
+from flask import url_for
 import uuid
 import chat
 
@@ -170,6 +171,7 @@ class Game:
     def end(self):
         self._status = GAME_STATUS_END
         emit('launch-toast', {'message': "La partie est terminée", "category": "success"}, broadcast=True)
+        emit('end_game', {"redirect": url_for('index')}, broadcast=True)
         self.broadcastGameInfo()
         self.logManager.logGame(self)
         self.gameManager.overrideGame(self)
