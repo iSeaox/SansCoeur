@@ -133,7 +133,7 @@ class Game:
         self.setupDeck()
         # Pour eviter les doublons lors du restart
         self.roundManager.deleteRound(self.getCurrentRound())
-        self.roundManager.registerNewRound(self._players, self.nbRound % 4, self._cards, self.gameManager)
+        self.roundManager.registerNewRound(self.id, self._players, self.nbRound % 4, self._cards, self.gameManager)
         self.getCurrentRound().start()
         self.getCurrentRound().sendRoundInfo()
         self.broadcastGameInfo()

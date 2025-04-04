@@ -17,7 +17,8 @@ def getBelotePoint(card, trump):
     return (TRUMP_POINT_TABLE if card["color"] == trump else CLASSIC_POINT_TABLE)[card["value"]]
 class Round:
 
-    def __init__(self, players, firstDistribIndex, cards, gManager):
+    def __init__(self, players, firstDistribIndex, cards, gManager, attachedGameID):
+        self.attachedGameID = attachedGameID
         self.attachedGameManger = gManager
         self.players = players
         self.firstDistribIndex = firstDistribIndex
@@ -147,7 +148,7 @@ class Round:
         for p in self.players:
             self.cards += p.cards.copy()
             p.cards = []
-        self.attachedGameManger.getGame().startNewRound()
+        self.attachedGameManger.getGameByID(self.attachedGameID).startNewRound()
 
     def registerTalkPass(self, player):
         self.registerTalk(player, {}, type="pass")
@@ -311,7 +312,7 @@ class Round:
                             for c in trick:
                                 score[t] += getBelotePoint(c["card"], self.talk["color"])
 
-                    self.attachedGameManger.getGame().registerScore(score, belote=self.belote)
+                    self.attachedGameManger.getGameByID(self.attachedGameID).registerScore(score, belote=self.belote)
 
         self.sendRoundInfo()
 

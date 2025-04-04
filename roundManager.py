@@ -10,12 +10,12 @@ class RoundManager:
             self.rounds.remove(round)
             del round
 
-    def registerNewRound(self, players, firstDistributionIndex, cards, gManager):
-        newRound = round.Round(players, firstDistributionIndex, cards, gManager)
-        print("[", gManager.getGame(), "] Création de ", newRound)
+    def registerNewRound(self, gameId, players, firstDistributionIndex, cards, gManager):
+        newRound = round.Round(players, firstDistributionIndex, cards, gManager, gameId)
+        print("[", gManager.getGameByID(gameId), "] Création de ", newRound)
 
         self.rounds.append(newRound)
-        print("[", gManager.getGame(), "] Stack de Round: ", self.rounds)
+        print("[", gManager.getGameByID(gameId), "] Stack de Round: ", self.rounds)
 
     def getRound(self):
         if len(self.rounds) > 0:

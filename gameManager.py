@@ -1,6 +1,10 @@
 import game
 from flask_socketio import emit
 
+import warnings
+
+warnings.simplefilter("always", DeprecationWarning)
+
 class GameManager:
     def __init__(self, logManager):
         self.logManager = logManager
@@ -27,8 +31,17 @@ class GameManager:
             if g.id == id:
                 return g
 
+    def getGameByPlayerName(self, name):
+        for g in self.games:
+            if g.getPlayerByName(name) != None:
+                return g
+        return None
+
+
     # TODO : DEPRECATED FUNCTION
     def getGame(self):
+        warnings.warn(
+        "Deprecated functin should be removed", category=DeprecationWarning, stacklevel=0)
         if len(self.games) > 0:
             return self.games[0]
 
