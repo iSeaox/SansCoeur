@@ -107,3 +107,36 @@ export function formatLastTalks(talks) {
   return out
 }
 
+function createToast(message, category) {
+  const toast = document.createElement("div");
+  toast.className = `toast align-items-center text-bg-${category} border-0 mb-2`;
+  toast.setAttribute("role", "alert");
+  toast.setAttribute("aria-live", "assertive");
+  toast.setAttribute("aria-atomic", "true");
+  toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">${message}</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  `;
+  return toast
+}
+
+export function sendToast(message, category) {
+  let toastContainer = document.getElementById("toast-container");
+  if (!toastContainer) {
+    toastContainer = document.createElement("div");
+    toastContainer.id = "toast-container";
+    document.body.appendChild(toastContainer);
+  }
+
+  const toast = createToast(message, category);
+  toastContainer.appendChild(toast);
+
+  const bsToast = new bootstrap.Toast(toast, { delay: 2000 });
+  bsToast.show();
+  toast.addEventListener("hidden.bs.toast", function () {
+    toast.remove();
+  });
+}
+

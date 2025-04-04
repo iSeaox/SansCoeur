@@ -33,7 +33,8 @@ socket.on('update_deck', (cards) => {
         const cardElement = getCardElement(card, index);
         deckDiv.appendChild(cardElement);
 
-        cardElement.addEventListener('click', () => {
+        cardElement.addEventListener('click', (e) => {
+            e.stopImmediatePropagation();
             socket.emit('card_clicked', {"card_id": cardElement.id});
         });
     });

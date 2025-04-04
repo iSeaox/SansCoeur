@@ -2,6 +2,7 @@ from flask_socketio import emit
 from flask import request, url_for
 from auth import socketio_login_required
 from flask_login import current_user
+import time
 
 def register_handlers(socketio, connected_clients, gameManager):
 
@@ -14,6 +15,7 @@ def register_handlers(socketio, connected_clients, gameManager):
             temp_game.resumePlayer(current_user.username, request.sid)
             print(f'{current_user.username} est de retour')
             emit('join_success', {'message': f'{current_user.username} est de retour', "redirect": url_for('dashboard')})
+            emit('launch-toast', {'message': f'Vous avez rejoint la partie !', "category": "success"})
 
     @socketio.on('join_game')
     @socketio_login_required
@@ -33,7 +35,7 @@ def register_handlers(socketio, connected_clients, gameManager):
         result, message = gameManager.getGameByID(gameId).registerPlayer(name, team, request.sid)
         if result:
             print(f'Client {name} a rejoint la Team {team}')
-            emit('join_success', {'message': f'Vous avez rejoint la Team {team} !', "redirect": url_for('dashboard')})
+            emit('join_success', {"redirect": url_for('dashboard')})
             gameManager.getGameByID(gameId).broadcastGameInfo()
             gameManager.updateClients()
         else:
@@ -60,7 +62,9 @@ def register_handlers(socketio, connected_clients, gameManager):
             result, message = game.start(data["maxPoints"])
             if not(result):
                 emit('start_game_error', {'message': message})
+                emit('launch-toast', {'message': message, "category": "danger"})
                 return
+            emit('launch-toast', {'message': "Lancement de la partie", "category": "success"}, broadcast=True)
             game.broadcastGameInfo()
             gameManager.updateClients()
 
@@ -77,7 +81,9 @@ def register_handlers(socketio, connected_clients, gameManager):
                     if card_index < len(player.cards):
                         card = player.cards[card_index]
 
-                        game.getCurrentRound().cardPlayed(player, card, card_index)
+                        error = game.getCurrentRound().cardPlayed(player, card, card_index)
+                        if error:
+                            emit('launch-toast', error)
 
     @socketio.on("talk_click")
     @socketio_login_required
@@ -86,7 +92,8 @@ def register_handlers(socketio, connected_clients, gameManager):
         game = gameManager.getGameByPlayerName(player_name)
         if game:
             player = game.getPlayerByName(player_name)
-            game.getCurrentRound().registerTalk(player, data)
+            if player:
+                game.getCurrentRound().registerTalk(player, data)
 
     @socketio.on("pass_click")
     @socketio_login_required

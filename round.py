@@ -329,7 +329,8 @@ class Round:
     def cardPlayed(self, player, card, index):
         if(self.state == ROUND_STATE_PLAYING):
             if self.needTableAck:
-                return # Is used as a lock
+                # Is used as a lock
+                return {"category": "danger", "message": "Impossible de jouer cette carte"}
             if(player == self.nextTurn):
                 #Verifier si la carte est dans le jeu du joueur
                 if card == player.cards[index]:

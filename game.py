@@ -167,6 +167,7 @@ class Game:
 
     def end(self):
         self._status = GAME_STATUS_END
+        emit('launch-toast', {'message': "La partie est terminée", "category": "success"}, broadcast=True)
         self.broadcastGameInfo()
         self.logManager.logGame(self)
         self.gameManager.overrideGame(self)
