@@ -2,6 +2,8 @@ import sys
 import datetime
 from pathlib import Path
 
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 # To manage import to top-level
 sys.path.append(str(Path(__file__).parent))
 
@@ -16,6 +18,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # Flask Setup
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
+app.wsgi_app = ProxyFix(app.wsgi_app)
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
