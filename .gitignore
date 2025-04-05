@@ -2,5 +2,5 @@ __pycache__/
 instance/
 logs/
 .vscode/
-sanscoeur-gunicore.service
+sanscoeur-gunicorn.service
 env/
