@@ -4,9 +4,11 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/card.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/score.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/help.css') }}" />
 {% endblock %}
 
 {% block content %}
+{% include "components/help.html" %}
 <div class="container mt-5" id="dashboard">
   <h1 class="text-center">Bienvenue, <span id="username">{{ username }}</span>&nbsp;!</h1>
   <!-- Tableau aligné avec des cases -->
@@ -84,5 +86,6 @@
 <script type="module" src="{{ url_for('static', filename='js/components/roundInfo.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/components/deck.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/components/chat.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/components/help.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/toaster.js') }}"></script>
 {% endblock %}
