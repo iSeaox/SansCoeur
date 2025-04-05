@@ -333,7 +333,7 @@ class Round:
         if(self.state == ROUND_STATE_PLAYING):
             if self.needTableAck or time.time_ns() - self.tableAckTime <= TALBE_ACK_COOLDOWN_NS:
                 if time.time_ns() - self.tableAckTime <= TALBE_ACK_COOLDOWN_NS:
-                    return {"category": "danger", "message": f"Cooldown anti-missclick ({(time.time_ns() - self.tableAckTime) / (10 ** 9)})"}
+                    return {"category": "danger", "message": f"Cooldown anti-missclick ({(time.time_ns() - self.tableAckTime) / (10 ** 9)} s)"}
                 else:
                     return {"category": "danger", "message": "Impossible de jouer cette carte"}
             if(player == self.nextTurn):
