@@ -78,7 +78,6 @@ DATA_MODEL = {
 def dumpData(logManager, type):
     games = logManager.dumpGameLogs()
     out = _analyseGamesDump(games)
-    print(out)
     if type == GRAPH_TYPE_TOTAL_POINT:
         sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["totalScore"], reverse=True))
         if len(sorted_players) > 10:

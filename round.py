@@ -1,4 +1,5 @@
 from flask_socketio import emit
+import time
 
 ROUND_STATE_SETUP = 0
 ROUND_STATE_TALKING = 1
@@ -9,6 +10,8 @@ CLASSIC_CONVERT_TABLE = {7: 7, 8: 8, 9: 9, 11: 10, 12: 11, 13: 12, 10: 13, 14: 1
 
 TRUMP_POINT_TABLE   = {7: 0, 8: 0, 9: 14, 10: 10, 11: 20, 12: 3, 13: 4, 14: 11}
 CLASSIC_POINT_TABLE = {7: 0, 8: 0, 9: 0 , 10: 10, 11: 2 , 12: 3, 13: 4, 14: 11}
+
+TALBE_ACK_COOLDOWN_NS = (10 ** 9) * 2
 
 def getBeloteValue(card, trump):
     return (TRUMP_CONVERT_TABLE if card["color"] == trump else CLASSIC_CONVERT_TABLE)[card["value"]]
@@ -39,6 +42,7 @@ class Round:
         self.belote = -1 # Team si il y a une belote
 
         self.needTableAck = 0 # ACK to remove cards from the table
+        self.tableAckTime = 0
 
         # Hand variable
         self.cardOnTable = []
@@ -135,11 +139,11 @@ class Round:
         #         p.cards = sorted(p.cards, key=lambda x: (x["color"], getBeloteValue(x, self.talk["color"])), reverse=True)
         #         p.sendDeck()
 
-        #     self.winningTeam = 0
-        #     self.needTableAck = 1
-        #     self.heapTeam = [[[{'card': {'color': 3, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 10}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 12}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 0, 'value': 13}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 0, 'value': 8}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 2, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 2, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 11}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 2, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 0, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 3, 'value': 13}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 2, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}], [{'card': {'color': 2, 'value': 13}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}]], [[{'card': {'color': 1, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 1, 'value': 11}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 13}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 3, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 3, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 0, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 10}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}]]]
-        #     self.flushCardOnTable()
-        #     self.computeTableAck(self.nextTurn)
+            # self.winningTeam = 0
+            # self.needTableAck = 1
+            # self.heapTeam = [[[{'card': {'color': 3, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 10}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 12}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 0, 'value': 13}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 0, 'value': 8}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 2, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 2, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 11}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 2, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 0, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 3, 'value': 13}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 2, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}], [{'card': {'color': 2, 'value': 13}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}]], [[{'card': {'color': 1, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 1, 'value': 11}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 13}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 3, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 3, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 0, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 10}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}]]]
+            # self.flushCardOnTable()
+            # self.computeTableAck(self.nextTurn)
 
         self.sendRoundInfo()
 
@@ -187,7 +191,6 @@ class Round:
                         if "contrer" in self.talk.keys() and self.talk['contrer'].team != player.team:
                             self.talk['surcontrer'] = player
                             self.surcontrer = 1
-                            print("END SUR CONTERR")
                             flag_end = 1
 
                 if flag_next:
@@ -200,11 +203,9 @@ class Round:
                     self.nextTalk = self.players[self.nextTalkIndex]
 
                     if self.talk != {} and "contrer" in self.talk and self.talk['contrer'] == self.nextTalk:
-                        print("END CONTREE")
                         flag_end = 1
 
                     if self.talk != {} and self.nextTalk == self.talk['player'] and not("contrer" in self.talk):
-                        print("END CLASSIC")
                         flag_end = 1
 
                     self.sendRoundInfo()
@@ -300,6 +301,7 @@ class Round:
         if self.needTableAck:
             if player == self.nextTurn:
                 self.needTableAck = 0
+                self.tableAckTime = time.time_ns()
                 self.cardOnTable = []
 
                 if len(self.heapTeam[0]) + len(self.heapTeam[1]) >= 8:
@@ -313,6 +315,7 @@ class Round:
                                 score[t] += getBelotePoint(c["card"], self.talk["color"])
 
                     self.attachedGameManger.getGameByID(self.attachedGameID).registerScore(score, belote=self.belote)
+                    return
 
         self.sendRoundInfo()
 
@@ -328,14 +331,15 @@ class Round:
 
     def cardPlayed(self, player, card, index):
         if(self.state == ROUND_STATE_PLAYING):
-            if self.needTableAck:
-                # Is used as a lock
-                return {"category": "danger", "message": "Impossible de jouer cette carte"}
+            if self.needTableAck or time.time_ns() - self.tableAckTime <= TALBE_ACK_COOLDOWN_NS:
+                if time.time_ns() - self.tableAckTime <= TALBE_ACK_COOLDOWN_NS:
+                    return {"category": "danger", "message": f"Cooldown anti-missclick ({(time.time_ns() - self.tableAckTime) / (10 ** 9)})"}
+                else:
+                    return {"category": "danger", "message": "Impossible de jouer cette carte"}
             if(player == self.nextTurn):
                 #Verifier si la carte est dans le jeu du joueur
                 if card == player.cards[index]:
                     result = self.computeNewCard(player, card)
-                    print(self.winningCard, self.winningTeam)
                     if result:
                         played_card = player.cards.pop(index)
                         player.sendDeck()
