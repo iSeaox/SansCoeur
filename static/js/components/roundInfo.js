@@ -25,6 +25,7 @@ socket.on('round_info', (data) => {
         if (talkInfoDiv) {
             talkInfoDiv.className = talkInfoDiv.className.replace(/\bd-none\b/g, 'd-flex');
         }
+        cardTableDiv.innerHTML = '';
     }
     else if(roundState == ROUND_STATE_PLAYING) {
         roundInfoDiv.innerHTML = `
