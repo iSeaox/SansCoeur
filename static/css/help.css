@@ -1,36 +1,44 @@
 .sticky-btn {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background-color: #007bff;
-    color: white;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    cursor: pointer;
-    z-index: 1000;
+  position: fixed;
+  bottom: 30px;
+  right: 40px;
+  background-color: none !important;
+
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000;
 }
 
-  /* Style du menu (initialement caché) */
 .sticky-menu {
-    display: none;
-    position: fixed;
-    bottom: 10px;  /* Placer le menu juste au-dessus du bouton */
-    right: 80px;   /* Aligner le menu à gauche du bouton */
-    background-color: #f8f9fa;
-    padding: 10px 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    color: #000;
-    z-index: 1000;
+  display: none;
+  position: fixed;
+  bottom: 10px;
+  right: 80px;
+  background-color: #f8f9fa;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #000;
+  z-index: 1000;
 }
 
 .sticky-menu.show {
-    display: block;
-    z-index: 1000;
+  display: block;
+  z-index: 1000;
+}
+
+@media (max-width: 768px) {
+  .sticky-btn {
+    background-color: #007bff;
+    bottom: 10px;
+    right: 10px;
+  }
 }

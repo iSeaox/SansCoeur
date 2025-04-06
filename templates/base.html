@@ -91,28 +91,45 @@
         const musicBtn = document.getElementById("music-btn");
         const musicFrame = document.getElementById("music-frame");
 
-        const isPlaying = sessionStorage.getItem("isPlaying") === "true";
+        const isPlaying = localStorage.getItem("isPlaying") === "true";
         musicImg.src = isPlaying ? "/static/img/volume.png" : "/static/img/no-volume.png";
 
+        let clickTimer = null;
+        const delay = 250;
+
         musicBtn.addEventListener("click", () => {
-          if (musicFrame.contentWindow) {
-            const audio = musicFrame.contentWindow.document.getElementById("background-music");
-            if (audio) {
-              if (audio.paused) {
-                audio
-                  .play()
-                  .then(() => {
-                    musicImg.src = "/static/img/volume.png";
-                    sessionStorage.setItem("isPlaying", "true");
-                  })
-                  .catch((err) => {
-                    console.error("Erreur lors du lancement de la musique", err);
-                  });
-              } else {
-                audio.pause();
-                musicImg.src = "/static/img/no-volume.png";
-                sessionStorage.setItem("isPlaying", "false");
+          if (clickTimer === null) {
+            clickTimer = setTimeout(() => {
+              if (musicFrame.contentWindow) {
+                const audio = musicFrame.contentWindow.document.getElementById("background-music");
+                if (audio) {
+                  if (audio.paused) {
+                    audio
+                      .play()
+                      .then(() => {
+                        musicImg.src = "/static/img/volume.png";
+                        localStorage.setItem("isPlaying", "true");
+                      })
+                      .catch((err) => {
+                        console.error("Erreur lors du lancement de la musique", err);
+                      });
+                  } else {
+                    audio.pause();
+                    musicImg.src = "/static/img/no-volume.png";
+                    localStorage.setItem("isPlaying", "false");
+                  }
+                }
               }
+              clickTimer = null;
+            }, delay);
+          } else {
+            clearTimeout(clickTimer);
+            clickTimer = null;
+            if (
+              musicFrame.contentWindow &&
+              typeof musicFrame.contentWindow.skipTrack === "function"
+            ) {
+              musicFrame.contentWindow.skipTrack();
             }
           }
         });
