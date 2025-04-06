@@ -7,7 +7,20 @@
 
 {% block content %}
 <h1 class="text-center">Bienvenue, <span id="username">{{ username }}</span>&nbsp;!</h1>
+
 <div id="games-list" class="container mt-5 mb-5"></div>
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="card col-md-8">
+            <div class="card-header">
+                <h3>Dernière partie</h3>
+            </div>
+            <div class="card-body" id="last-game"></div>
+        </div>
+    </div>
+</div>
+
 
 <div id="stats-graph" class="container mt-5 mb-5">
     <div class="row justify-content-center">

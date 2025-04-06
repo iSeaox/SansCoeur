@@ -158,6 +158,11 @@ def register_handlers(socketio, logManager, gameManager):
     def handle_request_games_update(data):
         emit('stat_update', {"data": statisticManager.dumpData(logManager, data["type"]), "type": data["type"]})
 
+    @socketio.on('request_last_game_data')
+    @socketio_login_required
+    def handle_request_games_update():
+        emit('last_game_data_update', logManager.getLastGameData())
+
     @socketio.on('disconnect')
     def handle_disconnect():
         pass

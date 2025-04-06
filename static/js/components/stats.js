@@ -10,7 +10,6 @@ socket.emit('request_stat_update', {"type": 2});
 socket.emit('request_stat_update', {"type": 3});
 
 socket.on('stat_update', (data) => {
-    console.log(data)
     if( data.type == 0) {
         const myChart = new Chart(ctx0, data.data);
     }

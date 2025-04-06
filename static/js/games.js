@@ -63,9 +63,46 @@ function createGameCard(game) {
     return cardHTML;
 }
 const gameListDiv = document.getElementById("games-list");
+const lastGameDiv = document.getElementById("last-game");
 
 // Request initial games update
 socket.emit('request_games_update');
+socket.emit('request_last_game_data');
+
+socket.on('last_game_data_update', (data) => {
+    console.log(data)
+    lastGameDiv.innerHTML = "";
+
+    const team0Players = data.players.filter(player => player.team === 0).map(player => player.name).join(' - ');
+    const team1Players = data.players.filter(player => player.team === 1).map(player => player.name).join(' - ');
+
+    const nbRound = data.round_score.length;
+
+    const lastGameHTML = `
+        <div class="row align-items-center">
+            <div class="col-6">
+                <h5>${team0Players}</h5>
+                <h6>${data.score[0]}</h6>
+            </div>
+            <div class="col-6">
+                <h5>${team1Players}</h5>
+                <h6>${data.score[1]}</h6>
+            </div>
+        </div>
+        <div class="row align-items-center mt-3">
+            <div class="col-12">
+                <h5>Manche décisive:</h5>
+                <p>${data.round_score[nbRound - 1].score[0]} - ${data.round_score[nbRound - 1].score[1]}</p>
+                <p>(Contrat: ${data.round_score[nbRound - 1].talk.value} points, Équipe ${data.round_score[nbRound - 1].talk.team})</p>
+            </div>
+        </div>
+        <div class="row justify-content-end mt-3">
+            <p class="text-start" style="color: #505050">ID: ${data.id} - ${data.time ? data.time : "Time not available"}</p>
+        </div>
+    `;
+
+    lastGameDiv.innerHTML = lastGameHTML;
+});
 
 // Listen for updates and refresh the games list
 socket.on('update_games', (data) => {
