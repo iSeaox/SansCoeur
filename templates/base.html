@@ -34,7 +34,13 @@
       {% endif %}
     </nav>
 
-    <button id="music-btn" class="btn btn-primary">Lancer la musique</button>
+    <button id="music-btn" class="btn btn-primary">
+      <img
+        id="music-img"
+        src="{{ url_for('static', filename='img/no-volume.png') }}"
+        alt="Toggle volume"
+      />
+    </button>
 
     <div class="container">{% block content %}{% endblock %}</div>
 
@@ -81,8 +87,12 @@
 
       // Bouton pour faire toggle play/pause de la musique
       document.addEventListener("DOMContentLoaded", () => {
+        const musicImg = document.getElementById("music-img");
         const musicBtn = document.getElementById("music-btn");
         const musicFrame = document.getElementById("music-frame");
+
+        const isPlaying = sessionStorage.getItem("isPlaying") === "true";
+        musicImg.src = isPlaying ? "/static/img/volume.png" : "/static/img/no-volume.png";
 
         musicBtn.addEventListener("click", () => {
           if (musicFrame.contentWindow) {
@@ -92,14 +102,16 @@
                 audio
                   .play()
                   .then(() => {
-                    musicBtn.textContent = "Pause la musique";
+                    musicImg.src = "/static/img/volume.png";
+                    sessionStorage.setItem("isPlaying", "true");
                   })
                   .catch((err) => {
                     console.error("Erreur lors du lancement de la musique", err);
                   });
               } else {
                 audio.pause();
-                musicBtn.textContent = "Lancer la musique";
+                musicImg.src = "/static/img/no-volume.png";
+                sessionStorage.setItem("isPlaying", "false");
               }
             }
           }

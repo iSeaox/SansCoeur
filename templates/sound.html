@@ -8,7 +8,7 @@
     {% if current_user.username == "mathias" %}
     <audio
       id="background-music"
-      src="{{ url_for('static', filename='sound/background-music2.mp3') }}"
+      src="{{ url_for('static', filename='sound/background-music.mp3') }}"
       loop
     >
       Ton navigateur ne supporte pas d'éléments audio.
@@ -26,6 +26,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         const audio = document.getElementById("background-music");
         const savedTime = sessionStorage.getItem("audioTime");
+        const isPlaying = sessionStorage.getItem("isPlaying") === "true";
 
         if (savedTime) {
           const time = parseFloat(savedTime);
@@ -35,13 +36,19 @@
             } else {
               sessionStorage.removeItem("audioTime");
             }
+            if (isPlaying) {
+              audio.play().catch((err) => console.log("La lecture automatique est bloquée :", err));
+            }
           });
+        } else if (isPlaying) {
+          audio.play().catch((err) => console.log("La lecture automatique est bloquée :", err));
         }
       });
 
       window.addEventListener("beforeunload", function () {
         const audio = document.getElementById("background-music");
         sessionStorage.setItem("audioTime", audio.currentTime);
+        sessionStorage.setItem("isPlaying", (!audio.paused).toString());
       });
     </script>
   </body>
