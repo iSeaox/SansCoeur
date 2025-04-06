@@ -25,6 +25,7 @@ class Chat:
     def broadcastMessage(self, player, message):
         current_time = time.strftime("%H:%M", time.localtime())
         emit("receive_chat_message", {"message": message, "player": player.name, "time": current_time}, broadcast=True)
+        emit('launch-toast', {'message': f"{player.name} - {message}", "category": "success"}, broadcast=True)
 
     def logMessage(self, player, message):
         self.attachedLogManager.logChat({"message": message, "player": player.dump()})
