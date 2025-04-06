@@ -11,7 +11,7 @@ CLASSIC_CONVERT_TABLE = {7: 7, 8: 8, 9: 9, 11: 10, 12: 11, 13: 12, 10: 13, 14: 1
 TRUMP_POINT_TABLE   = {7: 0, 8: 0, 9: 14, 10: 10, 11: 20, 12: 3, 13: 4, 14: 11}
 CLASSIC_POINT_TABLE = {7: 0, 8: 0, 9: 0 , 10: 10, 11: 2 , 12: 3, 13: 4, 14: 11}
 
-TALBE_ACK_COOLDOWN_NS = (10 ** 9) * 2
+TALBE_ACK_COOLDOWN_NS = (10 ** 9) * 1
 
 def getBeloteValue(card, trump):
     return (TRUMP_CONVERT_TABLE if card["color"] == trump else CLASSIC_CONVERT_TABLE)[card["value"]]
