@@ -13,35 +13,32 @@ def register_handlers(socketio, logManager, gameManager):
         temp_game = gameManager.getGameByPlayerName(current_user.username)
         if temp_game != None:
             temp_game.resumePlayer(current_user.username, request.sid)
-            print(f'{current_user.username} est de retour')
-            emit('join_success', {'message': f'{current_user.username} est de retour', "redirect": url_for('dashboard')})
-            emit('launch-toast', {'message': f'Vous avez rejoint la partie !', "category": "success"})
+            print(f"{current_user.username} est de retour")
+            emit("join_success", {"message": f"{current_user.username} est de retour", "redirect": url_for("dashboard")})
+            emit("launch-toast", {"message": f"Vous avez rejoint la partie !", "category": "success"})
 
-    @socketio.on('join_game')
+    @socketio.on("join_game")
     @socketio_login_required
     def handle_join_game(data):
         name = current_user.username
-        team = data.get('team')
-
-        if not("id" in data):
-            print("Deprecated button")
-            return
-        gameId = int(data.get('id'))
-
+        team = data.get("team")
+        if "id" not in data:
+            return  # Deprecated button
+        gameId = int(data.get("id"))
         if team not in [0, 1]:
-            emit('join_error', {'message': 'Team doit être 0 ou 1'})
+            emit("join_error", {"message": "Team doit être 0 ou 1"})
             return
 
         result, message = gameManager.getGameByID(gameId).registerPlayer(name, team, request.sid)
         if result:
-            print(f'Client {name} a rejoint la Team {team}')
-            emit('join_success', {"redirect": url_for('dashboard')})
+            print(f"Client {name} a rejoint la Team {team}")
+            emit("join_success", {"redirect": url_for("dashboard")})
             gameManager.getGameByID(gameId).broadcastGameInfo()
             gameManager.updateClients()
         else:
-            emit('join_error', {'message': message})
+            emit("join_error", {"message": message})
 
-    @socketio.on('quit_game')
+    @socketio.on("quit_game")
     @socketio_login_required
     def handle_quit_game():
         name = current_user.username
@@ -49,26 +46,26 @@ def register_handlers(socketio, logManager, gameManager):
         if game:
             result, message = game.removePlayer(name)
             if result:
-                print(f'Client {name} a quitté la game')
+                print(f"Client {name} a quitté la game")
                 emit("quit_success")
                 game.broadcastGameInfo()
                 gameManager.updateClients()
 
-    @socketio.on('start_game')
+    @socketio.on("start_game")
     @socketio_login_required
     def handle_start_game(data):
         game = gameManager.getGameByPlayerName(current_user.username)
         if game:
             result, message = game.start(data["maxPoints"])
-            if not(result):
-                emit('start_game_error', {'message': message})
-                emit('launch-toast', {'message': message, "category": "danger"})
+            if not result:
+                emit("start_game_error", {"message": message})
+                emit("launch-toast", {"message": message, "category": "danger"})
                 return
-            emit('launch-toast', {'message': "Lancement de la partie", "category": "success"}, broadcast=True)
+            emit("launch-toast", {"message": "Lancement de la partie", "category": "success"}, broadcast=True)
             game.broadcastGameInfo()
             gameManager.updateClients()
 
-    @socketio.on('card_clicked')
+    @socketio.on("card_clicked")
     @socketio_login_required
     def handle_card_clicked(data):
         if "card_id" in data:
@@ -77,13 +74,13 @@ def register_handlers(socketio, logManager, gameManager):
             if game:
                 player = game.getPlayerByName(player_name)
                 if player:
-                    card_index = int(data['card_id'].split("card-")[-1])
+                    card_index = int(data["card_id"].split("card-")[-1])
                     if card_index < len(player.cards):
                         card = player.cards[card_index]
 
                         error = game.getCurrentRound().cardPlayed(player, card, card_index)
                         if error:
-                            emit('launch-toast', error)
+                            emit("launch-toast", error)
 
     @socketio.on("talk_click")
     @socketio_login_required
@@ -137,32 +134,35 @@ def register_handlers(socketio, logManager, gameManager):
                 if currentRound:
                     currentRound.computeTableAck(player)
 
-    @socketio.on('request_games_update')
+    @socketio.on("request_games_update")
     @socketio_login_required
     def handle_request_games_update():
         games = gameManager.getGames()
-        emit('update_games', {'games': games})
+        emit("update_games", {"games": games})
 
-    @socketio.on('chat_message')
+    @socketio.on("chat_message")
     @socketio_login_required
-    def handle_request_games_update(data):
+    def handle_chat_message(data):
         player_name = current_user.username
         game = gameManager.getGameByPlayerName(player_name)
         if game:
             player = game.getPlayerByName(player_name)
             if player:
-                game.chat.registerChat(player, data)
+                if "gif_url" in data:
+                    game.chat.registerGif(player, data["gif_url"])
+                else:
+                    game.chat.registerChat(player, data)
 
-    @socketio.on('request_stat_update')
+    @socketio.on("request_stat_update")
     @socketio_login_required
     def handle_request_games_update(data):
-        emit('stat_update', {"data": statisticManager.dumpData(logManager, data["type"]), "type": data["type"]})
+        emit("stat_update", {"data": statisticManager.dumpData(logManager, data["type"]), "type": data["type"]})
 
-    @socketio.on('request_last_game_data')
+    @socketio.on("request_last_game_data")
     @socketio_login_required
-    def handle_request_games_update():
-        emit('last_game_data_update', logManager.getLastGameData())
+    def handle_request_last_game_data():
+        emit("last_game_data_update", logManager.getLastGameData())
 
-    @socketio.on('disconnect')
+    @socketio.on("disconnect")
     def handle_disconnect():
         pass
