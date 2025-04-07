@@ -1,4 +1,5 @@
 function createMessageBadge(data) {
+  console.log(data);
   const chatContainer = document.getElementById("chat-messages");
   const playerNameH = document.getElementById("username");
   let username = "undefined";
@@ -7,7 +8,7 @@ function createMessageBadge(data) {
   }
 
   const badgeContainer = document.createElement("div");
-    badgeContainer.className = `text-${(player == username ? "end" : "start")} mb-2`;
+    badgeContainer.className = `text-${(data.player == username ? "end" : "start")} mb-2`;
 
   const badgeLabel = document.createElement("div");
   badgeLabel.className = "chat-username text-muted";
