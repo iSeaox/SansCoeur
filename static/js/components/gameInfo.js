@@ -75,7 +75,7 @@ socket.on('game_info', (data) => {
     ${readyText}
     <ul>
       ${data.players
-        .map((player) => `<li>${player.name} (Team ${player.team ?? 'Non définie'})</li>`)
+        .map((player) => `<li>${player.name} <span class="${player.team === 1 ? 'bg-team-1' : 'bg-team-0'}">Team ${player.team ?? 'Non définie'}</span></span></li>`)
         .join('')}
     </ul>
     ${scoreText}

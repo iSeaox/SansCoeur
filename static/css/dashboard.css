@@ -46,3 +46,15 @@ h1 {
     font-size: 2.7rem;
   }
 }
+
+.bg-team-0 {
+  background-color: #0a9396; /* Orange clair */
+  border-radius: 5px;
+  padding: 0 5px 0 5px;
+}
+
+.bg-team-1 {
+  background-color: #e76f51; /* Orange clair */
+  border-radius: 5px;
+  padding: 0 5px 0 5px;
+}

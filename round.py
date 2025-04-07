@@ -74,6 +74,41 @@ class Round:
                     "value": lTalk['value'],
                     "player": lTalk['player'].name
                 })
+
+        higherTalkTeam0 = {}
+        higherTalkTeam1 = {}
+
+        temp_talks = self.lastTalk.copy()
+        if(self.talk != {}):
+            temp_talks.append(self.talk)
+        print(temp_talks)
+        for t in temp_talks:
+            if t['player'].team == 0:
+                if higherTalkTeam0 == {}:
+                    higherTalkTeam0 = t
+                elif t['value'] > higherTalkTeam0['value']:
+                    higherTalkTeam0 = t
+
+            elif t["player"].team == 1:
+                if higherTalkTeam1 == {}:
+                    higherTalkTeam1 = t
+                elif t['value'] > higherTalkTeam1['value']:
+                    higherTalkTeam1 = t
+
+        if higherTalkTeam0 != {}:
+            out["higher_talk_0"] = {
+                    "color": higherTalkTeam0['color'],
+                    "value": higherTalkTeam0['value'],
+                    "player": higherTalkTeam0['player'].name
+                }
+
+        if higherTalkTeam1 != {}:
+            out["higher_talk_1"] = {
+                    "color": higherTalkTeam1['color'],
+                    "value": higherTalkTeam1['value'],
+                    "player": higherTalkTeam1['player'].name
+                }
+
         if self.contrer:
             out.update({
                 "contrer": {

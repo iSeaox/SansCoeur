@@ -26,6 +26,26 @@ socket.on('round_info', (data) => {
             talkInfoDiv.className = talkInfoDiv.className.replace(/\bd-none\b/g, 'd-flex');
         }
         cardTableDiv.innerHTML = '';
+
+        document.querySelectorAll('#colorSelect .color-option').forEach(option => {
+            option.style.backgroundColor = '';
+            option.style.color = '';
+        });
+
+        if ("higher_talk_0" in data) {
+            const selectedOption = document.querySelector(`#colorSelect .color-option[value="${data.higher_talk_0.color}"]`);
+            if (selectedOption) {
+                selectedOption.style.backgroundColor = '#0a9396';
+                selectedOption.style.color = 'white';
+            }
+        }
+        if ("higher_talk_1" in data) {
+            const selectedOption = document.querySelector(`#colorSelect .color-option[value="${data.higher_talk_1.color}"]`);
+            if (selectedOption) {
+                selectedOption.style.backgroundColor = '#e76f51';
+                selectedOption.style.color = 'white';
+            }
+        }
     }
     else if(roundState == ROUND_STATE_PLAYING) {
         roundInfoDiv.innerHTML = `
