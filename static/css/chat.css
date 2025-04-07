@@ -9,3 +9,7 @@
     word-break: normal;
     color: #000;
 }
+
+#chat-messages {
+  scroll-behavior: smooth;
+}

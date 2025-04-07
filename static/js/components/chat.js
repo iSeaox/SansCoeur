@@ -8,11 +8,11 @@ function createMessageBadge(data) {
   }
 
   const badgeContainer = document.createElement("div");
-    badgeContainer.className = `text-${(data.player == username ? "end" : "start")} mb-2`;
+  badgeContainer.className = `text-${(data.player == username ? "end" : "start")} mb-2`;
 
   const badgeLabel = document.createElement("div");
   badgeLabel.className = "chat-username text-muted";
-  badgeLabel.textContent = data.player + " - " + data.time;
+  badgeLabel.textContent = data.player;
   badgeContainer.appendChild(badgeLabel);
 
   // Si le message contient une URL de GIF on affiche une iframe :)
@@ -28,7 +28,7 @@ function createMessageBadge(data) {
     } else {
       const gifImage = document.createElement("img");
       gifImage.src = data.gif_url;
-      gifImage.alt = "GIF envoyé par " + data.player;
+      gifImage.alt = "GIF qui marche pas";
       gifImage.style.maxWidth = "200px";
       badgeContainer.appendChild(gifImage);
     }
@@ -46,11 +46,33 @@ document.getElementById("chat-form").addEventListener("submit", function (event)
   const messageInput = document.getElementById("message-input");
   let message = messageInput.value;
   if (message.trim() !== "") {
-    if (message.includes("tenor.com/view/")) {
-      // "https://tenor.com/view/nom-du-gif-xxxxxxx"
+    let embedUrl = "";
+
+    if (message.includes("tenor.com/view/") || message.includes("tenor.com/fr/view/")) {
+      // Ex: "https://tenor.com/[fr/]view/nom-du-gif-xxxxxxx"
       const parts = message.split("-");
       const id = parts[parts.length - 1];
-      const embedUrl = "https://tenor.com/embed/" + id;
+      embedUrl = "https://tenor.com/embed/" + id;
+    } else if (message.includes("giphy.com")) {
+      let id = "";
+      try {
+        // Essayer "media4.giphy.com"
+        const urlObj = new URL(message);
+        const segments = urlObj.pathname.split("/").filter((seg) => seg !== "");
+        if (segments[0] === "media" && segments.length >= 3) {
+          id = segments[2];
+        } else {
+          const parts = message.split("-");
+          id = parts[parts.length - 1];
+        }
+      } catch (e) {
+        const parts = message.split("-");
+        id = parts[parts.length - 1];
+      }
+      embedUrl = "https://giphy.com/embed/" + id;
+    }
+
+    if (embedUrl) {
       socket.emit("chat_message", { gif_url: embedUrl });
     } else {
       socket.emit("chat_message", { message: message });
@@ -61,24 +83,20 @@ document.getElementById("chat-form").addEventListener("submit", function (event)
 
 socket.on("receive_chat_message", (data) => {
   const chatDiv = document.getElementById("chat-messages");
-  const numberOfMessage = Array.from(chatDiv.childNodes).filter(
-    (node) => node.nodeType === Node.ELEMENT_NODE && node.tagName === "DIV"
-  ).length;
-  const maxMessage = 6;
-  if (numberOfMessage >= maxMessage) {
+  const maxMessage = 16;
+  if (chatDiv.childNodes.length >= maxMessage) {
     chatDiv.removeChild(chatDiv.firstElementChild);
   }
   chatDiv.appendChild(createMessageBadge(data));
+  chatDiv.scrollTop = chatDiv.scrollHeight;
 });
 
 socket.on("receive_chat_gif", (data) => {
   const chatDiv = document.getElementById("chat-messages");
-  const numberOfMessage = Array.from(chatDiv.childNodes).filter(
-    (node) => node.nodeType === Node.ELEMENT_NODE && node.tagName === "DIV"
-  ).length;
-  const maxMessage = 6;
-  if (numberOfMessage >= maxMessage) {
+  const maxMessage = 16;
+  if (chatDiv.childNodes.length >= maxMessage) {
     chatDiv.removeChild(chatDiv.firstElementChild);
   }
   chatDiv.appendChild(createMessageBadge(data));
+  chatDiv.scrollTop = chatDiv.scrollHeight;
 });
