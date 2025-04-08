@@ -168,7 +168,7 @@ class Game:
         # DEBUG
         if current_app.config["DEBUG_MODE_FAKE_ROUNDS"]:
             for i in range(0, 8):
-                sTeam0 = random.randint(0, 162)
+                sTeam0 = random.randint(0, 160)
                 self.roundScore.append({
                     "score": [sTeam0, 162 - sTeam0],
                     "talk": {
