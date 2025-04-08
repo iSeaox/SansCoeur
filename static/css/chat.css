@@ -1,15 +1,18 @@
 .msg-other {
-    background-color: #a5f48d;
-    word-break: normal;
-    color: #000;
+  background-color: #a5f48d;
+  word-break: normal;
+  color: #000;
 }
 
 .msg-perso {
-    background-color: #8df4b5;
-    word-break: normal;
-    color: #000;
+  background-color: #8df4b5;
+  word-break: normal;
+  color: #000;
 }
 
 #chat-messages {
+  height: 300px;
+  overflow-y: auto;
   scroll-behavior: smooth;
+  padding: 10px;
 }
