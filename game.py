@@ -4,7 +4,7 @@ import roundManager
 import random
 
 from flask_socketio import emit
-from flask import url_for
+from flask import url_for, current_app
 import uuid
 import chat
 
@@ -164,10 +164,21 @@ class Game:
 
         self._status = GAME_STATUS_PLAYING
 
+        # _____________________________________________________
+        # DEBUG
+        if current_app.config["DEBUG_MODE_FAKE_ROUNDS"]:
+            for i in range(0, 8):
+                sTeam0 = random.randint(0, 162)
+                self.roundScore.append({
+                    "score": [sTeam0, 162 - sTeam0],
+                    "talk": {
+                        "value": random.randint(80, 162),
+                        "team": random.randint(0, 1)
+                    }
+                })
+        # _____________________________________________________
         self.startNewRound()
         return (True, "Starting game")
-
-        # _____________________________________________________
 
     def end(self):
         self._status = GAME_STATUS_END
