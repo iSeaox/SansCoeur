@@ -12,10 +12,13 @@ def register_handlers(socketio, logManager, gameManager):
         # Check if player is register in a game
         temp_game = gameManager.getGameByPlayerName(current_user.username)
         if temp_game != None:
-            temp_game.resumePlayer(current_user.username, request.sid)
-            print(f"{current_user.username} est de retour")
-            emit("join_success", {"message": f"{current_user.username} est de retour", "redirect": url_for("dashboard")})
-            emit("launch-toast", {"message": f"Vous avez rejoint la partie !", "category": "success"})
+            if temp_game.resumePlayer(current_user.username, request.sid):
+                print(f"{current_user.username} est de retour")
+                emit("join_success", {"message": f"{current_user.username} est de retour", "redirect": url_for("dashboard")})
+                emit("launch-toast", {"message": f"Vous avez rejoint la partie !", "category": "success"})
+        else:
+            print(f"{current_user.username} regarde la partie")
+            emit("launch-toast", {"message": f"{current_user.username} regarde la partie", "category": "success"}, broadcast=True)
 
     @socketio.on("join_game")
     @socketio_login_required
