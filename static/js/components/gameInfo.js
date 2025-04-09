@@ -65,12 +65,32 @@ socket.on("game_info", (data) => {
     data.round_score.forEach((item) => {
       const scoreElement = document.createElement("div");
       scoreElement.classList.add("score");
-      scoreElement.innerHTML = `<span>${item.score[0]}</span> - <span>${item.score[1]}</span>`;
+
+      // Please review ça
+      if (item.talk) {
+        const scoreTeam0 = item.score[0];
+        const scoreTeam1 = item.score[1];
+        const talkValue = item.talk.value;
+        const team = item.talk.team;
+        let scoreTeam0Color = "";
+        let scoreTeam1Color = "";
+        if (team == 0) {
+          scoreTeam0Color = (scoreTeam0 < talkValue && scoreTeam0 > 80) ? "loose" : "win";
+        } else {
+          scoreTeam1Color = (scoreTeam1 < talkValue && scoreTeam1 > 80) ? "loose" : "win";
+        }
+        scoreElement.innerHTML = `
+          <span class="${scoreTeam0Color}">${scoreTeam0}</span> -
+          <span class="${scoreTeam1Color}">${scoreTeam1}</span>
+        `;
+      } else {
+        scoreElement.innerHTML = `<span>${item.score[0]}</span> - <span>${item.score[1]}</span>`;
+      }
       scoreTableDiv.appendChild(scoreElement);
     });
   }
 
-  // Affichage de la dernière partie s'il y en a
+  // Affichage de la dernière partie
   lastGameInfoDiv.innerHTML = "";
   if (data.status === GAME_STATUS_WAITING && "last_game_data" in data) {
     const players = data.last_game_data.players;
