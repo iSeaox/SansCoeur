@@ -66,7 +66,7 @@ socket.on("game_info", (data) => {
       const scoreElement = document.createElement("div");
       scoreElement.classList.add("score");
 
-      // Please review ça
+      // ----------------------------------------------------------------------------------------------------------------------------- Please review ça 
       if (item.talk) {
         const scoreTeam0 = item.score[0];
         const scoreTeam1 = item.score[1];
@@ -75,9 +75,10 @@ socket.on("game_info", (data) => {
         let scoreTeam0Color = "";
         let scoreTeam1Color = "";
         if (team == 0) {
-          scoreTeam0Color = (scoreTeam0 < talkValue && scoreTeam0 > 80) ? "loose" : "win";
-        } else {
-          scoreTeam1Color = (scoreTeam1 < talkValue && scoreTeam1 > 80) ? "loose" : "win";
+          scoreTeam0Color = (scoreTeam0 < 81 || scoreTeam0 < talkValue) ? 'loose' : 'win';
+        }
+        else {
+          scoreTeam1Color = (scoreTeam1 < 81 || scoreTeam1 < talkValue) ? 'loose' : 'win';
         }
         scoreElement.innerHTML = `
           <span class="${scoreTeam0Color}">${scoreTeam0}</span> -
@@ -86,6 +87,7 @@ socket.on("game_info", (data) => {
       } else {
         scoreElement.innerHTML = `<span>${item.score[0]}</span> - <span>${item.score[1]}</span>`;
       }
+      // ----------------------------------------------------------------------------------------------------------------------------- Please review ça 
       scoreTableDiv.appendChild(scoreElement);
     });
   }

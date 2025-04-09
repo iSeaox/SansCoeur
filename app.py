@@ -7,12 +7,11 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 # To manage import to top-level
 sys.path.append(str(Path(__file__).parent))
 
-import gameManager
-import logManager
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_socketio import SocketIO
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+
 
 # ################################################
 # Flask Setup
@@ -21,6 +20,11 @@ app.config.from_pyfile('config.py')
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 socketio = SocketIO(app, cors_allowed_origins="*")
+# ################################################
+# Setup
+
+import gameManager
+import logManager
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -62,6 +66,7 @@ currentGameManager.registerNewGame()
 # ################################################
 # Socket Handlers
 from socket_handlers import init_socket_handlers
+import argparse
 init_socket_handlers(socketio, currentlogManager, currentGameManager)
 
 # ################################################
@@ -119,9 +124,47 @@ def dashboard():
 # Main
 
 if __name__ == "__main__":
-    # ! DEBUG : Connexion auto des joueurs
-    # currentGameManager.getGame().registerPlayer("magathe", 0, None)
-    # currentGameManager.getGame().registerPlayer("helios", 1, None)
-    # currentGameManager.getGame().registerPlayer("mathias", 0, None)
+    # Command-line argument parsing
+    parser = argparse.ArgumentParser(description="SansCoeur Game Server")
+    parser.add_argument("--players", "-p", action="store_true", help="Enable auto player connection")
+    parser.add_argument("--talk-pass", "-t", action="store_true", help="Pass talk phase")
+    parser.add_argument("--fake-rounds", "-r", action="store_true", help="Register fake rounds")
+    parser.add_argument("--cards", "-c", action="store_true", help="Place cards on table")
+    parser.add_argument("--end-game", "-e", action="store_true", help="End game at start (quite weird isn't it ?)")
+    args = parser.parse_args()
+
+    if args.players:
+        app.config["DEBUG_MODE"] = 1
+        app.config["DEBUG_MODE_PLAYERS"] = 1
+
+    if args.talk_pass:
+        app.config["DEBUG_MODE"] = 1
+        app.config["DEBUG_MODE_TALKS"] = 1
+        app.config["DEBUG_MODE_PLAYERS"] = 1
+
+    if args.cards:
+        app.config["DEBUG_MODE"] = 1
+        app.config["DEBUG_MODE_TABLE_CARDS"] = 1
+        app.config["DEBUG_MODE_TALKS"] = 1
+        app.config["DEBUG_MODE_PLAYERS"] = 1
+
+    if args.end_game:
+        app.config["DEBUG_MODE"] = 1
+        app.config["DEBUG_MODE_END_GAME"] = 1
+        app.config["DEBUG_MODE_TALKS"] = 1
+        app.config["DEBUG_MODE_PLAYERS"] = 1
+
+    if args.fake_rounds:
+        app.config["DEBUG_MODE"] = 1
+        app.config["DEBUG_MODE_PLAYERS"] = 1
+        app.config["DEBUG_MODE_FAKE_ROUNDS"] = 1
+
+    if app.config["DEBUG_MODE_PLAYERS"]:
+        currentGameManager.getGame().registerPlayer("magathe", 0, None)
+        currentGameManager.getGame().registerPlayer("helios", 1, None)
+        currentGameManager.getGame().registerPlayer("mathias", 0, None)
+
+    if app.config["DEBUG_MODE"]:
+        print("[INFO] GAME STARTED IN DEBUG MODE")
 
     socketio.run(app, debug=True, host="0.0.0.0", port=25565)
