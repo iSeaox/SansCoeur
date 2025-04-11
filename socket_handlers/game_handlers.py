@@ -9,11 +9,10 @@ def register_handlers(socketio, logManager, gameManager, sidManager):
     @socketio.on("connect")
     @socketio_login_required
     def handle_connect():
-        # Check if player is register in a game
-
         sidManager.addMapping(request.sid, current_user.username)
         print(f"{current_user.username} est connecté avec le SID {request.sid}")
 
+        # Check if player is register in a game
         temp_game = gameManager.getGameByPlayerName(current_user.username)
         if temp_game != None:
             if temp_game.resumePlayer(current_user.username, request.sid):

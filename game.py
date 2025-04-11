@@ -45,6 +45,7 @@ class Game:
 
     def broadcastToPlayerOnPage(self, event, data):
         for player in self.playersOnPage:
+            print("player: ", player)
             emit(event, data, room=self.gameManager.sidManager.getSID(player))
 
     def registerPlayerOnPage(self, name):

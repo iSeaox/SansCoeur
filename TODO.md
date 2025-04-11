@@ -17,4 +17,4 @@ Ce document recense les tâches et améliorations à apporter au projet SansCoeu
 - Améliorer l'affichage des scores à la fin de la partie
 - Implémenter un système de statistiques plus complet pour les joueurs
 - Ajouter la recherche de GIF
-- Gérer proprement la parralélisation des games
+- Créer un request_game_info_update

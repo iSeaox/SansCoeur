@@ -121,7 +121,6 @@ def sound():
 @login_required
 def dashboard():
     game_id = request.args.get('id')
-    print()
     if not game_id or not currentGameManager.getGameByID(int(game_id)):
         return render_template("errors/game_not_found.html",
                               message="Partie introuvable",
@@ -131,7 +130,12 @@ def dashboard():
 
     player = game.getPlayerByName(current_user.username)
     if not player:
-        game.broadcastToPlayerOnPage("launch-toast", {"message": f"{current_user.username} regarde la partie", "category": "success"})
+        # Don't call broadcastToPlayerOnPage directly
+        # Instead, schedule a background task or use socketio directly
+        socketio.emit("launch-toast",
+                     {"message": f"{current_user.username} regarde la partie",
+                      "category": "success"},
+                     to=[game.gameManager.sidManager.getSID(p) for p in game.playersOnPage if p != current_user.username])
 
     return render_template("dashboard.html", username=current_user.username)
 

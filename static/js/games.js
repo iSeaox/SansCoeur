@@ -36,6 +36,11 @@ function createGameCard(game) {
                         <h6>Équipe 1: ${team1Players.map(player => player.name).join(' - ')} ${team1Players.length < 2 ? `<button class="btn btn-primary ms-2" id="join-game-${gameId}-1">Rejoindre</button>` : ''}</h6>
                     </div>
                 </div>
+                <div class="row mt-3 justify-content-center">
+                    <div class="col-4 text-center">
+                        <a href="/dashboard?id=${gameId}" class="btn btn-secondary">Observer</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -85,7 +85,6 @@ class Round:
         temp_talks = self.lastTalk.copy()
         if(self.talk != {}):
             temp_talks.append(self.talk)
-        print(temp_talks)
         for t in temp_talks:
             if t['player'].team == 0:
                 if higherTalkTeam0 == {}:
