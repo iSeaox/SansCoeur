@@ -339,7 +339,6 @@ class Round:
                         return not(player.hasColor(self.askedColor) or player.hasColor(currentTrump))
 
     def computeTableAck(self, player):
-        # TESTME : Empecher les cartes de partir toutes seules, ptetre fixer la taille de la div
         if self.needTableAck:
             if player == self.nextTurn:
                 self.needTableAck = 0
@@ -347,7 +346,6 @@ class Round:
                 self.cardOnTable = []
 
                 if len(self.heapTeam[0]) + len(self.heapTeam[1]) >= 8:
-                    # TESTME : Ajouter le compte de la belote
                     score = [0, 0]
                     for t in (0, 1):
                         if self.winningTeam == t:

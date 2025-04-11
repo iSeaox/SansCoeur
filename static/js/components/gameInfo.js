@@ -66,7 +66,6 @@ socket.on("game_info", (data) => {
       const scoreElement = document.createElement("div");
       scoreElement.classList.add("score");
 
-      // ----------------------------------------------------------------------------------------------------------------------------- Please review ça 
       if (item.talk) {
         const scoreTeam0 = item.score[0];
         const scoreTeam1 = item.score[1];
@@ -87,7 +86,6 @@ socket.on("game_info", (data) => {
       } else {
         scoreElement.innerHTML = `<span>${item.score[0]}</span> - <span>${item.score[1]}</span>`;
       }
-      // ----------------------------------------------------------------------------------------------------------------------------- Please review ça 
       scoreTableDiv.appendChild(scoreElement);
     });
   }
