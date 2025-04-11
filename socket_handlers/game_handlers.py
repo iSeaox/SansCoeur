@@ -4,21 +4,23 @@ from auth import socketio_login_required
 from flask_login import current_user
 import statisticManager
 
-def register_handlers(socketio, logManager, gameManager):
+def register_handlers(socketio, logManager, gameManager, sidManager):
 
     @socketio.on("connect")
     @socketio_login_required
     def handle_connect():
         # Check if player is register in a game
+
+        sidManager.addMapping(request.sid, current_user.username)
+        print(f"{current_user.username} est connecté avec le SID {request.sid}")
+
         temp_game = gameManager.getGameByPlayerName(current_user.username)
         if temp_game != None:
             if temp_game.resumePlayer(current_user.username, request.sid):
                 print(f"{current_user.username} est de retour")
-                emit("join_success", {"message": f"{current_user.username} est de retour", "redirect": url_for("dashboard")})
+                temp_game.broadcastToPlayerOnPage("launch-toast", {"message": f"{current_user.username} est de retour", "category": "success"})
+                emit("join_success", {"message": "Redirection vers la page de jeu", "redirect": url_for("dashboard", id=temp_game.id)})
                 emit("launch-toast", {"message": f"Vous avez rejoint la partie !", "category": "success"})
-        else:
-            print(f"{current_user.username} regarde la partie")
-            emit("launch-toast", {"message": f"{current_user.username} regarde la partie", "category": "success"}, broadcast=True)
 
     @socketio.on("join_game")
     @socketio_login_required
@@ -35,7 +37,7 @@ def register_handlers(socketio, logManager, gameManager):
         result, message = gameManager.getGameByID(gameId).registerPlayer(name, team, request.sid)
         if result:
             print(f"Client {name} a rejoint la Team {team}")
-            emit("join_success", {"redirect": url_for("dashboard")})
+            emit("join_success", {"redirect": url_for("dashboard", id=gameId)})
             gameManager.getGameByID(gameId).broadcastGameInfo()
             gameManager.updateClients()
         else:
@@ -64,7 +66,7 @@ def register_handlers(socketio, logManager, gameManager):
                 emit("start_game_error", {"message": message})
                 emit("launch-toast", {"message": message, "category": "danger"})
                 return
-            emit("launch-toast", {"message": "Lancement de la partie", "category": "success"}, broadcast=True)
+            game.broadcastToPlayerOnPage("launch-toast", {"message": "Lancement de la partie", "category": "success"})
             game.broadcastGameInfo()
             gameManager.updateClients()
 
@@ -167,5 +169,6 @@ def register_handlers(socketio, logManager, gameManager):
         emit("last_game_data_update", logManager.getLastGameData())
 
     @socketio.on("disconnect")
+    @socketio_login_required
     def handle_disconnect():
-        pass
+        sidManager.removeMapping(request.sid)

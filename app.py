@@ -25,6 +25,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 import gameManager
 import logManager
+import SIDManager
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -59,15 +60,16 @@ users = {
 # ################################################
 # Global Variables
 
+currentSIDManager = SIDManager.SIDManager()
 currentlogManager = logManager.LogManager("./logs", "logs.json", "chat.log")
-currentGameManager = gameManager.GameManager(currentlogManager)
+currentGameManager = gameManager.GameManager(currentlogManager, currentSIDManager)
 currentGameManager.registerNewGame()
 
 # ################################################
 # Socket Handlers
 from socket_handlers import init_socket_handlers
 import argparse
-init_socket_handlers(socketio, currentlogManager, currentGameManager)
+init_socket_handlers(socketio, currentlogManager, currentGameManager, currentSIDManager)
 
 # ################################################
 # App routine
@@ -118,6 +120,19 @@ def sound():
 @app.route("/dashboard")
 @login_required
 def dashboard():
+    game_id = request.args.get('id')
+    print()
+    if not game_id or not currentGameManager.getGameByID(int(game_id)):
+        return render_template("errors/game_not_found.html",
+                              message="Partie introuvable",
+                              username=current_user.username)
+    game = currentGameManager.getGameByID(int(game_id))
+    game.registerPlayerOnPage(current_user.username)
+
+    player = game.getPlayerByName(current_user.username)
+    if not player:
+        game.broadcastToPlayerOnPage("launch-toast", {"message": f"{current_user.username} regarde la partie", "category": "success"})
+
     return render_template("dashboard.html", username=current_user.username)
 
 # ################################################

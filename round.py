@@ -54,6 +54,9 @@ class Round:
 
         self.heapTeam = [[], []]
 
+    def _emitBroadcast(self, event, data):
+        self.attachedGameManger.getGameByID(self.attachedGameID).broadcastToPlayerOnPage(event, data)
+
     def dumpRoundInfo(self):
         out = {
             "state": self.state,
@@ -143,7 +146,7 @@ class Round:
         return out
 
     def sendRoundInfo(self):
-        emit('round_info', self.dumpRoundInfo(), broadcast=True)
+        self._emitBroadcast('round_info', self.dumpRoundInfo())
 
     def cardsDistrib(self):
         # TODO: Pensez à couper le jeu

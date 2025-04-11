@@ -1,0 +1,38 @@
+.card {
+    background-color: rgba(20, 20, 20, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-body {
+    color: #fff;
+}
+
+.card-body h2 {
+    font-size: 2.2rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+}
+
+.card-body .text-muted {
+    color: #d0d0d0 !important;
+}
+
+.error-btn {
+    background-color: #5a8f2b;
+    border-color: #5a8f2b;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.error-btn:hover {
+    background-color: #446a20;
+    border-color: #446a20;
+    transform: scale(1.05);
+}
+
+.card-header.bg-danger {
+    background-color: #d62828 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}

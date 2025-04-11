@@ -41,6 +41,18 @@ class Game:
         self.roundScore = []
         self.id = int(str(uuid.uuid4().int)[:8])
         self.chat = chat.Chat(self.gameManager, self.logManager, self.id)
+        self.playersOnPage = []
+
+    def broadcastToPlayerOnPage(self, event, data):
+        for player in self.playersOnPage:
+            emit(event, data, room=self.gameManager.sidManager.getSID(player))
+
+    def registerPlayerOnPage(self, name):
+        if name not in self.playersOnPage:
+            self.playersOnPage.append(name)
+            print(f"{name} registered on page")
+            return True
+        return False
 
     def setupDeck(self):
         # TODO : gérer la distribution des cartes mieux que ça
@@ -89,6 +101,8 @@ class Game:
                 self.getCurrentRound().sendRoundInfo()
                 self.chat.resumeChat(player)
                 player.sendDeck()
+            return True
+        return False
 
     def getTeam(self, team):
         out = []
@@ -131,7 +145,7 @@ class Game:
         return out
 
     def broadcastGameInfo(self):
-        emit('game_info', self.dumpGameInfo(), broadcast=True)
+        self.broadcastToPlayerOnPage('game_info', self.dumpGameInfo())
 
     def startNewRound(self):
         self.setupDeck()
@@ -182,8 +196,8 @@ class Game:
 
     def end(self):
         self._status = GAME_STATUS_END
-        emit('launch-toast', {'message': "La partie est terminée", "category": "success"}, broadcast=True)
-        emit('end_game', {"redirect": url_for('index')}, broadcast=True)
+        self.broadcastToPlayerOnPage('launch-toast', {'message': "La partie est terminée", "category": "success"})
+        self.broadcastToPlayerOnPage('end_game', {"redirect": url_for('index')})
         self.broadcastGameInfo()
         self.logManager.logGame(self)
         self.gameManager.overrideGame(self)

@@ -6,7 +6,8 @@ import warnings
 warnings.simplefilter("always", DeprecationWarning)
 
 class GameManager:
-    def __init__(self, logManager):
+    def __init__(self, logManager, sidManager):
+        self.sidManager = sidManager
         self.logManager = logManager
         self.games = []
 
