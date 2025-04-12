@@ -4,22 +4,33 @@ from auth import socketio_login_required
 from flask_login import current_user
 import statisticManager
 
-def register_handlers(socketio, logManager, gameManager, sidManager):
+def register_handlers(socketio, logManager, gameManager):
 
     @socketio.on("connect")
     @socketio_login_required
     def handle_connect():
-        sidManager.addMapping(request.sid, current_user.username)
         print(f"{current_user.username} est connecté avec le SID {request.sid}")
 
         # Check if player is register in a game
         temp_game = gameManager.getGameByPlayerName(current_user.username)
         if temp_game != None:
             if temp_game.resumePlayer(current_user.username, request.sid):
-                print(f"{current_user.username} est de retour")
-                temp_game.broadcastToPlayerOnPage("launch-toast", {"message": f"{current_user.username} est de retour", "category": "success"})
                 emit("join_success", {"message": "Redirection vers la page de jeu", "redirect": url_for("dashboard", id=temp_game.id)})
-                emit("launch-toast", {"message": f"Vous avez rejoint la partie !", "category": "success"})
+
+    @socketio.on("connect_game")
+    @socketio_login_required
+    def handle_connect_game(data):
+        player_name = current_user.username
+        if "id" in data:
+            gameId = int(data["id"])
+            gameManager.roomManager.add_player_to_room(f"game-{gameId}", player_name, request.sid)
+            gameManager.getGameByID(gameId).broadcastGameInfo()
+
+        # Verify if the player belongs to the game
+        game = gameManager.getGameByID(gameId)
+        if game and game.getPlayerByName(player_name):
+            r_manager = gameManager.roomManager
+            r_manager.broadcast_to_room(f"game-{game.id}", "launch-toast", {"message": f"{current_user.username} est de retour", "category": "success"})
 
     @socketio.on("join_game")
     @socketio_login_required
@@ -65,7 +76,8 @@ def register_handlers(socketio, logManager, gameManager, sidManager):
                 emit("start_game_error", {"message": message})
                 emit("launch-toast", {"message": message, "category": "danger"})
                 return
-            game.broadcastToPlayerOnPage("launch-toast", {"message": "Lancement de la partie", "category": "success"})
+            r_manager = gameManager.roomManager
+            r_manager.broadcast_to_room(f"game-{game.id}", "launch-toast",{"message": "Lancement de la partie", "category": "success"})
             game.broadcastGameInfo()
             gameManager.updateClients()
 
@@ -170,4 +182,5 @@ def register_handlers(socketio, logManager, gameManager, sidManager):
     @socketio.on("disconnect")
     @socketio_login_required
     def handle_disconnect():
-        sidManager.removeMapping(request.sid)
+        # sidManager.removeMapping(request.sid)
+        pass

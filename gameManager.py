@@ -6,9 +6,9 @@ import warnings
 warnings.simplefilter("always", DeprecationWarning)
 
 class GameManager:
-    def __init__(self, logManager, sidManager):
-        self.sidManager = sidManager
+    def __init__(self, logManager, roomManager):
         self.logManager = logManager
+        self.roomManager = roomManager
         self.games = []
 
     def overrideGame(self, game):

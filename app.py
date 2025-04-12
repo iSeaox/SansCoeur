@@ -25,7 +25,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 import gameManager
 import logManager
-import SIDManager
+import roomManager
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -60,16 +60,16 @@ users = {
 # ################################################
 # Global Variables
 
-currentSIDManager = SIDManager.SIDManager()
 currentlogManager = logManager.LogManager("./logs", "logs.json", "chat.log")
-currentGameManager = gameManager.GameManager(currentlogManager, currentSIDManager)
+currentRoomManager = roomManager.RoomManager(socketio)
+currentGameManager = gameManager.GameManager(currentlogManager, currentRoomManager)
 currentGameManager.registerNewGame()
 
 # ################################################
 # Socket Handlers
 from socket_handlers import init_socket_handlers
 import argparse
-init_socket_handlers(socketio, currentlogManager, currentGameManager, currentSIDManager)
+init_socket_handlers(socketio, currentlogManager, currentGameManager)
 
 # ################################################
 # App routine
@@ -130,12 +130,10 @@ def dashboard():
 
     player = game.getPlayerByName(current_user.username)
     if not player:
-        # Don't call broadcastToPlayerOnPage directly
-        # Instead, schedule a background task or use socketio directly
         socketio.emit("launch-toast",
                      {"message": f"{current_user.username} regarde la partie",
                       "category": "success"},
-                     to=[game.gameManager.sidManager.getSID(p) for p in game.playersOnPage if p != current_user.username])
+                     room=f"game-{game.id}")
 
     return render_template("dashboard.html", username=current_user.username)
 

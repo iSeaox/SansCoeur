@@ -10,7 +10,9 @@ class Chat:
         self.cachedMessage = []
 
     def _emitBroadcast(self, event, data):
-        self.attachedGameManager.getGameByID(self.attachedGameID).broadcastToPlayerOnPage(event, data)
+        self.attachedGameManager.roomManager.broadcast_to_room(
+            f"game-{self.attachedGameID}", event, data, skip_sid=None
+        )
 
     def registerChat(self, player, message):
         self.logMessage(player, message["message"])

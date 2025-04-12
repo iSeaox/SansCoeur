@@ -43,11 +43,6 @@ class Game:
         self.chat = chat.Chat(self.gameManager, self.logManager, self.id)
         self.playersOnPage = []
 
-    def broadcastToPlayerOnPage(self, event, data):
-        for player in self.playersOnPage:
-            print("player: ", player)
-            emit(event, data, room=self.gameManager.sidManager.getSID(player))
-
     def registerPlayerOnPage(self, name):
         if name not in self.playersOnPage:
             self.playersOnPage.append(name)
@@ -146,7 +141,9 @@ class Game:
         return out
 
     def broadcastGameInfo(self):
-        self.broadcastToPlayerOnPage('game_info', self.dumpGameInfo())
+        self.gameManager.roomManager.broadcast_to_room(
+            f"game-{self.id}", "game_info", self.dumpGameInfo(), skip_sid=None
+        )
 
     def startNewRound(self):
         self.setupDeck()
@@ -197,8 +194,14 @@ class Game:
 
     def end(self):
         self._status = GAME_STATUS_END
-        self.broadcastToPlayerOnPage('launch-toast', {'message': "La partie est terminée", "category": "success"})
-        self.broadcastToPlayerOnPage('end_game', {"redirect": url_for('index')})
+        self.gameManager.roomManager.broadcast_to_room(
+            f"game-{self.id}", 'launch-toast',
+            {'message': "La partie est terminée", "category": "success"}
+        )
+        self.gameManager.roomManager.broadcast_to_room(
+            f"game-{self.id}", 'end_game',
+             {"redirect": url_for('index')}
+        )
         self.broadcastGameInfo()
         self.logManager.logGame(self)
         self.gameManager.overrideGame(self)

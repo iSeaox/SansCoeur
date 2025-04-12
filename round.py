@@ -55,7 +55,9 @@ class Round:
         self.heapTeam = [[], []]
 
     def _emitBroadcast(self, event, data):
-        self.attachedGameManger.getGameByID(self.attachedGameID).broadcastToPlayerOnPage(event, data)
+        self.attachedGameManger.roomManager.broadcast_to_room(
+            f"game-{self.attachedGameID}", event, data, skip_sid=None
+        )
 
     def dumpRoundInfo(self):
         out = {
