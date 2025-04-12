@@ -3,6 +3,7 @@ from flask import request, url_for
 from auth import socketio_login_required
 from flask_login import current_user
 import statisticManager
+import re
 
 def register_handlers(socketio, logManager, gameManager):
 
@@ -174,6 +175,20 @@ def register_handlers(socketio, logManager, gameManager):
                     game.chat.registerGif(player, data["gif_url"])
                 else:
                     game.chat.registerChat(player, data)
+                return
+        # Check if the player is in a spectator room
+        player_rooms = gameManager.roomManager.get_player_rooms()
+        for room in player_rooms:
+            match = re.match(r'game-(\d+)-spec', room)
+            if match:
+                game_id = int(match.group(1))
+                game = gameManager.getGameByID(game_id)
+                if game:
+                    if "gif_url" in data:
+                        game.chat.registerSpecGif(player_name, request.sid, data["gif_url"])
+                    else:
+                        game.chat.registerSpecChat(player_name, request.sid, data)
+                    return
 
     @socketio.on("request_stat_update")
     @socketio_login_required

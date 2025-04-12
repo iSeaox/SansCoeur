@@ -126,7 +126,6 @@ def dashboard():
                               message="Partie introuvable",
                               username=current_user.username)
     game = currentGameManager.getGameByID(int(game_id))
-    game.registerPlayerOnPage(current_user.username)
 
     player = game.getPlayerByName(current_user.username)
     if not player:

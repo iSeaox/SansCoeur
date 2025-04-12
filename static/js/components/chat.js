@@ -12,7 +12,7 @@ function createMessageBadge(data) {
 
   const badgeLabel = document.createElement("div");
   badgeLabel.className = "chat-username text-muted";
-  badgeLabel.textContent = data.player;
+  badgeLabel.textContent = `${data.player} - ${data.time}`;
   badgeContainer.appendChild(badgeLabel);
 
   // Si le message contient une URL de GIF on affiche une iframe :)
@@ -35,7 +35,7 @@ function createMessageBadge(data) {
   } else {
     const badgeBody = `<span class="badge fs-6 text-wrap text-start msg-${
       data.player.toLowerCase() === username ? "perso" : "other"
-    }">${data.message}</span>`;
+    } ${"spec" in data ? "spec": ""}">${data.message}</span>`;
     badgeContainer.insertAdjacentHTML("beforeend", badgeBody);
   }
   return badgeContainer;

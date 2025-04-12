@@ -14,9 +14,6 @@ Ce document recense les tâches et améliorations à apporter au projet SansCoeu
 
 ## Prochaines fonctionnalités
 
-- Améliorer l'affichage des scores à la fin de la partie
 - Implémenter un système de statistiques plus complet pour les joueurs
 - Ajouter la recherche de GIF
-- Créer un request_game_info_update
 - Segmenter les sockets en plusieurs socket surtout pour le chat et les messages dans games
-- Permettre au spectateur de parler

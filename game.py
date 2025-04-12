@@ -40,14 +40,6 @@ class Game:
         self.roundScore = []
         self.id = int(str(uuid.uuid4().int)[:8])
         self.chat = chat.Chat(self.gameManager, self.logManager, self.id)
-        self.playersOnPage = []
-
-    def registerPlayerOnPage(self, name):
-        if name not in self.playersOnPage:
-            self.playersOnPage.append(name)
-            print(f"{name} registered on page")
-            return True
-        return False
 
     def setupDeck(self):
         # TODO : gérer la distribution des cartes mieux que ça
@@ -106,10 +98,10 @@ class Game:
         player = self.getPlayerByName(name)
         player.sid = sid
         if player != None:
+            self.chat.resumeChat(player)
             self.broadcastGameInfo()
             if self.getCurrentRound() != None:
                 self.getCurrentRound().sendRoundInfo()
-                self.chat.resumeChat(player)
                 player.sendDeck()
             return True
         return False

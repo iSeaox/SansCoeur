@@ -10,6 +10,10 @@
   color: #000;
 }
 
+.spec {
+  background-color: #c4ead2 !important;
+}
+
 #chat-messages {
   height: 400px;
   overflow-y: auto;

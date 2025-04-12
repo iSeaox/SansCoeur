@@ -2,8 +2,9 @@ from flask_socketio import emit
 from round import getBeloteValue
 
 class Player:
-    def __init__(self, name, team, sid):
+    def __init__(self, name, team, sid, spec=False):
         self.name = name
+        self.spec = spec
         self.team = team
         self.sid = sid
         self.cards = []
