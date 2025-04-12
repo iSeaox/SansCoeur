@@ -5,7 +5,15 @@
 
 <div class="card-footer">
   <form id="chat-form" class="d-flex">
-        <input type="text" id="message-input" class="form-control me-2" placeholder="Tape ton message..." />
+    <input type="text" id="message-input" class="form-control me-2" placeholder="Tape ton message..." />
     <button type="submit" class="btn btn-primary">Send</button>
+    <button type="button" id="gif-button" class="btn btn-secondary me-2">GIF</button>
   </form>
+</div>
+
+<div id="gif-selector" class="gif-selector d-none">
+  <div class="gif-search">
+    <input type="text" id="gif-search" class="form-control" placeholder="Rechercher un GIF...">
+  </div>
+  <div id="gif-results" class="gif-results"></div>
 </div>

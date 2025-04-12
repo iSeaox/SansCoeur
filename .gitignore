@@ -4,3 +4,4 @@ logs/
 .vscode/
 sanscoeur-gunicorn.service
 env/
+config.js

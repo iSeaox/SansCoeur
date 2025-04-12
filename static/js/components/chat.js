@@ -100,3 +100,93 @@ socket.on("receive_chat_gif", (data) => {
   chatDiv.appendChild(createMessageBadge(data));
   chatDiv.scrollTop = chatDiv.scrollHeight;
 });
+
+
+import CONFIG from '../config/config.js';
+
+// Constantes pour l'API
+const TENOR_SEARCH_URL = "https://tenor.googleapis.com/v2/search";
+
+// Sélecteurs DOM
+const gifButton = document.getElementById("gif-button");
+const gifSelector = document.getElementById("gif-selector");
+const gifSearch = document.getElementById("gif-search");
+const gifResults = document.getElementById("gif-results");
+
+// État
+let searchTimeout = null;
+
+// Fonction pour rechercher des GIFs
+function searchGifs(query = "") {
+  const url = new URL(TENOR_SEARCH_URL);
+  url.searchParams.append("q", query || "looser");
+  url.searchParams.append("key", CONFIG.TENOR_API_KEY);
+  url.searchParams.append("client_key", CONFIG.TENOR_CLIENT_KEY);
+  url.searchParams.append("limit", CONFIG.GIF_LIMIT);
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      displayGifs(data.results);
+    })
+    .catch(error => {
+      console.error("Erreur lors de la recherche de GIFs:", error);
+    });
+}
+
+// Fonction pour afficher les GIFs
+function displayGifs(results) {
+  gifResults.innerHTML = "";
+
+  results.forEach(result => {
+    const gifItem = document.createElement("div");
+    gifItem.className = "gif-item";
+
+    const img = document.createElement("img");
+    img.src = result.media_formats.tinygif.url; // Une version miniature pour l'aperçu
+    img.alt = result.title;
+
+    gifItem.appendChild(img);
+    gifResults.appendChild(gifItem);
+
+    // Quand l'utilisateur clique sur un GIF
+    gifItem.addEventListener("click", () => {
+      const gifUrl = result.media_formats.gif.url;
+      const embedId = result.id;
+      const embedUrl = "https://tenor.com/embed/" + embedId;
+
+      // Envoyer le GIF au chat
+      socket.emit("chat_message", { gif_url: embedUrl });
+
+      // Fermer le sélecteur de GIF
+      gifSelector.classList.add("d-none");
+    });
+  });
+}
+
+// Écouteurs d'événements
+gifButton.addEventListener("click", () => {
+  if (gifSelector.classList.contains("d-none")) {
+    gifSelector.classList.remove("d-none");
+    searchGifs(); // Charger des GIFs par défaut
+  } else {
+    gifSelector.classList.add("d-none");
+  }
+});
+
+gifSearch.addEventListener("input", (e) => {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
+  }
+  
+  searchTimeout = setTimeout(() => {
+    searchGifs(e.target.value);
+  }, 300); // Délai pour éviter trop de requêtes
+});
+
+// Fermer le sélecteur si on clique ailleurs
+document.addEventListener("click", (e) => {
+  if (!gifSelector.contains(e.target) && e.target !== gifButton) {
+    gifSelector.classList.add("d-none");
+  }
+});
