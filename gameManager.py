@@ -1,6 +1,6 @@
 import game
 from flask_socketio import emit
-
+from flask import url_for
 import warnings
 
 warnings.simplefilter("always", DeprecationWarning)
@@ -17,6 +17,12 @@ class GameManager:
 
     def deleteGame(self, game):
         print("Supression de ", game)
+
+        self.roomManager.broadcast_to_room(
+            f"game-{game.id}", 'end_game',
+             {"redirect": url_for('index')}
+        )
+
         self.games.remove(game)
         del game
 

@@ -3,7 +3,6 @@ import roundManager
 
 import random
 
-from flask_socketio import emit
 from flask import url_for, current_app
 import uuid
 import chat
@@ -72,6 +71,21 @@ class Game:
                 self._players.remove(player)
                 self._readyToStart = False
                 self.broadcastGameInfo()
+                return (True, f"Game sucessfully quit")
+        elif self._status == GAME_STATUS_END:
+            player = self.getPlayerByName(name)
+            if player:
+                self._players.remove(player)
+                self.broadcastGameInfo()
+
+                if len(self._players) == 0:
+                    self.gameManager.roomManager.broadcast_to_room(
+                        f"game-{self.id}", 'end_game',
+                        {"redirect": url_for('index')}
+                    )
+
+                    self.gameManager.deleteGame(self)
+
                 return (True, f"Game sucessfully quit")
         else:
             return (False, f"You can't quit a started game")
@@ -198,13 +212,10 @@ class Game:
             f"game-{self.id}", 'launch-toast',
             {'message': "La partie est terminée", "category": "success"}
         )
-        self.gameManager.roomManager.broadcast_to_room(
-            f"game-{self.id}", 'end_game',
-             {"redirect": url_for('index')}
-        )
+
         self.broadcastGameInfo()
         self.logManager.logGame(self)
-        self.gameManager.overrideGame(self)
+        self.gameManager.registerNewGame()
 
     def registerScore(self, score, belote=-1):
         currentTalk = self.getCurrentRound().talk

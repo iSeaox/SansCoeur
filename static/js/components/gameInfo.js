@@ -53,7 +53,7 @@ socket.on("game_info", (data) => {
   `;
 
   // Affichage du score en cours
-  if (data.status === GAME_STATUS_PLAYING) {
+  if (data.status === GAME_STATUS_PLAYING || data.status === GAME_STATUS_END) {
     scoreInfoDiv.innerHTML = `<p>Score : ${data.score[0]} - ${data.score[1]}</p>`;
   } else {
     scoreInfoDiv.innerHTML = "";
@@ -107,7 +107,7 @@ socket.on("game_info", (data) => {
 
   // Affichage ou masquage des sections start/quit
   if (quitGameSection) {
-    if (data.status === GAME_STATUS_WAITING) {
+    if (data.status === GAME_STATUS_WAITING || data.status === GAME_STATUS_END) {
       quitGameSection.classList.replace("d-none", "d-flex");
     } else {
       quitGameSection.classList.replace("d-flex", "d-none");

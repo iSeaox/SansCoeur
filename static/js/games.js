@@ -6,8 +6,24 @@ function createGameCard(game) {
     const gameId = game.id || "Unknown ID";
     const playersCount = game.players ? game.players.length : 0;
     const maxPlayers = 4;
-    const statusColor = game.status === 1 ? "red" : "green";
-    const statusText = game.status === 1 ? "En cours" : "En attente";
+    let statusColor = '';
+    let statusText = '';
+    switch (game.status) {
+        case 0:
+            statusColor = "green";
+            statusText = "En attente";
+            break;
+
+        case 1:
+            statusColor = "orange";
+            statusText = "En cours";
+            break;
+
+        case 2:
+            statusColor = "red";
+            statusText = "Terminée";
+            break;
+    }
 
     const team0Players = game.players.filter(player => player.team === 0);
     const team1Players = game.players.filter(player => player.team === 1);
