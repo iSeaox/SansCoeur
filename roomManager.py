@@ -126,3 +126,20 @@ class RoomManager:
             # Ne quitte pas la room par défaut de SocketIO (qui est le SID)
             if room != sid:
                 self.remove_player_from_room(room, username, sid)
+
+    def delete_room(self, room_id):
+        """
+        Supprime une room spécifique
+
+        Args:
+            room_id (str): L'identifiant de la room à supprimer
+        """
+        if room_id in self.active_rooms:
+            self.active_rooms.remove(room_id)
+            # Supprime tous les membres de la room dans Flask-SocketIO
+            room_members = self.socketio.server.manager.rooms.get('/', {}).get(room_id, []).copy()
+            for sid in room_members:
+                leave_room(room_id, sid=sid)
+            print(f"[RoomManager] La room {room_id} a été supprimée.")
+        else:
+            print(f"[RoomManager] La room {room_id} n'existe pas ou a déjà été supprimée.")

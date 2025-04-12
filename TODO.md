@@ -18,7 +18,5 @@ Ce document recense les tâches et améliorations à apporter au projet SansCoeu
 - Implémenter un système de statistiques plus complet pour les joueurs
 - Ajouter la recherche de GIF
 - Créer un request_game_info_update
-- Gérer la suppresion des rooms à la fin des games
 - Segmenter les sockets en plusieurs socket surtout pour le chat et les messages dans games
 - Permettre au spectateur de parler
-- Améliorer le style de specTools

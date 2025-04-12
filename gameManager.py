@@ -23,6 +23,9 @@ class GameManager:
              {"redirect": url_for('index')}
         )
 
+        self.roomManager.delete_room(f"game-{game.id}")
+        self.roomManager.delete_room(f"game-{game.id}-spec")
+
         self.games.remove(game)
         del game
 
