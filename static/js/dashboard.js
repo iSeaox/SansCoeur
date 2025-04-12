@@ -16,8 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 socket.on('end_game', (data) => {
-  // if (data.redirect) {
-  //     window.location.href = data.redirect;
-  // }
+  if (data.redirect) {
+      window.location.href = data.redirect;
+  }
 });
+
 

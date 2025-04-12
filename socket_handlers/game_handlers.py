@@ -31,6 +31,11 @@ def register_handlers(socketio, logManager, gameManager):
         if game and game.getPlayerByName(player_name):
             r_manager = gameManager.roomManager
             r_manager.broadcast_to_room(f"game-{game.id}", "launch-toast", {"message": f"{current_user.username} est de retour", "category": "success"})
+        else:
+            r_manager = gameManager.roomManager
+            r_manager.add_player_to_room(f"game-{gameId}-spec", player_name, request.sid)
+            r_manager.broadcast_to_room(request.sid, "load-spec-tools", {})
+            r_manager.broadcast_to_room(f"game-{game.id}", "launch-toast", {"message": f"{current_user.username} regarde la partie", "category": "success"})
 
     @socketio.on("join_game")
     @socketio_login_required
