@@ -63,6 +63,7 @@ def register_handlers(socketio, logManager, gameManager):
             if result:
                 print(f"Client {name} a quitté la game")
                 emit("quit_success")
+                gameManager.roomManager.remove_player_from_room(f"game-{game.id}", name, request.sid)
                 game.broadcastGameInfo()
                 gameManager.updateClients()
 
