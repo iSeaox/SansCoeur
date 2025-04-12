@@ -26,6 +26,12 @@ def register_handlers(socketio, logManager, gameManager):
             gameId = int(data["id"])
             gameManager.roomManager.add_player_to_room(f"game-{gameId}", player_name, request.sid)
             gameManager.getGameByID(gameId).broadcastGameInfo()
+            round = gameManager.getGameByID(gameId).getCurrentRound()
+            if round:
+                round.sendRoundInfo()
+                player = gameManager.getGameByID(gameId).getPlayerByName(player_name)
+                if player:
+                    player.sendDeck()
 
         # Verify if the player belongs to the game
         game = gameManager.getGameByID(gameId)
