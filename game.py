@@ -270,7 +270,8 @@ class Game:
         # _____________________________________________________
 
         self.nbRound += 1
-        if belote != talkTeam:
+        defendTeam = not(talkTeam)
+        if belote == defendTeam:
             self.score[belote] += 20
 
         # Mise à jour du tableau des scores
