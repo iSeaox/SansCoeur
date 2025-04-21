@@ -225,8 +225,8 @@ class Game:
             f"Talk: \n\tColor: {currentTalk['color']}\n\tValue: {currentTalk['value']}\n\tTeam: {currentTalk['player'].team}\n"
             f"\tContrer: {self.getCurrentRound().contrer}\n"
             f"\tSur-contrer: {self.getCurrentRound().surcontrer}\n"
-            f"Score: \n\tTeam {self.getTeam(0)[0].name} - {self.getTeam(0)[1].name} (0): {score[0]} {"+ 20" if belote == 0 else ""}\n"
-            f"\tTeam {self.getTeam(1)[0].name} - {self.getTeam(1)[1].name} (1): {score[1]} {"+ 20" if belote == 1 else ""}\n"
+            f"Score: \n\tTeam {self.getTeam(0)[0].name} - {self.getTeam(0)[1].name} (0): {score[0]} {'+ 20' if belote == 0 else ''}\n"
+            f"\tTeam {self.getTeam(1)[0].name} - {self.getTeam(1)[1].name} (1): {score[1]} {'+ 20' if belote == 1 else ''}\n"
             f"\tTotal: {score[0] + score[1]}\n"
             f"{'-' * 60}"
         )
