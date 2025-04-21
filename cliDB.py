@@ -24,7 +24,6 @@ def add_user(args, db):
     if not password:
         password = args.username[0]
         logger.info(f"Temporary password generated: {password}")
-        print(f"Temporary password generated: {password}")
 
     # Hash the password
     hashed_password = generate_password_hash(password)
@@ -204,10 +203,10 @@ def main():
     flag_parser.add_argument("--require-change", action="store_true", help="Require password change on next login")
     flag_parser.add_argument("--no-require-change", dest="require_change", action="store_false", help="Don't require password change on next login")
     flag_parser.set_defaults(require_change=True)
-    
+
     # List users subcommand
     list_parser = subparsers.add_parser("list", help="List all users in the database")
-    
+
     # Delete user subcommand
     delete_parser = subparsers.add_parser("delete", help="Delete a user from the database")
     delete_parser.add_argument("username", help="Username to delete")

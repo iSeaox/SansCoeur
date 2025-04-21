@@ -14,7 +14,6 @@ class dbManager:
         logger.info("Database path set to %s", self.db_path)
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            logger.info("Change since last run %d", conn.total_changes)
 
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS users (
