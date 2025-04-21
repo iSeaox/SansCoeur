@@ -3,3 +3,4 @@ flask-login
 flask-socketio
 werkzeug
 python-dotenv
+sqlite3

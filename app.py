@@ -61,28 +61,9 @@ login_manager.login_message = ''
 
 # ################################################
 # BDD
-# TODO : Setup real BDD
+import dbManager
 
-class User(UserMixin):
-    def __init__(self, id, username, password):
-        self.id = id
-        self.username = username
-        self.password = password
-
-users = {
-    1: User(1, 'guillaume', generate_password_hash('g')),
-    2: User(2, 'mathias', generate_password_hash('m')),
-    3: User(3, 'helios', generate_password_hash('h')),
-    4: User(4, 'magathe', generate_password_hash('m')),
-    5: User(5, 'jocelyn', generate_password_hash('j')),
-    6: User(6, 'esthelle', generate_password_hash('e')),
-    7: User(7, 'pauline', generate_password_hash('p')),
-    8: User(8, 'christian', generate_password_hash('c')),
-    9: User(9, 'bastien', generate_password_hash('b')),
-    10: User(10, 'nico', generate_password_hash('n')),
-    11: User(11, 'mathis', generate_password_hash('m')),
-    12: User(12, 'lucas', generate_password_hash('l')),
-}
+currentDBManager = dbManager.dbManager(app.config["DATABASE_PATH"])
 
 # ################################################
 # Global Variables
@@ -105,7 +86,7 @@ init_socket_handlers(socketio, currentlogManager, currentGameManager)
 # Login
 @login_manager.user_loader
 def load_user(user_id):
-    return users.get(int(user_id))
+    return currentDBManager.getUser(user_id)
 # ___________________________________________
 
 @app.route("/")
@@ -120,14 +101,17 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        user = next((u for u in users.values() if u.username == username), None)
+        user = currentDBManager.getUserByName(username)
 
         if user and check_password_hash(user.password, password):
             remember = request.form.get('remember') == 'on'
             login_user(user, remember=remember)
             flash('Connexion réussie !', 'success')
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('index'))
+
+            if user.password_needs_update:
+                return redirect(url_for('change_password'))
+
+            return redirect(url_for('index'))
         else:
             flash('Identifiant ou mot de passe incorrect', 'danger')
 
@@ -162,6 +146,31 @@ def dashboard():
                      room=f"game-{game.id}")
 
     return render_template("dashboard.html", username=current_user.username)
+
+@app.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm-password')
+
+        if password != confirm_password:
+            flash('Les mots de passe ne correspondent pas', 'danger')
+            return render_template('change_password.html')
+
+        success, message = currentDBManager.updatePassword(current_user.id, generate_password_hash(password))
+
+        if success:
+            flash(message, 'success')
+            logout_user()
+            return redirect(url_for('index'))
+        else:
+            flash(message, 'danger')
+
+    if not current_user.password_needs_update:
+        return render_template('errors/change_error.html')
+    else:
+        return render_template('change_password.html')
 
 # ################################################
 # Main

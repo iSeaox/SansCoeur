@@ -8,12 +8,9 @@ Ce document recense les tâches et améliorations à apporter au projet SansCoeu
 - **game.py** : Améliorer la distribution des cartes (actuellement commenté comme "TODO: gérer la distribution des cartes mieux que ça")
 - **round.py** : Penser à implémenter la coupe du jeu avant la distribution (commenté comme "TODO: Pensez à couper le jeu")
 
-## Utilisateurs et authentification
-
-- **app.py** : Configurer une vraie base de données pour remplacer le stockage temporaire des utilisateurs (commenté comme "TODO: Setup real BDD")
-
 ## Prochaines fonctionnalités
 
 - Implémenter un système de statistiques plus complet pour les joueurs
-- Ajouter la recherche de GIF
 - Segmenter les sockets en plusieurs socket surtout pour le chat et les messages dans games
+- Ajout du temps passer à jouer
+- Ajout du nombre de partie jouer
