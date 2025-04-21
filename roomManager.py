@@ -101,12 +101,13 @@ class RoomManager:
             data (dict): Les données à envoyer
             skip_sid (str, optional): SID à ignorer pour l'émission
         """
-        print("-" * 60)
-        self.list_all_rooms()
-        print(f"SIDs dans room {room_id}: {self.socketio.server.manager.rooms.get('/', {}).get(f'{room_id}', [])}")
-        print("\nEVENT: ", event)
-        print("DATA: ", data)
-        print("-" * 60)
+        # ! DEBUG
+        # print("-" * 60)
+        # self.list_all_rooms()
+        # print(f"SIDs dans room {room_id}: {self.socketio.server.manager.rooms.get('/', {}).get(f'{room_id}', [])}")
+        # print("\nEVENT: ", event)
+        # print("DATA: ", data)
+        # print("-" * 60)
         self.socketio.emit(event, data, room=room_id, skip_sid=skip_sid)
 
 

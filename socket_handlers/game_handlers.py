@@ -24,25 +24,26 @@ def register_handlers(socketio, logManager, gameManager):
         player_name = current_user.username
         if "id" in data:
             gameId = int(data["id"])
-            gameManager.roomManager.add_player_to_room(f"game-{gameId}", player_name, request.sid)
-            gameManager.getGameByID(gameId).broadcastGameInfo()
-            round = gameManager.getGameByID(gameId).getCurrentRound()
-            if round:
-                round.sendRoundInfo()
-                player = gameManager.getGameByID(gameId).getPlayerByName(player_name)
-                if player:
-                    player.sendDeck()
+            game = gameManager.getGameByID(gameId)
+            if game:
+                gameManager.roomManager.add_player_to_room(f"game-{gameId}", player_name, request.sid)
+                game.broadcastGameInfo()
+                round = game.getCurrentRound()
+                if round:
+                    round.sendRoundInfo()
+                    player = game.getPlayerByName(player_name)
+                    if player:
+                        player.sendDeck()
 
-        # Verify if the player belongs to the game
-        game = gameManager.getGameByID(gameId)
-        if game and game.getPlayerByName(player_name):
-            r_manager = gameManager.roomManager
-            r_manager.broadcast_to_room(f"game-{game.id}", "launch-toast", {"message": f"{current_user.username} est de retour", "category": "success"})
-        else:
-            r_manager = gameManager.roomManager
-            r_manager.add_player_to_room(f"game-{gameId}-spec", player_name, request.sid)
-            r_manager.broadcast_to_room(request.sid, "load-spec-tools", {})
-            r_manager.broadcast_to_room(f"game-{game.id}", "launch-toast", {"message": f"{current_user.username} regarde la partie", "category": "success"})
+            # Verify if the player belongs to the game
+            if game and game.getPlayerByName(player_name):
+                r_manager = gameManager.roomManager
+                r_manager.broadcast_to_room(f"game-{game.id}", "launch-toast", {"message": f"{current_user.username} est de retour", "category": "success"})
+            else:
+                r_manager = gameManager.roomManager
+                r_manager.add_player_to_room(f"game-{gameId}-spec", player_name, request.sid)
+                r_manager.broadcast_to_room(request.sid, "load-spec-tools", {})
+                r_manager.broadcast_to_room(f"game-{game.id}", "launch-toast", {"message": f"{current_user.username} regarde la partie", "category": "success"})
 
     @socketio.on("join_game")
     @socketio_login_required
