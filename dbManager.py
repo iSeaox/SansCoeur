@@ -161,7 +161,7 @@ class dbManager:
         try:
             with sqlite3.connect(self.db_path) as connection:
                 cursor = connection.cursor()
-                cursor.execute("DELETE FROM users WHERE username = ?", (username,))
+                cursor.execute("DELETE FROM users WHERE name = ?", (username,))
                 connection.commit()
                 if cursor.rowcount == 0:
                     raise Exception(f"No user with username '{username}' found")
