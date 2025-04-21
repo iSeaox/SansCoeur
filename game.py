@@ -7,6 +7,9 @@ from flask import url_for, current_app
 import uuid
 import chat
 
+import logging
+logger = logging.getLogger(f"app.{__name__}")
+
 GAME_STATUS_WAITING = 0
 GAME_STATUS_PLAYING = 1
 GAME_STATUS_END = 2
@@ -212,20 +215,21 @@ class Game:
     def registerScore(self, score, belote=-1):
         currentTalk = self.getCurrentRound().talk
         talkTeam = currentTalk["player"].team
-        print(score, belote)
+
+        logger.debug(
+            f"\n{'-' * 60}\n"
+            f"Belote: {belote}\n"
+            f"Talk: \n\tColor: {currentTalk['color']}\n\tValue: {currentTalk['value']}\n\tTeam: {currentTalk['player'].team}\n"
+            f"\tContrer: {self.getCurrentRound().contrer}\n"
+            f"\tSur-contrer: {self.getCurrentRound().surcontrer}\n"
+            f"Score: \n\tTeam {self.getTeam(0)[0].name} - {self.getTeam(0)[1].name} (0): {score[0]} {"+ 20" if belote == 0 else ""}\n"
+            f"\tTeam {self.getTeam(1)[0].name} - {self.getTeam(1)[1].name} (1): {score[1]} {"+ 20" if belote == 1 else ""}\n"
+            f"\tTotal: {score[0] + score[1]}\n"
+            f"{'-' * 60}"
+        )
+
         if belote == talkTeam:
             score[belote] += 20
-
-        #  ! DEBUG :
-        print("-"*60)
-        print("Talk: \n\tColor:", currentTalk["color"], "\n\tValue: ", currentTalk["value"], "\n\tTeam: ", currentTalk["player"].team)
-        print("\tContrer: ", self.getCurrentRound().contrer)
-        print("\tSur-contrer: ", self.getCurrentRound().surcontrer)
-
-        print("Score: \n\tTeam ", self.getTeam(0)[0].name + " - " + self.getTeam(0)[1].name, "(0): ", score[0])
-        print("\tTeam ", self.getTeam(1)[0].name + " - " + self.getTeam(1)[1].name, "(1): ", score[1])
-        print("\tTotal: ", score[0] + score[1])
-        print("-"*60)
 
         multi = (2 if "contrer" in currentTalk else 1)
         multi *= (2 if "surcontrer" in currentTalk else 1)
@@ -243,7 +247,6 @@ class Game:
             self.score[not(talkTeam)] += ((162 + currentTalk["value"]) // 10 * 10) * multi
 
         self.nbRound += 1
-        print(self.score, belote)
         if belote != talkTeam:
             self.score[belote] += 20
 
@@ -256,7 +259,6 @@ class Game:
                 "team": talkTeam
             }
         })
-        print("SCORE TABLE: ", self.roundScore)
 
         # Verifier si la game est finie
         if self.score[0] >= self.maxPoints or self.score[1] > self.maxPoints:

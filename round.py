@@ -1,6 +1,8 @@
 from flask_socketio import emit
 from flask import current_app
 import time
+import logging
+logger = logging.getLogger(f"app.{__name__}")
 
 ROUND_STATE_SETUP = 0
 ROUND_STATE_TALKING = 1
@@ -183,11 +185,16 @@ class Round:
                     self.cardOnTable.append({"card": p.cards.pop(), "player": p})
 
             if current_app.config["DEBUG_MODE_END_GAME"]:
-                print("END GAME")
+                logger.debug("END GAME")
                 self.winningTeam = 0
                 self.needTableAck = 1
                 self.heapTeam = [[[{'card': {'color': 3, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 10}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 12}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 0, 'value': 13}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 0, 'value': 8}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 2, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 2, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 11}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 2, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 0, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 3, 'value': 13}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 2, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}], [{'card': {'color': 2, 'value': 13}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}]], [[{'card': {'color': 1, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 1, 'value': 11}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 13}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 3, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 3, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 0, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 10}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}]]]
                 self.cardOnTable = []
+
+                if current_app.config["DEBUG_MODE_FAKE_BELOTE"] != -1:
+                    self.belote = current_app.config["DEBUG_MODE_FAKE_BELOTE"]
+                    logger.debug(f"Fake belote: {self.belote}")
+
                 self.flushCardOnTable()
                 self.computeTableAck(self.nextTurn)
 
@@ -269,7 +276,7 @@ class Round:
                                 if c["value"] == 12 or c["value"] == 13:
                                     idx += 1
                         if idx == 2:
-                            print("Belote détectée")
+                            logger.info("Belote détectée (TEAM %d)", p.team)
                             self.belote = player.team
 
                     self.sendRoundInfo()
@@ -305,7 +312,7 @@ class Round:
                     else:
                         res, upperCard = player.hasUpper(self.winningCard, currentTrump)
                         if res and upperCard != card:
-                            print(player.name, " il faut monter à l'atout")
+                            emit("launch-toast", {"message": f"{player.name} il faut monter à l'atout", "category": "danger"})
                             return False
                     return True
                 else:
@@ -322,7 +329,7 @@ class Round:
                     return True
                 elif card['color'] == currentTrump:
                     if player.hasColor(self.askedColor):
-                        print(player.name, " a essayé de tricher")
+                        emit("launch-toast", {"message": f"{player.name} a essayé de tricher", "category": "danger"})
                         return False
 
                     if self.compareCard(card, self.winningCard, currentTrump) > 0:
@@ -332,7 +339,7 @@ class Round:
                     else:
                         res, upperCard = player.hasUpper(self.winningCard, currentTrump)
                         if res and upperCard != card:
-                            print(player.name, " il faut monter à l'atout")
+                            emit("launch-toast", {"message": f"{player.name} a essayé de tricher", "category": "danger"})
                             return False
                     return True
 

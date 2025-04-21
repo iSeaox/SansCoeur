@@ -2,6 +2,8 @@ import game
 from flask_socketio import emit
 from flask import url_for
 import warnings
+import logging
+logger = logging.getLogger(f"app.{__name__}")
 
 warnings.simplefilter("always", DeprecationWarning)
 
@@ -16,7 +18,7 @@ class GameManager:
         self.registerNewGame()
 
     def deleteGame(self, game):
-        print("Supression de ", game)
+        logger.info("Supression de ", game)
 
         self.roomManager.broadcast_to_room(
             f"game-{game.id}", 'end_game',
@@ -31,10 +33,10 @@ class GameManager:
 
     def registerNewGame(self):
         newGame = game.Game(self, self.logManager)
-        print("Création de ", newGame)
+        logger.info(f"Création de {newGame}")
 
         self.games.append(newGame)
-        print("Stack de Game: ", self.games)
+        logger.info(f"Stack de Game: {self.games}")
 
     def getGameByID(self, id):
         for g in self.games:

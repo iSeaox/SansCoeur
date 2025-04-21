@@ -4,13 +4,15 @@ from auth import socketio_login_required
 from flask_login import current_user
 import statisticManager
 import re
+import logging
+logger = logging.getLogger(f"app.{__name__}")
 
 def register_handlers(socketio, logManager, gameManager):
 
     @socketio.on("connect")
     @socketio_login_required
     def handle_connect():
-        print(f"{current_user.username} est connecté avec le SID {request.sid}")
+        logger.info(f"{current_user.username} est connecté avec le SID {request.sid}")
 
         # Check if player is register in a game
         temp_game = gameManager.getGameByPlayerName(current_user.username)
@@ -59,7 +61,7 @@ def register_handlers(socketio, logManager, gameManager):
 
         result, message = gameManager.getGameByID(gameId).registerPlayer(name, team, request.sid)
         if result:
-            print(f"Client {name} a rejoint la Team {team}")
+            logger.info(f"Client {name} a rejoint la Team {team}")
             emit("join_success", {"redirect": url_for("dashboard", id=gameId)})
             gameManager.getGameByID(gameId).broadcastGameInfo()
             gameManager.updateClients()
@@ -74,7 +76,7 @@ def register_handlers(socketio, logManager, gameManager):
         if game:
             result, message = game.removePlayer(name)
             if result:
-                print(f"Client {name} a quitté la game")
+                logger.info(f"Client {name} a quitté la game")
                 emit("quit_success")
                 gameManager.roomManager.remove_player_from_room(f"game-{game.id}", name, request.sid)
                 game.broadcastGameInfo()

@@ -12,7 +12,34 @@ from flask_socketio import SocketIO
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# ################################################
+# Loggin setup
 
+import logging
+import logging.config
+import json
+import os
+
+def setup_logging(
+        default_path='logging_config.json',
+        default_level=logging.INFO,
+        env_key='LOG_CFG'):
+
+    # Ensure logs directory exists
+    logs_dir = os.path.join(os.path.dirname(__file__), 'logs')
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
+
+    path = os.getenv(env_key, default_path)
+    if os.path.exists(path):
+        with open(path, 'r') as f:
+            config = json.load(f)
+            logging.config.dictConfig(config)
+    else:
+        logging.basicConfig(level=default_level)
+
+setup_logging()
+logger = logging.getLogger(f"app.{__name__}")
 # ################################################
 # Flask Setup
 app = Flask(__name__)
@@ -147,6 +174,7 @@ if __name__ == "__main__":
     parser.add_argument("--fake-rounds", "-r", action="store_true", help="Register fake rounds")
     parser.add_argument("--cards", "-c", action="store_true", help="Place cards on table")
     parser.add_argument("--end-game", "-e", action="store_true", help="End game at start (quite weird isn't it ?)")
+    parser.add_argument("--belote", "-b", type=int, help="Start the game with a fake belote (provide Team ID 0 or 1)")
     args = parser.parse_args()
 
     if args.players:
@@ -175,12 +203,21 @@ if __name__ == "__main__":
         app.config["DEBUG_MODE_PLAYERS"] = 1
         app.config["DEBUG_MODE_FAKE_ROUNDS"] = 1
 
+    if args.belote is not None:
+        if not args.end_game:
+            logger.error("You need to provide --end-game to use --belote")
+            sys.exit(1)
+        app.config["DEBUG_MODE"] = 1
+        app.config["DEBUG_MODE_FAKE_BELOTE"] = args.belote
+        app.config["DEBUG_MODE_TALKS"] = 1
+        app.config["DEBUG_MODE_PLAYERS"] = 1
+
     if app.config["DEBUG_MODE_PLAYERS"]:
         currentGameManager.getGame().registerPlayer("magathe", 0, None)
         currentGameManager.getGame().registerPlayer("helios", 1, None)
         currentGameManager.getGame().registerPlayer("mathias", 0, None)
 
     if app.config["DEBUG_MODE"]:
-        print("[INFO] GAME STARTED IN DEBUG MODE")
+        logger.warning("GAME STARTED IN DEBUG MODE")
 
     socketio.run(app, debug=True, host="0.0.0.0", port=25565)

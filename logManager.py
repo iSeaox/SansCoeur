@@ -1,6 +1,8 @@
 import os
 import json
 import time
+import logging
+logger = logging.getLogger(f"app.{__name__}")
 
 class LogManager:
     def __init__(self, path, game_filename, chat_filename):
@@ -15,13 +17,13 @@ class LogManager:
 
     @staticmethod
     def checkPath(path, file_path):
-        print("[INFO] Log file:", file_path)
+        logger.info(f"Log file: {file_path}")
         if not(os.path.exists(path)):
-            print(f"[INFO] Cant't find {path} => created")
+            logger.error(f"Can't find {path} => created")
             os.makedirs(path)
 
         if not(os.path.exists(file_path)):
-            print(f"[INFO] Cant't find {file_path} => created")
+            logger.error(f"Can't find {file_path} => created")
             with open(file_path, "w") as file:
                 json.dump([], file, indent=4)
 
@@ -29,7 +31,7 @@ class LogManager:
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         data = f'[{current_time}] <{chat["player"]["name"]}> {chat["message"]}'
 
-        print(data)
+        logger.debug(data)
 
         with open(self.chat_file_path, "a") as file:
             file.write(data + "\n")
@@ -49,29 +51,21 @@ class LogManager:
         self.printGameSummary(game_data)
 
     def printGameSummary(self, game_data):
-        print("\n==================== Résumé de la Partie ====================")
-
-        print("\nJoueurs:")
-        for player in game_data["players"]:
-            print(f"Nom: {player['name']}, Équipe: {player['team']}")
-
-        print("\nScores:")
-        print(f"Équipe 0 : {game_data['score'][0]}")
-        print(f"Équipe 1 : {game_data['score'][1]}")
-
-        print("\nScores des manches:")
-        for round_score in game_data['round_score']:
-            print(f"Manche {game_data['round_score'].index(round_score) + 1}: {round_score['score']}")
-
-
-        status = "En attente" if game_data["status"] == 0 else "En cours" if game_data["status"] == 1 else "Terminé"
-        print(f"\nStatut du jeu : {status}")
-
-
+        status = "En attente" if game_data["status"] == 0 else "En cours" if game_data["status"] == 1 else "Termine"
         ready_to_start = "Oui" if game_data["readyToStart"] else "Non"
-        print(f"Prêt à commencer : {ready_to_start}")
 
-        print("\n==============================================================")
+        summary = (
+            "\n==================== Resume de la Partie ====================\n\n"
+            f"Joueurs:\n" +
+            "\n".join([f"Nom: {player['name']}, Equipe: {player['team']}" for player in game_data["players"]]) +
+            f"\n\nScores:\nEquipe 0 : {game_data['score'][0]}\nEquipe 1 : {game_data['score'][1]}\n\n"
+            "Scores des manches:\n" +
+            "\n".join([f"Manche {game_data['round_score'].index(round_score) + 1}: {round_score['score']}" for round_score in game_data['round_score']]) +
+            f"\n\nStatut du jeu : {status}\nPret a commencer : {ready_to_start}\n"
+            "=============================================================="
+        )
+
+        logger.info(summary)
 
     def getLastGameData(self):
         with open(self.game_file_path, 'r') as file:

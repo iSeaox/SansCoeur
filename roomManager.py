@@ -1,5 +1,7 @@
 from flask_socketio import join_room, leave_room, rooms, emit
 from flask import request
+import logging
+logger = logging.getLogger(f"app.{__name__}")
 
 class RoomManager:
     """
@@ -34,7 +36,7 @@ class RoomManager:
 
         join_room(room_id, sid=sid)
         self.active_rooms.add(room_id)
-        print(f"[RoomManager] {username} a rejoint la room {room_id}")
+        logger.info(f"{username} a rejoint la room {room_id}")
         return True
 
     def remove_player_from_room(self, room_id, username, sid=None):
@@ -53,7 +55,7 @@ class RoomManager:
             sid = request.sid
 
         leave_room(room_id, sid=sid)
-        print(f"[RoomManager] {username} a quitté la room {room_id}")
+        logger.info(f"{username} a quitté la room {room_id}")
         return True
 
     def get_player_rooms(self, sid=None):
@@ -76,11 +78,12 @@ class RoomManager:
         Affiche dans la console toutes les rooms enregistrées dans SocketIO
         """
         all_rooms = self.socketio.server.manager.rooms
-        print("[RoomManager] Liste de toutes les rooms enregistrées :")
+        out = " Liste de toutes les rooms enregistrées :\n"
         for namespace, rooms in all_rooms.items():
-            print(f"Namespace: {namespace}")
+            out += f"Namespace: {namespace}\n"
             for room in rooms:
-                print(f"  - Room: {room}")
+                out += f"  - Room: {room}\n"
+        logger.info(out)
 
     def get_available_rooms(self):
         """
@@ -141,6 +144,6 @@ class RoomManager:
             room_members = self.socketio.server.manager.rooms.get('/', {}).get(room_id, []).copy()
             for sid in room_members:
                 leave_room(room_id, sid=sid)
-            print(f"[RoomManager] La room {room_id} a été supprimée.")
+            logger.info(f"La room {room_id} a été supprimée.")
         else:
-            print(f"[RoomManager] La room {room_id} n'existe pas ou a déjà été supprimée.")
+            logger.info(f"La room {room_id} n'existe pas ou a déjà été supprimée.")
