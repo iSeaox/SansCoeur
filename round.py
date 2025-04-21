@@ -312,7 +312,7 @@ class Round:
                     else:
                         res, upperCard = player.hasUpper(self.winningCard, currentTrump)
                         if res and upperCard != card:
-                            emit("launch-toast", {"message": f"{player.name} il faut monter à l'atout", "category": "danger"})
+                            self._emitBroadcast("launch-toast", {"message": f"{player.name} il faut monter à l'atout", "category": "danger"})
                             return False
                     return True
                 else:
@@ -329,7 +329,7 @@ class Round:
                     return True
                 elif card['color'] == currentTrump:
                     if player.hasColor(self.askedColor):
-                        emit("launch-toast", {"message": f"{player.name} a essayé de tricher", "category": "danger"})
+                        self._emitBroadcast("launch-toast", {"message": f"{player.name} a essayé de tricher", "category": "danger"})
                         return False
 
                     if self.compareCard(card, self.winningCard, currentTrump) > 0:
@@ -339,7 +339,7 @@ class Round:
                     else:
                         res, upperCard = player.hasUpper(self.winningCard, currentTrump)
                         if res and upperCard != card:
-                            emit("launch-toast", {"message": f"{player.name} a essayé de tricher", "category": "danger"})
+                            self._emitBroadcast("launch-toast", {"message": f"{player.name} a essayé de tricher", "category": "danger"})
                             return False
                     return True
 
