@@ -147,3 +147,24 @@ class dbManager:
         except Exception as e:
             logger.error(f"Error fetching all users: {e}")
             return []
+
+    def deleteUser(self, username):
+        """
+        Delete a user from the database by username
+
+        Args:
+            username (str): The username of the user to delete
+
+        Returns:
+            bool: True if successful, raises an exception otherwise
+        """
+        try:
+            with sqlite3.connect(self.db_path) as connection:
+                cursor = connection.cursor()
+                cursor.execute("DELETE FROM users WHERE username = ?", (username,))
+                connection.commit()
+                if cursor.rowcount == 0:
+                    raise Exception(f"No user with username '{username}' found")
+                return True
+        except sqlite3.Error as e:
+            raise Exception(f"Database error: {e}")

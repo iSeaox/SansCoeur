@@ -85,6 +85,24 @@ def update_password_flag(args, db):
         logger.error(f"Error updating the password change flag: {e}")
         return 1
 
+def delete_user(args, db):
+    """Delete a user from the database"""
+    # Check if the user exists
+    existing_user = db.getUserByName(args.username)
+    if not existing_user:
+        logger.error(f"The user '{args.username}' does not exist in the database.")
+        return 1
+
+    try:
+        # Delete the user
+        db.deleteUser(args.username)
+        logger.info(f"User '{args.username}' deleted successfully.")
+        print(f"User '{args.username}' deleted successfully.")
+        return 0
+    except Exception as e:
+        logger.error(f"Error deleting user: {e}")
+        return 1
+
 def list_users(args, db):
     """List all users in the database in a nicely formatted table"""
     try:
@@ -189,6 +207,10 @@ def main():
     
     # List users subcommand
     list_parser = subparsers.add_parser("list", help="List all users in the database")
+    
+    # Delete user subcommand
+    delete_parser = subparsers.add_parser("delete", help="Delete a user from the database")
+    delete_parser.add_argument("username", help="Username to delete")
 
     # Parse arguments without exiting on help
     args, unknown = parser.parse_known_args()
@@ -222,6 +244,8 @@ def main():
         return update_password_flag(args, db)
     elif args.command == "list":
         return list_users(args, db)
+    elif args.command == "delete":
+        return delete_user(args, db)
     else:
         return show_full_help(parser, subparsers)
 
