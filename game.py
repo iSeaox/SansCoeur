@@ -215,6 +215,9 @@ class Game:
     def registerScore(self, score, belote=-1):
         currentTalk = self.getCurrentRound().talk
         talkTeam = currentTalk["player"].team
+        talkerScore = score[talkTeam]
+        defenderScore = score[not(talkTeam)]
+
 
         logger.debug(
             f"\n{'-' * 60}\n"
@@ -229,27 +232,46 @@ class Game:
         )
 
         if belote == talkTeam:
-            score[belote] += 20
+            talkerScore += 20
 
-        multi = (2 if "contrer" in currentTalk else 1)
-        multi *= (2 if "surcontrer" in currentTalk else 1)
+        # _____________________________________________________
+        # Compte des points
+        if "contrer" in currentTalk or "surcontrer" in currentTalk:
+            # Cas Contrer ou Sur-contrer
+            multi = 2 if "contrer" in currentTalk else 1
+            multi *= 2 if "surcontrer" in currentTalk else 1
 
-        if currentTalk["value"] == 162 or currentTalk["value"] == 182:
-            if currentTalk["value"] == score[talkTeam]:
-                self.score[talkTeam] += (320 + score[talkTeam]) * multi
+            if talkerScore > 80 and talkerScore >= currentTalk["value"]:
+                # Si capot ET gagnant
+                if currentTalk["value"] == 162 or currentTalk["value"] == 182:
+                    self.score[talkTeam] = (320 + talkerScore) * multi
+                    self.score[not(talkTeam)] = 0
+                # Pas de capot ET gagnant
+                else:
+                    self.score[talkTeam] = (currentTalk["value"] + talkerScore) * multi
+                    self.score[not(talkTeam)] = 0
             else:
-                self.score[not(talkTeam)] += ((320 + 162) // 10 * 10) * multi
-
-        if currentTalk["value"] <= score[talkTeam] and score[talkTeam] > 80:
-            self.score[talkTeam] += ((currentTalk["value"] + score[talkTeam]) // 10 * 10) * multi
-            self.score[not(talkTeam)] += (score[not(talkTeam)]) // 10 * 10
+                self.score[talkTeam] = 0
+                self.score[not(talkTeam)] = (162 + defenderScore // 10 * 10) * multi
         else:
-            self.score[not(talkTeam)] += ((162 + currentTalk["value"]) // 10 * 10) * multi
+            # Cas classique
+            if talkerScore > 80 and talkerScore >= currentTalk["value"]:
+                # Si capot ET gagnant
+                if currentTalk["value"] == 162 or currentTalk["value"] == 182:
+                    self.score[talkTeam] = 320 + talkerScore
+                    self.score[not(talkTeam)] = 0
+                # Pas de capot ET gagnant
+                else:
+                    self.score[talkTeam] = currentTalk["value"] + talkerScore
+                    self.score[not(talkTeam)] = defenderScore // 10 * 10
+            else:
+                self.score[talkTeam] = 0
+                self.score[not(talkTeam)] = 162 + defenderScore // 10 * 10
+        # _____________________________________________________
 
         self.nbRound += 1
         if belote != talkTeam:
             self.score[belote] += 20
-
 
         # Mise à jour du tableau des scores
         self.roundScore.append({
