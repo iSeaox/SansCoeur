@@ -244,29 +244,29 @@ class Game:
             if talkerScore > 80 and talkerScore >= currentTalk["value"]:
                 # Si capot ET gagnant
                 if currentTalk["value"] == 162 or currentTalk["value"] == 182:
-                    self.score[talkTeam] = (320 + talkerScore) * multi
-                    self.score[not(talkTeam)] = 0
+                    self.score[talkTeam] += (320 + talkerScore) * multi
+                    self.score[not(talkTeam)] += 0
                 # Pas de capot ET gagnant
                 else:
                     self.score[talkTeam] = (currentTalk["value"] + talkerScore) * multi
-                    self.score[not(talkTeam)] = 0
+                    self.score[not(talkTeam)] += 0
             else:
-                self.score[talkTeam] = 0
-                self.score[not(talkTeam)] = (162 + defenderScore // 10 * 10) * multi
+                self.score[talkTeam] += 0
+                self.score[not(talkTeam)] += (162 + defenderScore // 10 * 10) * multi
         else:
             # Cas classique
             if talkerScore > 80 and talkerScore >= currentTalk["value"]:
                 # Si capot ET gagnant
                 if currentTalk["value"] == 162 or currentTalk["value"] == 182:
-                    self.score[talkTeam] = 320 + talkerScore
-                    self.score[not(talkTeam)] = 0
+                    self.score[talkTeam] += 320 + talkerScore
+                    self.score[not(talkTeam)] += 0
                 # Pas de capot ET gagnant
                 else:
-                    self.score[talkTeam] = currentTalk["value"] + talkerScore
-                    self.score[not(talkTeam)] = defenderScore // 10 * 10
+                    self.score[talkTeam] += currentTalk["value"] + talkerScore
+                    self.score[not(talkTeam)] += defenderScore // 10 * 10
             else:
-                self.score[talkTeam] = 0
-                self.score[not(talkTeam)] = 162 + defenderScore // 10 * 10
+                self.score[talkTeam] += 0
+                self.score[not(talkTeam)] += 162 + defenderScore // 10 * 10
         # _____________________________________________________
 
         self.nbRound += 1
