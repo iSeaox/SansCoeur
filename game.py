@@ -251,7 +251,7 @@ class Game:
                     self.score[not(talkTeam)] += 0
                 # Pas de capot ET gagnant
                 else:
-                    self.score[talkTeam] = (currentTalk["value"] + talkerScore) * multi
+                    self.score[talkTeam] += (currentTalk["value"] + talkerScore) * multi
                     self.score[not(talkTeam)] += 0
             else:
                 self.score[talkTeam] += 0
