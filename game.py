@@ -1,5 +1,6 @@
 import player
 import roundManager
+import time
 
 import random
 
@@ -43,6 +44,7 @@ class Game:
         self.roundScore = []
         self.id = int(str(uuid.uuid4().int)[:8])
         self.chat = chat.Chat(self.gameManager, self.logManager, self.id)
+        self.beginTime = None
 
     def setupDeck(self):
         # TODO : gérer la distribution des cartes mieux que ça
@@ -198,6 +200,7 @@ class Game:
                     }
                 })
         # _____________________________________________________
+        self.beginTime = time.time()
         self.startNewRound()
         return (True, "Starting game")
 

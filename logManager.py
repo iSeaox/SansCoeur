@@ -39,8 +39,10 @@ class LogManager:
     def logGame(self, game):
         game_data = game.dumpGameInfo()
 
+        duration = time.time() - game.beginTime
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         game_data.update({"time": current_time})
+        game_data.update({"duration": duration})
 
         with open(self.game_file_path, "r+") as file:
             logs = json.load(file)
