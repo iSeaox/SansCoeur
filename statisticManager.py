@@ -65,7 +65,7 @@ DATA_MODEL = {
             "data": [],
             "backgroundColor": [],
             "borderColor": [],
-            "borderWidth": 1
+            "borderWidth": 0
         }]
     },
     "options": {
@@ -91,6 +91,8 @@ def dumpData(logManager, type, player=None):
         data_model["data"]["datasets"][0]["data"] = [player_data["totalScore"] for player_data in sorted_players.values()]
         data_model["data"]["datasets"][0]["backgroundColor"] = COLORS_TYPE_0[:len(sorted_players)]
         data_model["data"]["datasets"][0]["borderColor"] = COLORS_TYPE_0[:len(sorted_players)]
+        data_model["data"]["datasets"][0]["borderWidth"] = 0
+        data_model["options"] = {"scales": {"y": {"beginAtZero": True,}}}
 
     elif type == GRAPH_TYPE_AVERAGE_POINT:
         sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["totalScore"] / item[1]["nbGamePlayed"], reverse=True))
@@ -103,6 +105,8 @@ def dumpData(logManager, type, player=None):
         data_model["data"]["datasets"][0]["data"] = [player_data["totalScore"] / player_data["nbGamePlayed"] for player_data in sorted_players.values()]
         data_model["data"]["datasets"][0]["backgroundColor"] = COLORS_TYPE_1[:len(sorted_players)]
         data_model["data"]["datasets"][0]["borderColor"] = COLORS_TYPE_1[:len(sorted_players)]
+        data_model["data"]["datasets"][0]["borderWidth"] = 0
+        data_model["options"] = {"scales": {"y": {"beginAtZero": True,}}}
 
     elif type == GRAPH_TYPE_LOOSE_TALK:
         sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["looseTalk"], reverse=True))
@@ -115,6 +119,8 @@ def dumpData(logManager, type, player=None):
         data_model["data"]["datasets"][0]["data"] = [player_data["looseTalk"] for player_data in sorted_players.values()]
         data_model["data"]["datasets"][0]["backgroundColor"] = COLORS_TYPE_2[:len(sorted_players)]
         data_model["data"]["datasets"][0]["borderColor"] = COLORS_TYPE_2[:len(sorted_players)]
+        data_model["data"]["datasets"][0]["borderWidth"] = 0
+        data_model["options"] = {"scales": {"y": {"beginAtZero": True,}}}
 
     elif type == GRAPH_TYPE_RATIO_LOOSE_PLAYED:
         sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["winGame"] / item[1]["nbGamePlayed"], reverse=True))
@@ -127,6 +133,7 @@ def dumpData(logManager, type, player=None):
         data_model["data"]["datasets"][0]["data"] = [100 * player_data["winGame"] / player_data["nbGamePlayed"] for player_data in sorted_players.values()]
         data_model["data"]["datasets"][0]["backgroundColor"] = COLORS_TYPE_3[:len(sorted_players)]
         data_model["data"]["datasets"][0]["borderColor"] = COLORS_TYPE_3[:len(sorted_players)]
+        data_model["data"]["datasets"][0]["borderWidth"] = 0
         data_model["options"] = {"indexAxis": "y", "scales": {"y": {"min": 0, "max": 100}}}
 
     elif type == PROFILE_STATISTIC:
@@ -176,9 +183,8 @@ def dumpData(logManager, type, player=None):
         data_model["data"]["datasets"][0]["data"] = ratios
         data_model["data"]["datasets"][0]["backgroundColor"] = "rgba(231, 111, 81, 0.5)"
         data_model["data"]["datasets"][0]["borderColor"] = "rgba(231, 111, 81, 1)"
-        data_model["data"]["datasets"][0]["tension"] = 0.1
         data_model["data"]["datasets"][0]["borderWidth"] = 3
-        data_model["data"]["datasets"][0]["pointRadius"] = 0
+        data_model["data"]["datasets"][0]["pointRadius"] = 1
 
         # Add specific options for line chart
         data_model["options"]["plugins"] = {
