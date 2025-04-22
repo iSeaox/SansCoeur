@@ -2,6 +2,8 @@ GRAPH_TYPE_TOTAL_POINT = 0
 GRAPH_TYPE_AVERAGE_POINT = 1
 GRAPH_TYPE_LOOSE_TALK = 2
 GRAPH_TYPE_RATIO_LOOSE_PLAYED = 3
+PROFILE_STATISTIC = 4
+GRAPH_PROFILE_STATISTIC = 5
 
 COLORS_TYPE_0 = [
     "rgba(204, 92, 74)",
@@ -75,7 +77,7 @@ DATA_MODEL = {
     }
 }
 
-def dumpData(logManager, type):
+def dumpData(logManager, type, player=None):
     games = logManager.dumpGameLogs()
     out = _analyseGamesDump(games)
     if type == GRAPH_TYPE_TOTAL_POINT:
@@ -125,7 +127,68 @@ def dumpData(logManager, type):
         data_model["data"]["datasets"][0]["data"] = [100 * player_data["winGame"] / player_data["nbGamePlayed"] for player_data in sorted_players.values()]
         data_model["data"]["datasets"][0]["backgroundColor"] = COLORS_TYPE_3[:len(sorted_players)]
         data_model["data"]["datasets"][0]["borderColor"] = COLORS_TYPE_3[:len(sorted_players)]
-        data_model["options"] = {"indexAxis": "y"}
+        data_model["options"] = {"indexAxis": "y", "scales": {"y": {"min": 0, "max": 100}}}
+
+    elif type == PROFILE_STATISTIC:
+        return out["players"][player]
+
+    elif type == GRAPH_PROFILE_STATISTIC:
+        player_data = out["players"][player]
+        data_model = DATA_MODEL.copy()
+
+        # Create a chronological progression of the player's win ratio
+        player_games = []
+        win_count = 0
+        game_count = 0
+        ratios = []
+
+        # Find all games with this player and sort them by time
+        for g in games:
+            player_in_game = False
+            for p in g["players"]:
+                if p["name"] == player:
+                    player_in_game = True
+                    break
+
+            if player_in_game:
+                game_count += 1
+                player_team = None
+
+                # Find the player's team in this game
+                for p in g["players"]:
+                    if p["name"] == player:
+                        player_team = p["team"]
+                        break
+
+                # Check if player's team won
+                if g["score"][player_team] > g["score"][not player_team]:
+                    win_count += 1
+
+                # Calculate cumulative ratio after each game
+                ratio = (win_count / game_count) * 100
+                ratios.append(ratio)
+                player_games.append(g.get("time", f"Partie {game_count}"))
+
+        # Set up the line chart
+        data_model["type"] = "line"
+        data_model["data"]["labels"] = player_games
+        data_model["data"]["datasets"][0]["label"] = f"Évolution du ratio de victoire pour {player} (%)"
+        data_model["data"]["datasets"][0]["data"] = ratios
+        data_model["data"]["datasets"][0]["backgroundColor"] = "rgba(231, 111, 81, 0.5)"
+        data_model["data"]["datasets"][0]["borderColor"] = "rgba(231, 111, 81, 1)"
+        data_model["data"]["datasets"][0]["tension"] = 0.1
+        data_model["data"]["datasets"][0]["borderWidth"] = 3
+        data_model["data"]["datasets"][0]["pointRadius"] = 0
+
+        # Add specific options for line chart
+        data_model["options"]["plugins"] = {
+            "title": {
+                "display": True,
+                "text": f"Progression du ratio de victoire pour {player}"
+            }
+        }
+        data_model["options"]["scales"]["y"]["min"] = 0
+        data_model["options"]["scales"]["y"]["max"] = 100
 
     return data_model
 

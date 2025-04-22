@@ -10,7 +10,7 @@ Ce document recense les tâches et améliorations à apporter au projet SansCoeu
 
 ## Prochaines fonctionnalités
 
-- Implémenter un système de statistiques plus complet pour les joueurs
 - Segmenter les sockets en plusieurs socket surtout pour le chat et les messages dans games
 - Ajout du temps passer à jouer
-- Ajout du nombre de partie jouer
+- Ajouter un système pour intéragir avec une partie en cours ou créer des parties
+- Améliorer la page profil avec plus de statistiques

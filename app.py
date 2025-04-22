@@ -12,6 +12,8 @@ from flask_socketio import SocketIO
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
+import statisticManager
+
 # ################################################
 # Loggin setup
 
@@ -171,6 +173,13 @@ def change_password():
         return render_template('errors/change_error.html')
     else:
         return render_template('change_password.html')
+
+@app.route("/profile")
+@login_required
+def profile():
+    return render_template("profile.html",
+                           user=current_user,
+                           statistics=statisticManager.dumpData(currentlogManager, statisticManager.PROFILE_STATISTIC, player=current_user.username),)
 
 # ################################################
 # Main

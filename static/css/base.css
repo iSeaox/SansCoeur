@@ -12,11 +12,19 @@ nav {
   padding-top: 70px;
 }
 
+#profile-svg {
+  width: 85px;
+  height: auto;
+  cursor: pointer;
+  padding-right: 30px;
+  padding-top: 40px;
+}
+
 .navbar-logo {
   width: 120px;
   height: auto;
   cursor: pointer;
-  padding-left: 50px;
+  padding-left: 60px;
   padding-top: 50px;
 }
 
@@ -79,7 +87,13 @@ nav {
   #logout-svg {
     width: 50px;
     padding-right: 0px;
-    padding-top: 10px;
+    padding-top: 30px;
+  }
+
+  #profile-svg {
+    width: 50px;
+    padding-right: 0px;
+    padding-top: 0px;
   }
 
   #music-btn {

@@ -18,19 +18,33 @@
         <img src="{{ url_for('static', filename='img/sco_logo.png') }}" alt="" class="navbar-logo" />
       </a>
       {% if current_user.is_authenticated %}
-      <svg
-        id="logout-svg"
-        style="enable-background: new 0 0 44 44"
-        version="1.1"
-        viewBox="0 0 44 44"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g>
-          <line class="st1" x1="7.6" x2="22" y1="12" y2="12" />
-          <path class="st1" d="M11.9,0.8H4.5C3.1,0.8,2,1.9,2,3.2v17.5c0,1.4,1.1,2.5,2.5,2.5h7.4" />
-          <polyline class="st1" points="18.2,8.2 22,12 18.2,15.8" />
-        </g>
-      </svg>
+      <div>
+        <a href="{{ url_for('profile') }}" id="profile-link">
+          <svg
+            id="profile-svg"
+            style="enable-background: new 0 0 44 44"
+            version="1.1"
+            viewBox="0 0 44 44"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="22" cy="14" r="8" class="st1" />
+            <path class="st1" d="M22,26c-8,0-14,6-14,14h28C36,32,30,26,22,26z" />
+          </svg>
+        </a>
+        <svg
+          id="logout-svg"
+          style="enable-background: new 0 0 44 44"
+          version="1.1"
+          viewBox="0 0 44 44"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g>
+            <line class="st1" x1="7.6" x2="22" y1="12" y2="12" />
+            <path class="st1" d="M11.9,0.8H4.5C3.1,0.8,2,1.9,2,3.2v17.5c0,1.4,1.1,2.5,2.5,2.5h7.4" />
+            <polyline class="st1" points="18.2,8.2 22,12 18.2,15.8" />
+          </g>
+        </svg>
+      </div>
       {% endif %}
     </nav>
 

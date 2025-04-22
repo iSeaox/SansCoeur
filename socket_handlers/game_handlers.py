@@ -202,7 +202,11 @@ def register_handlers(socketio, logManager, gameManager):
     @socketio.on("request_stat_update")
     @socketio_login_required
     def handle_request_games_update(data):
-        emit("stat_update", {"data": statisticManager.dumpData(logManager, data["type"]), "type": data["type"]})
+        if "player" in data and data.get("type") == statisticManager.GRAPH_PROFILE_STATISTIC:
+            emit("stat_update", {"data": statisticManager.dumpData(logManager, data["type"], player=data["player"]), "type": data["type"]})
+        else:
+            emit("stat_update", {"data": statisticManager.dumpData(logManager, data["type"]), "type": data["type"]})
+
 
     @socketio.on("request_last_game_data")
     @socketio_login_required

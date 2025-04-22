@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" />
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div id="toast-container"></div>
+
+<h1 class="title">Sans Coeur Online</h1>
+
+<div class="profile-container">
+  <div class="profile-card">
+    <h1 class="profile-title">Mon Profil</h1>
+
+    <div class="profile-info">
+      <div class="profile-details">
+        <div class="info-group">
+          <label>Nom d'utilisateur:</label>
+          <p>{{ user.username }}</p>
+        </div>
+
+        <div class="info-group">
+          <label>Email:</label>
+          <p>{{ user.email if user.email else 'Non renseigné' }}</p>
+        </div>
+
+        <div class="info-group">
+          <label>Date d'inscription:</label>
+          <p>{{ user.created_at if user.created_at else 'Non disponible' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-stats">
+      <h2>Statistiques</h2>
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-value">{{ statistics["nbGamePlayed"] }}</div>
+          <div class="stat-label">Parties jouées</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-value">{{ statistics["winGame"] }}</div>
+          <div class="stat-label">Victoires</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-value">{{ "%0.2f"|format(statistics["winGame"] / statistics["nbGamePlayed"] * 100)}}%</div>
+          <div class="stat-label">Ratio de victoires</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4 justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-body bg-white p-3">
+                    <div style="height: 200;">
+                        <canvas id="chart-tp-5" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-buttons">
+      <button href="{{ url_for('change_password') }}"
+         class="btn {% if not user.password_needs_update %}btn-secondary{% else %}btn-primary{% endif %} profile-button"
+         {% if not user.password_needs_update %}
+         title="Pour changer votre mot de passe contactez un admin"
+         onclick="event.preventDefault(); showPasswordChangeToast(); return false;"
+         style="cursor: not-allowed; opacity: 0.6;"
+         {% endif %}>Changer le mot de passe</button>
+      <a href="{{ url_for('index') }}" class="btn btn-secondary profile-button">Retour au tableau de bord</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+<script type="module" src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}
