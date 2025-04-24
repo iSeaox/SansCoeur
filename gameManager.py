@@ -49,14 +49,9 @@ class GameManager:
                 return g
         return None
 
-
-    # TODO : DEPRECATED FUNCTION
-    def getGame(self):
-        warnings.warn(
-        "Deprecated functin should be removed", category=DeprecationWarning, stacklevel=0)
+    def getDebugGame(self):
         if len(self.games) > 0:
             return self.games[0]
-
     def getGames(self):
         out = []
         for game in self.games:

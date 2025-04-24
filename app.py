@@ -231,9 +231,9 @@ if __name__ == "__main__":
         app.config["DEBUG_MODE_PLAYERS"] = 1
 
     if app.config["DEBUG_MODE_PLAYERS"]:
-        currentGameManager.getGame().registerPlayer("magathe", 0, None)
-        currentGameManager.getGame().registerPlayer("helios", 1, None)
-        currentGameManager.getGame().registerPlayer("mathias", 0, None)
+        currentGameManager.getDebugGame().registerPlayer("magathe", 0, None)
+        currentGameManager.getDebugGame().registerPlayer("helios", 1, None)
+        currentGameManager.getDebugGame().registerPlayer("mathias", 0, None)
 
     if app.config["DEBUG_MODE"]:
         logger.warning("GAME STARTED IN DEBUG MODE")
