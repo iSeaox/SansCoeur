@@ -277,7 +277,7 @@ class Round:
                                     idx += 1
                         if idx == 2:
                             logger.info("Belote détectée (TEAM %d)", p.team)
-                            self.belote = player.team
+                            self.belote = p.team
 
                     self.sendRoundInfo()
 
