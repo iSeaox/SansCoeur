@@ -46,8 +46,23 @@ class Game:
         self.chat = chat.Chat(self.gameManager, self.logManager, self.id)
         self.beginTime = None
 
-    def setupDeck(self):
-        # TODO : gérer la distribution des cartes mieux que ça
+    def setupDeck(self, previousHeap=None):
+        # If cards came from a previous game
+        if previousHeap != None:
+            for trick in previousHeap[0]:
+                for c in trick:
+                    self._cards.append(c["card"])
+
+            for trick in previousHeap[1]:
+                for c in trick:
+                    self._cards.append(c["card"])
+
+            cut = random.randint(5, 27)
+            topHalf = self._cards[:cut]
+            bottomHalf = self._cards[cut:]
+            self._cards = bottomHalf + topHalf
+            return
+
         self._cards = []
         colors = [CARD_COLOR_SPADES, CARD_COLOR_HEARTS, CARD_COLOR_DIAMONDS, CARD_COLOR_CLUBS]
 
@@ -137,7 +152,8 @@ class Game:
             "status": self._status,
             "readyToStart": self._readyToStart,
             "score": self.score,
-            "round_score": self.roundScore
+            "round_score": self.roundScore,
+            "maxPoints": self.maxPoints,
         }
 
         if self._status == GAME_STATUS_WAITING:
@@ -156,8 +172,11 @@ class Game:
             f"game-{self.id}", "game_info", self.dumpGameInfo(), skip_sid=None
         )
 
-    def startNewRound(self):
-        self.setupDeck()
+    def startNewRound(self, previousHeap=None):
+        self.setupDeck(previousHeap=previousHeap)
+        # !debug Suppression des cartes de la partie
+        for p in self._players:
+            p.cards = []
         # Pour eviter les doublons lors du restart
         self.roundManager.deleteRound(self.getCurrentRound())
         self.roundManager.registerNewRound(self.id, self._players, self.nbRound % 4, self._cards, self.gameManager)
@@ -290,7 +309,7 @@ class Game:
         if self.score[0] >= self.maxPoints or self.score[1] > self.maxPoints:
             self.end()
             return
-        self.startNewRound()
+        self.startNewRound(previousHeap=self.getCurrentRound().heapTeam)
 
     def getCurrentRound(self):
         return self.roundManager.getRound()

@@ -8,7 +8,7 @@ class RoundManager:
 
     def deleteRound(self, round):
         if round in self.rounds:
-            logger.info("Supression de ", round)
+            logger.info(f"Supression de {round}")
             self.rounds.remove(round)
             del round
 
