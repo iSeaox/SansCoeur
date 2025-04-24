@@ -86,6 +86,7 @@ init_socket_handlers(socketio, currentlogManager, currentGameManager)
 import commandHandler
 
 currentCommandHandler = commandHandler.CommandHandler(currentGameManager)
+currentCommandHandler.start()
 
 import atexit
 atexit.register(currentCommandHandler.stop)
@@ -247,5 +248,4 @@ if __name__ == "__main__":
     if app.config["DEBUG_MODE"]:
         logger.warning("GAME STARTED IN DEBUG MODE")
 
-    currentCommandHandler.start()
     socketio.run(app, debug=True, host="0.0.0.0", port=25565)
