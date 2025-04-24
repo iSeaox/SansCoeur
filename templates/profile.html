@@ -51,6 +51,10 @@
           <div class="stat-value">{{ "%0.2f"|format(statistics["winGame"] / statistics["nbGamePlayed"] * 100)}}%</div>
           <div class="stat-label">Ratio de victoires</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-value">{{ statistics.timePlayed if statistics.timePlayed else 'Non disponible' }}</div>
+          <div class="stat-label">Temps jouées</div>
+        </div>
       </div>
     </div>
 

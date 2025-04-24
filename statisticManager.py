@@ -218,7 +218,8 @@ def _analyseGamesDump(games):
                     "winTalk": 0,
                     "played_round": 0,
                     "nbGamePlayed": 0,
-                    "winGame": 0
+                    "winGame": 0,
+                    "timePlayed": 0
                 }
 
             if g["score"][currentTeam] > g["score"][not(currentTeam)]:
@@ -226,6 +227,8 @@ def _analyseGamesDump(games):
 
             out["players"][p["name"]]["nbGamePlayed"] += 1
             out["players"][p["name"]]["totalScore"] += g["score"][currentTeam]
+            if "duration" in g:
+                out["players"][p["name"]]["timePlayed"] += g["duration"]
 
         for r in g["round_score"]:
             talkTeam = r["talk"]["team"]
@@ -242,5 +245,13 @@ def _analyseGamesDump(games):
                         out["players"][player["name"]]["looseTalk"] += 1
                     else:
                         out["players"][player["name"]]["winTalk"] += 1
+
+    # Format played time
+    for player in out["players"].values():
+        seconds = player["timePlayed"]
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds = seconds % 60
+        player["timePlayed"] = f"{int(hours)}h {int(minutes)}min {int(seconds)}s"
     return out
 
