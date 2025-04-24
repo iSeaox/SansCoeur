@@ -37,6 +37,7 @@ class GameManager:
 
         self.games.append(newGame)
         logger.info(f"Stack de Game: {self.games}")
+        return newGame.id
 
     def getGameByID(self, id):
         for g in self.games:
