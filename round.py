@@ -152,7 +152,6 @@ class Round:
         self._emitBroadcast('round_info', self.dumpRoundInfo())
 
     def cardsDistrib(self):
-        # TODO: Pensez à couper le jeu
         # Distribution des cartes
         schem = [3, 2, 3]
         for nbCard in schem:
