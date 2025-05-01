@@ -22,6 +22,9 @@ class SocketMonitor:
 
     def register_connection(self, socket_id, username, request):
         """Register a new connection to a socket."""
+        forwarded_for = request.headers.get("X-Forwarded-For")
+        if forwarded_for:
+            print(f"Forwarded IP: {forwarded_for}")
         if socket_id in self.sockets:
             self.sockets[socket_id]["connections"][username] = {
                 "sid_socketio": request.sid,
