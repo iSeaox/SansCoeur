@@ -24,9 +24,10 @@ class Chat:
         self.registerGif(fake_player, gif_url)
 
     def registerChat(self, player, message):
+        current_time = time.strftime("%H:%M", time.localtime())
         self.logMessage(player, message["message"])
         self.broadcastMessage(player, message["message"])
-        self.cachedMessage.append((player, {"message": message["message"]}))
+        self.cachedMessage.append((player, {"message": message["message"]}, current_time))
         if len(self.cachedMessage) > 8:
             self.cachedMessage = self.cachedMessage[1:]
 
@@ -37,22 +38,21 @@ class Chat:
             self._emitBroadcast("receive_chat_gif", {"gif_url": gif_url, "player": player.name, "time": current_time, "spec": True})
         else:
             self._emitBroadcast("receive_chat_gif", {"gif_url": gif_url, "player": player.name, "time": current_time})
-        self.cachedMessage.append((player, {"gif_url": gif_url}))
+        self.cachedMessage.append((player, {"gif_url": gif_url}, current_time))
         if len(self.cachedMessage) > 8:
             self.cachedMessage = self.cachedMessage[1:]
 
     def resumeChat(self, player):
-        for p, msg in self.cachedMessage:
-            current_time = time.strftime("%H:%M", time.localtime())
+        for p, msg, mTime in self.cachedMessage:
             event = ""
             data = {}
             if "gif_url" in msg:
                 event = "receive_chat_gif"
-                data = {"gif_url": msg["gif_url"], "player": p.name, "time": current_time}
-                emit("receive_chat_gif", {"gif_url": msg["gif_url"], "player": p.name, "time": current_time}, room=player.sid)
+                data = {"gif_url": msg["gif_url"], "player": p.name, "time": mTime}
+                emit("receive_chat_gif", {"gif_url": msg["gif_url"], "player": p.name, "time": mTime}, room=player.sid)
             else:
                 event = "receive_chat_message"
-                data = {"message": msg["message"], "player": p.name, "time": current_time}
+                data = {"message": msg["message"], "player": p.name, "time": mTime}
 
             if p.spec:
                 data["spec"] = True
