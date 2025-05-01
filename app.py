@@ -78,8 +78,11 @@ currentGameManager.registerNewGame()
 
 # ################################################
 # Socket Handlers
+from socketMonitoring import SocketMonitor
+currentSocketMonitor = SocketMonitor()
+
 from socket_handlers import init_socket_handlers
-init_socket_handlers(socketio, currentlogManager, currentGameManager, currentDBManager)
+init_socket_handlers(socketio, currentlogManager, currentGameManager, currentDBManager, currentSocketMonitor)
 
 # ################################################
 # IPC Command

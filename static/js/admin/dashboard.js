@@ -15,6 +15,11 @@ function fetchPlayersList() {
 function fetchGamesList() {
   admin_socket.emit("get_games");
 }
+
+// Fonction pour récupérer la liste des connexions
+function fetchConnectionsList() {
+  admin_socket.emit("get_connections");
+}
 window.fetchGamesList = fetchGamesList;
 
 
@@ -147,6 +152,114 @@ admin_socket.on("players_list", data => {
   renderPlayersList(data.players);
 });
 
+// Gestionnaire d'événement pour les connexions
+admin_socket.on("connections_list", data => {
+  console.log("Received connections data:", data);
+  renderConnectionsList(data.connections);
+});
+
+function renderConnectionsList(connections) {
+  const connectionsList = document.getElementById("connections-list");
+  if (!connectionsList) return;
+
+  // Vérifier si le dictionnaire est vide
+  const hasConnections = Object.keys(connections).some(namespace => 
+    Object.keys(connections[namespace]).length > 0
+  );
+
+  if (!connections || !hasConnections) {
+    connectionsList.innerHTML = '<tr><td colspan="8" class="text-center">Aucune connexion active</td></tr>';
+    return;
+  }
+
+  connectionsList.innerHTML = "";
+
+  // Parcourir le dictionnaire par namespace
+  for (const namespace in connections) {
+    // Pour chaque namespace, parcourir les utilisateurs
+    for (const username in connections[namespace]) {
+      const userConnection = connections[namespace][username];
+
+      const row = document.createElement('tr');
+
+      // Namespace
+      const namespaceCell = document.createElement('td');
+      namespaceCell.textContent = namespace;
+      namespaceCell.className = 'text-break';
+      row.appendChild(namespaceCell);
+
+      // Username
+      const usernameCell = document.createElement('td');
+      usernameCell.textContent = username;
+      usernameCell.className = 'text-break';
+      row.appendChild(usernameCell);
+
+      // SID Socket.io
+      const sidCell = document.createElement('td');
+      sidCell.textContent = userConnection.sid_socketio || '-';
+      sidCell.className = 'text-break';
+      sidCell.style.wordWrap = 'break-word';
+      sidCell.style.minWidth = '100px';
+      sidCell.style.maxWidth = '150px';
+      row.appendChild(sidCell);
+
+      // EIO Socket.io
+      const eioCell = document.createElement('td');
+      eioCell.textContent = userConnection.eio_socketio || '-';
+      eioCell.className = 'text-break';
+      eioCell.style.wordWrap = 'break-word';
+      eioCell.style.minWidth = '100px';
+      eioCell.style.maxWidth = '150px';
+      row.appendChild(eioCell);
+
+      // Status
+      const statusCell = document.createElement('td');
+      if (userConnection.status) {
+        statusCell.innerHTML = '<span class="badge bg-success">Connecté</span>';
+      } else {
+        statusCell.innerHTML = '<span class="badge bg-danger">Déconnecté</span>';
+      }
+      row.appendChild(statusCell);
+
+      // IP Address
+      const ipCell = document.createElement('td');
+      ipCell.textContent = userConnection.ip_address || '-';
+      ipCell.className = 'text-break';
+      row.appendChild(ipCell);
+
+      // User Agent
+      const uaCell = document.createElement('td');
+      uaCell.textContent = userConnection.user_agent || '-';
+      uaCell.className = 'text-break';
+      uaCell.style.wordWrap = 'break-word';
+      uaCell.style.minWidth = '150px';
+      uaCell.style.maxWidth = '200px';
+      uaCell.title = userConnection.user_agent; // Ajoute un tooltip pour voir l'agent complet
+      row.appendChild(uaCell);
+
+      // Rooms
+      const roomsCell = document.createElement('td');
+      roomsCell.className = 'text-break';
+      if (userConnection.rooms && userConnection.rooms.length) {
+        const roomsList = document.createElement('ul');
+        roomsList.className = 'list-unstyled mb-0';
+        userConnection.rooms.forEach(room => {
+          const roomItem = document.createElement('li');
+          roomItem.textContent = room;
+          roomItem.style.wordWrap = 'break-word';
+          roomsList.appendChild(roomItem);
+        });
+        roomsCell.appendChild(roomsList);
+      } else {
+        roomsCell.textContent = '-';
+      }
+      row.appendChild(roomsCell);
+
+      connectionsList.appendChild(row);
+    }
+  }
+}
+
 // Fonctions pour les actions sur les joueurs (à implémenter plus tard)
 window.unlockPassword = function(username) {
   admin_socket.emit("update_flag", { username });
@@ -178,6 +291,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   fetchPlayersList();
   fetchGamesList();
+  fetchConnectionsList(); // Ajouter cette ligne pour charger les connexions
+  
+  // Configurer les rafraîchissements périodiques
+  setInterval(() => {
+    fetchPlayersList();
+    fetchGamesList();
+    fetchConnectionsList(); // Ajouter cette ligne pour rafraîchir régulièrement
+  }, 30000); // Rafraîchir toutes les 30 secondes
 });
 
 const btnAddPlayer = document.getElementById("add-player");
@@ -192,3 +313,6 @@ btnAddPlayer.addEventListener("click", function () {
     sendToast("Veuillez entrer un nom d'utilisateur valide.", "danger");
   }
 });
+
+// Exposer les fonctions de récupération des connexions
+window.fetchConnectionsList = fetchConnectionsList;

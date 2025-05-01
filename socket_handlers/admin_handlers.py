@@ -26,17 +26,19 @@ def _formatUserData(users):
     return formatted_data
 
 
-def register_handlers(socketio, logManager, gameManager, dbManager):
+def register_handlers(socketio, logManager, gameManager, dbManager, socketMonitor):
 
     @socketio.on("connect", namespace="/admin")
     @socketio_admin_required
     def handle_admin_connect():
         logger.info(f"{current_user.username} est connecté au namespace admin (SID {request.sid})")
+        socketMonitor.register_connection("/admin", current_user.username, request)
 
     @socketio.on("disconnect", namespace="/admin")
     @socketio_admin_required
     def handle_admin_connect():
         logger.info(f"{current_user.username} est s'est déconnecté du namespace admin (SID {request.sid})")
+        socketMonitor.unregister_connection("/admin", current_user.username)
 
     @socketio.on("get_players", namespace="/admin")
     @socketio_admin_required
@@ -111,6 +113,11 @@ def register_handlers(socketio, logManager, gameManager, dbManager):
     @socketio_admin_required
     def handle_get_games():
         emit("games_list", {"games": gameManager.getGames()}, namespace="/admin")
+
+    @socketio.on("get_connections", namespace="/admin")
+    @socketio_admin_required
+    def handle_get_connections():
+        emit("connections_list", {"connections": socketMonitor.resolve_rooms(socketio)}, namespace="/admin")
 
     @socketio.on("delete_game", namespace="/admin")
     @socketio_admin_required

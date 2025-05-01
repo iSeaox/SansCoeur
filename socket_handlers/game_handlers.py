@@ -7,13 +7,13 @@ import re
 import logging
 logger = logging.getLogger(f"app.{__name__}")
 
-def register_handlers(socketio, logManager, gameManager):
+def register_handlers(socketio, logManager, gameManager, socketMonitor):
 
     @socketio.on("connect")
     @socketio_login_required
     def handle_connect():
         logger.info(f"{current_user.username} est connecté avec le SID {request.sid}")
-
+        socketMonitor.register_connection("/", current_user.username, request)
         # Check if player is register in a game
         temp_game = gameManager.getGameByPlayerName(current_user.username)
         if temp_game != None:
@@ -217,4 +217,4 @@ def register_handlers(socketio, logManager, gameManager):
     @socketio_login_required
     def handle_disconnect():
         # sidManager.removeMapping(request.sid)
-        pass
+        socketMonitor.unregister_connection("/", current_user.username)
