@@ -1,6 +1,7 @@
 window.socket = io({
   withCredentials: true
 });
+
 const params = new URLSearchParams(window.location.search);
 const data = Object.fromEntries(params.entries());
 socket.emit('connect_game', data);

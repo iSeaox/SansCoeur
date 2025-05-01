@@ -1,0 +1,23 @@
+.title {
+    font-family: "Great Vibes", cursive;
+    font-weight: 400;
+    text-align: center;
+    font-size: 7rem;
+    padding-top: -20px;
+    margin-top: -20px;
+    color: white;
+  }
+
+.title span {
+  display: inline-block;
+  animation: highlight 7s infinite;
+  animation-delay: calc(var(--i) * 0.1s);
+}
+
+.container {
+  color: black;
+}
+
+.sub-title {
+  color: white
+}

@@ -13,6 +13,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import statisticManager
+import argparse
 
 # ################################################
 # Loggin setup
@@ -78,8 +79,7 @@ currentGameManager.registerNewGame()
 # ################################################
 # Socket Handlers
 from socket_handlers import init_socket_handlers
-import argparse
-init_socket_handlers(socketio, currentlogManager, currentGameManager)
+init_socket_handlers(socketio, currentlogManager, currentGameManager, currentDBManager)
 
 # ################################################
 # IPC Command
@@ -96,6 +96,9 @@ atexit.register(currentCommandHandler.stop)
 
 # ___________________________________________
 # Login
+
+import auth
+
 @login_manager.user_loader
 def load_user(user_id):
     return currentDBManager.getUser(user_id)
@@ -117,6 +120,7 @@ def login():
 
         if user and check_password_hash(user.password, password):
             remember = request.form.get('remember') == 'on'
+            currentDBManager.updateLoginTime(user.id, datetime.datetime.now())
             login_user(user, remember=remember)
             flash('Connexion réussie !', 'success')
 
@@ -190,6 +194,12 @@ def profile():
     return render_template("profile.html",
                            user=current_user,
                            statistics=statisticManager.dumpData(currentlogManager, statisticManager.PROFILE_STATISTIC, player=current_user.username),)
+
+@app.route("/admin")
+@auth.admin_required
+@login_required
+def admin():
+    return render_template("/admin/dashboard.html", username=current_user.username)
 
 # ################################################
 # Main

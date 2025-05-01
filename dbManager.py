@@ -20,7 +20,10 @@ class dbManager:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 password TEXT NOT NULL,
-                password_needs_update BOOLEAN NOT NULL DEFAULT 0
+                password_needs_update BOOLEAN NOT NULL DEFAULT 0,
+                is_admin BOOLEAN NOT NULL DEFAULT 0,
+                creation_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+                last_connection DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             """)
             conn.commit()
@@ -32,7 +35,7 @@ class dbManager:
             cursor.execute("SELECT * FROM users WHERE id = ?", (id,))
             user_fetch = cursor.fetchone()
             if user_fetch:
-                return user.User(user_fetch[0], user_fetch[1], user_fetch[2], user_fetch[3])
+                return user.User(user_fetch[0], user_fetch[1], user_fetch[2], user_fetch[3], user_fetch[4], user_fetch[5], user_fetch[6])
             return None
 
     def getUserByName(self, name):
@@ -41,7 +44,7 @@ class dbManager:
             cursor.execute("SELECT * FROM users WHERE name = ?", (name,))
             user_fetch = cursor.fetchone()
             if user_fetch:
-                return user.User(user_fetch[0], user_fetch[1], user_fetch[2], user_fetch[3])
+                return user.User(user_fetch[0], user_fetch[1], user_fetch[2], user_fetch[3], user_fetch[4], user_fetch[5], user_fetch[6])
             return None
 
     def updatePassword(self, id, new_password):
@@ -167,3 +170,30 @@ class dbManager:
                 return True
         except sqlite3.Error as e:
             raise Exception(f"Database error: {e}")
+
+    def updateLoginTime(self, user_id, login_time):
+        """
+        Update the last connection time for a user
+
+        Args:
+            user_id (int): The ID of the user
+            login_time (datetime): The datetime of the login
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("UPDATE users SET last_connection = ? WHERE id = ?",
+                              (login_time.strftime('%Y-%m-%d %H:%M:%S'), user_id))
+                conn.commit()
+                if cursor.rowcount == 0:
+                    logger.warning("No user found with id %d to update login time.", user_id)
+                    return False
+                else:
+                    logger.info("Login time updated for user with id %d.", user_id)
+                    return True
+        except Exception as e:
+            logger.error(f"Error updating login time for user {user_id}: {e}")
+            return False

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/dashboard.css') }}" />
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div id="toast-container"></div>
+
+<h1 class="title">Sans Coeur Online</h1>
+<h1 class="text-center sub-title mt-5">Dashboard Administrateur</h1>
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title text-center">Placeholder</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+<script type="module" src="{{ url_for('static', filename='js/admin/dashboard.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/toaster.js') }}"></script>
+{% endblock %}
