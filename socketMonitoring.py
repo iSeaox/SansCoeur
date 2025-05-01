@@ -22,15 +22,17 @@ class SocketMonitor:
 
     def register_connection(self, socket_id, username, request):
         """Register a new connection to a socket."""
-        forwarded_for = request.headers.get("X-Forwarded-For")
-        if forwarded_for:
-            logger.info(f"Forwarded IP: {forwarded_for}")
         if socket_id in self.sockets:
             self.sockets[socket_id]["connections"][username] = {
                 "sid_socketio": request.sid,
                 "user_agent": request.headers.get("User-Agent", "N/A"),
                 "ip_address": request.remote_addr,
             }
+
+            forwarded_for = request.headers.get("X-Forwarded-For")
+            if forwarded_for:
+                self.sockets[socket_id]["connections"][username]["ip_address"] = forwarded_for
+
         else:
             logger.error(f"Socket {socket_id} not found.")
 
