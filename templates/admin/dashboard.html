@@ -13,8 +13,43 @@
 <h1 class="text-center sub-title mt-5">Dashboard Administrateur</h1>
 <div class="container mt-5">
     <div class="card shadow-sm">
+        <div class="card-header text-center">
+            <h3 class="card-title mb-0">Liste des joueurs</h3>
+        </div>
         <div class="card-body">
-            <h2 class="card-title text-center">Placeholder</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Date d'inscription</th>
+                            <th>Dernière connexion</th>
+                            <th>MDP Update</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="players-list">
+                        <tr>
+                            <td colspan="5" class="text-center">Chargement des données...</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <tfoot>
+                    <tr>
+                        <td colspan="5">
+                            <div class="input-group">
+                                <input type="text" id="new-player-name" class="form-control" placeholder="Nom" />
+                                <button id="add-player" class="btn btn-success input-group-append">
+                                    <i class="bi bi-plus-circle"></i> Ajouter
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </div>
+            <button id="refresh-players" class="btn btn-primary mt-3">
+                <i class="bi bi-arrow-clockwise"></i> <span class="text-white">Rafraîchir</span>
+            </button>
         </div>
     </div>
 </div>

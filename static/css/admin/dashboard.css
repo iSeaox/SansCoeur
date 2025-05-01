@@ -21,3 +21,11 @@
 .sub-title {
   color: white
 }
+
+.btn-unlock {
+  background-color: #ff7d00;
+}
+
+.btn-delete {
+  background-color: #78290f;
+}

@@ -64,10 +64,11 @@ class dbManager:
             cursor = conn.cursor()
             if self.getUserByName(name):
                 logger.warning("User %s already exists in the database.", name)
-                return
+                return False, "User already exists."
             cursor.execute("INSERT INTO users (name, password, password_needs_update) VALUES (?, ?, ?)", (name, password, should_update_password))
             conn.commit()
             logger.info("User %s inserted into the database.", name)
+            return True, ""
 
     def updateUserPassword(self, username, password_hash):
         """
@@ -116,12 +117,12 @@ class dbManager:
                 )
                 if cursor.rowcount == 0:
                     logger.warning("No user found with username %s to update the password flag.", username)
-                    return False
+                    return False, f"No user with username '{username}' found"
                 logger.info("Password flag updated for user %s.", username)
-                return True
+                return True, ""
         except Exception as e:
             logger.error(f"Error updating user password flag: {e}")
-            return False
+            return False, f"An error occurred: {e}"
 
     def getAllUsers(self):
         """
@@ -142,7 +143,10 @@ class dbManager:
                         id=row['id'],
                         username=row['name'],
                         password=row['password'],
-                        password_needs_update=bool(row['password_needs_update'])
+                        password_needs_update=bool(row['password_needs_update']),
+                        is_admin=bool(row['is_admin']),
+                        creation_time=row['creation_time'],
+                        last_connection=row['last_connection']
                     )
                     users.append(user_fetch)
                 return users
@@ -166,10 +170,10 @@ class dbManager:
                 cursor.execute("DELETE FROM users WHERE name = ?", (username,))
                 connection.commit()
                 if cursor.rowcount == 0:
-                    raise Exception(f"No user with username '{username}' found")
-                return True
+                    return False, f"No user with username '{username}' found"
+                return True, ""
         except sqlite3.Error as e:
-            raise Exception(f"Database error: {e}")
+            return False, f"An error occurred: {e}"
 
     def updateLoginTime(self, user_id, login_time):
         """
