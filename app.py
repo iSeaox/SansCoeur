@@ -148,6 +148,10 @@ def sound():
 @login_required
 def dashboard():
     game_id = request.args.get('id')
+    if not game_id.isdigit():
+        return render_template("errors/game_not_found.html",
+                              message="ID de partie invalide",
+                              username=current_user.username)
     if not game_id or not currentGameManager.getGameByID(int(game_id)):
         return render_template("errors/game_not_found.html",
                               message="Partie introuvable",

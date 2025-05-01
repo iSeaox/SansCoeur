@@ -106,3 +106,50 @@ def register_handlers(socketio, logManager, gameManager, dbManager):
             return
         emit("launch-toast", {"message": f"User {username} added successfully", "category": "success"}, namespace="/info", room=current_user.username)
         emit("players_list", {"players": _formatUserData(dbManager.getAllUsers())}, namespace="/admin")
+
+    @socketio.on("get_games", namespace="/admin")
+    @socketio_admin_required
+    def handle_get_games():
+        emit("games_list", {"games": gameManager.getGames()}, namespace="/admin")
+
+    @socketio.on("delete_game", namespace="/admin")
+    @socketio_admin_required
+    def handle_delete_game(data):
+        gameID = int(data.get("gameID"))
+        if not gameID:
+            emit("launch-toast", {"message": "Game ID is required", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+        game = gameManager.getGameByID(gameID)
+        if not game:
+            emit("launch-toast", {"message": f"Game {gameID} not found", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+        ret, err = gameManager.deleteGame(game)
+        if not ret:
+            emit("launch-toast", {"message": f"Error deleting game: {err}", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+        emit("launch-toast", {"message": f"Game {gameID} deleted successfully", "category": "success"}, namespace="/info", room=current_user.username)
+        emit("games_list", {"games": gameManager.getGames()}, namespace="/admin")
+
+    @socketio.on("new_game", namespace="/admin")
+    @socketio_admin_required
+    def handle_new_game():
+        ret = gameManager.registerNewGame()
+        emit("launch-toast", {"message": f"New game created with ID {ret}", "category": "success"}, namespace="/info", room=current_user.username)
+        emit("games_list", {"games": gameManager.getGames()}, namespace="/admin")
+
+    @socketio.on("update_score", namespace="/admin")
+    @socketio_admin_required
+    def handle_update_score(data):
+        gameID = int(data.get("gameId"))
+        score = data.get("score")
+
+        if not gameID or not score:
+            emit("launch-toast", {"message": "Game ID and score are required", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+        game = gameManager.getGameByID(gameID)
+        if not game:
+            emit("launch-toast", {"message": f"Game {gameID} not found", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+        game.score = score
+        emit("launch-toast", {"message": f"Game {gameID} updated successfully", "category": "success"}, namespace="/info", room=current_user.username)
+        emit("games_list", {"games": gameManager.getGames()}, namespace="/admin")

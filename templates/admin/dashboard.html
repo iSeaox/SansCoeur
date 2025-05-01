@@ -52,6 +52,72 @@
             </button>
         </div>
     </div>
+
+    <!-- Nouvelle section pour les parties -->
+    <div class="card shadow-sm mt-5">
+        <div class="card-header text-center">
+            <h3 class="card-title mb-0">Parties en cours</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Joueurs</th>
+                            <th>Score</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="games-list">
+                        <tr>
+                            <td colspan="5" class="text-center">Chargement des parties...</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <button id="add-game" class="btn btn-success" onclick="window.newGame()">
+                                <i class="bi bi-plus-circle"></i> Créer une nouvelle partie
+                            </button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </div>
+            <button id="refresh-games" class="btn btn-primary mt-3" onclick="window.fetchGamesList()">
+                <i class="bi bi-arrow-clockwise"></i> <span class="text-white">Rafraîchir la liste des parties</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal pour modifier les scores -->
+    <div class="modal fade" id="modifyScoreModal" tabindex="-1" aria-labelledby="modifyScoreModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modifyScoreModalLabel">Modifier le score</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="modalGameId">
+                    <div class="mb-3">
+                        <label for="scoreTeam0" class="form-label">Score Équipe 0</label>
+                        <input type="number" class="form-control" id="scoreTeam0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="scoreTeam1" class="form-label">Score Équipe 1</label>
+                        <input type="number" class="form-control" id="scoreTeam1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="saveScoreChanges">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 

@@ -18,7 +18,7 @@ class GameManager:
         self.registerNewGame()
 
     def deleteGame(self, game):
-        logger.info("Supression de ", game)
+        logger.info(f"Supression de {str(game)}")
 
         self.roomManager.broadcast_to_room(
             f"game-{game.id}", 'end_game',
@@ -30,6 +30,7 @@ class GameManager:
 
         self.games.remove(game)
         del game
+        return True, ""
 
     def registerNewGame(self):
         newGame = game.Game(self, self.logManager)

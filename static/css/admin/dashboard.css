@@ -22,10 +22,14 @@
   color: white
 }
 
-.btn-unlock {
+.btn-unlock, .btn-score {
   background-color: #ff7d00;
 }
 
 .btn-delete {
   background-color: #78290f;
+}
+
+.btn-goto {
+  background-color: #15616d;
 }

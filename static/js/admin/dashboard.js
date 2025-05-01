@@ -1,4 +1,4 @@
-import { sendToast } from "../utils.js";
+import { sendToast, getGameStatusText } from "../utils.js";
 
 window.socket = io({
   withCredentials: true
@@ -8,12 +8,104 @@ window.admin_socket = io("/admin", {
   withCredentials: true
 });
 
-// Fonction pour récupérer la liste des joueurs
 function fetchPlayersList() {
   admin_socket.emit("get_players");
 }
 
-// Fonction pour créer les lignes de la table des joueurs
+function fetchGamesList() {
+  admin_socket.emit("get_games");
+}
+window.fetchGamesList = fetchGamesList;
+
+
+
+function renderGamesList(games) {
+  const gamesListElement = document.getElementById("games-list");
+  if (!games || games.length === 0) {
+    gamesListElement.innerHTML = `
+    <tr>
+      <td colspan="5" class="text-center">Aucune partie trouvée</td>
+    </tr>
+    `;
+  }
+  else {
+    gamesListElement.innerHTML = games.map(game => `
+      <tr>
+        <td>${game.id}</td>
+        <td>${game.players.length} / 4</td>
+        <td>${game.score}</td>
+        <td>${getGameStatusText(game.status)}</td>
+        <td>
+          <div class="btn-group btn-group-sm" role="group">
+          <button type="button" class="btn btn-goto" data-username="${game.id}" onclick="goToGame('${game.id}')">
+            <i class="bi bi-arrow-right text-white"></i>
+          </button>
+          <button type="button" class="btn btn-score" onclick="openModifyScoreModal('${game.id}', [${game.score}])">
+            <i class="bi bi-pencil-square text-white"></i>
+          </button>
+          <button type="button" class="btn btn-delete" data-username="${game.id}" onclick="confirmDeleteGame('${game.id}')">
+            <i class="bi bi-trash text-white"></i>
+          </button>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+  }
+}
+
+// Function to open the modify score modal
+function openModifyScoreModal(gameId, scores) {
+  const modal = new bootstrap.Modal(document.getElementById('modifyScoreModal'));
+  document.getElementById('modalGameId').value = gameId;
+  document.getElementById('scoreTeam0').value = scores[0];
+  document.getElementById('scoreTeam1').value = scores[1];
+  modal.show();
+}
+window.openModifyScoreModal = openModifyScoreModal;
+
+// Add event listener for saving score changes
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('saveScoreChanges').addEventListener('click', function() {
+    const gameId = document.getElementById('modalGameId').value;
+    const scoreTeam0 = parseInt(document.getElementById('scoreTeam0').value);
+    const scoreTeam1 = parseInt(document.getElementById('scoreTeam1').value);
+
+    if (isNaN(scoreTeam0) || isNaN(scoreTeam1) || scoreTeam0 < 0 || scoreTeam1 < 0) {
+      showToast('error', 'Veuillez entrer des scores valides (nombres positifs).');
+      return;
+    }
+
+    admin_socket.emit('update_score', {
+      gameId: gameId,
+      score: [scoreTeam0, scoreTeam1]
+    });
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modifyScoreModal'));
+    modal.hide();
+  });
+});
+
+
+admin_socket.on("games_list", data => {
+  renderGamesList(data.games);
+});
+
+window.confirmDeleteGame = function (gameID) {
+  if (confirm(`Êtes-vous sûr de vouloir supprimer la partie ${gameID} ?`)) {
+    admin_socket.emit("delete_game", { gameID });
+  }
+}
+
+window.goToGame = function (gameId) {
+  window.location.href = `/dashboard?id=${gameId}`;
+}
+
+window.newGame = function () {
+  admin_socket.emit("new_game");
+}
+
+
+// ###########################################################################################
 function renderPlayersList(players) {
   const playersListElement = document.getElementById("players-list");
 
@@ -84,8 +176,8 @@ document.addEventListener("DOMContentLoaded", function () {
     refreshButton.addEventListener("click", fetchPlayersList);
   }
 
-  // Charger initialement la liste des joueurs
   fetchPlayersList();
+  fetchGamesList();
 });
 
 const btnAddPlayer = document.getElementById("add-player");
