@@ -126,7 +126,7 @@ def dumpData(logManager, type, player=None):
         data_model["options"] = {"scales": {"y": {"beginAtZero": True,}}}
 
     elif type == GRAPH_TYPE_RATIO_LOOSE_PLAYED:
-        NB_GAME = 10
+        NB_GAME = 20
         winRates = {}
         for player, _ in out["players"].items():
             winRates[player] = _getLastGame(games, NB_GAME, player)["winRate"]
