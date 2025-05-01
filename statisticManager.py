@@ -1,3 +1,5 @@
+import json
+
 GRAPH_TYPE_TOTAL_POINT = 0
 GRAPH_TYPE_AVERAGE_POINT = 1
 GRAPH_TYPE_LOOSE_TALK = 2
@@ -84,6 +86,7 @@ def dumpData(logManager, type, player=None):
         sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["totalScore"], reverse=True))
         if len(sorted_players) > 10:
             sorted_players = sorted_players[:11]
+
         data_model = DATA_MODEL.copy()
         data_model["type"] = "bar"
         data_model["data"]["labels"] = [player for player in sorted_players.keys()]
@@ -123,18 +126,40 @@ def dumpData(logManager, type, player=None):
         data_model["options"] = {"scales": {"y": {"beginAtZero": True,}}}
 
     elif type == GRAPH_TYPE_RATIO_LOOSE_PLAYED:
-        sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["winGame"] / item[1]["nbGamePlayed"], reverse=True))
-        if len(sorted_players) > 10:
-            sorted_players = sorted_players[:11]
+        NB_GAME = 10
+        winRates = {}
+        for player, _ in out["players"].items():
+            winRates[player] = _getLastGame(games, NB_GAME, player)["winRate"]
+
+        sorted_players = dict(sorted(winRates.items(), key=lambda item: winRates[item[0]], reverse=True))
+
         data_model = DATA_MODEL.copy()
         data_model["type"] = "bar"
         data_model["data"]["labels"] = [player for player in sorted_players.keys()]
-        data_model["data"]["datasets"][0]["label"] = "Top 10 des ratios de victoire (%)"
-        data_model["data"]["datasets"][0]["data"] = [100 * player_data["winGame"] / player_data["nbGamePlayed"] for player_data in sorted_players.values()]
+        data_model["data"]["datasets"][0]["label"] = f"Top 10 des ratios de victoire ({NB_GAME} dernières parties) [%]"
+        data_model["data"]["datasets"][0]["data"] = [value for value in sorted_players.values()]
+
         data_model["data"]["datasets"][0]["backgroundColor"] = COLORS_TYPE_3[:len(sorted_players)]
         data_model["data"]["datasets"][0]["borderColor"] = COLORS_TYPE_3[:len(sorted_players)]
         data_model["data"]["datasets"][0]["borderWidth"] = 0
-        data_model["options"] = {"indexAxis": "y", "scales": {"y": {"min": 0, "max": 100}}}
+
+        # Configuration pour afficher les barres horizontalement et fixer le maximum à 100%
+        data_model["options"] = {
+            "indexAxis": "y",
+            "scales": {
+                "x": {  # Pour les barres horizontales, l'axe des x représente les valeurs
+                    "min": 0,
+                    "max": 100,
+                    "beginAtZero": True,
+                    "title": {
+                        "display": True,
+                        "text": f"Pourcentage de victoire ({NB_GAME} dernières parties) [%]"
+                    }
+                }
+            },
+            "maintainAspectRatio": True,
+            "responsive": True
+        }
 
     elif type == PROFILE_STATISTIC:
         return out["players"][player]
@@ -197,6 +222,88 @@ def dumpData(logManager, type, player=None):
         data_model["options"]["scales"]["y"]["max"] = 100
 
     return data_model
+
+def _getLastGame(games, nbGame, player):
+    """
+    Get statistics from the last nbGame games of a specific player
+
+    Args:
+        games: List of all games data
+        nbGame: Number of games to analyze
+        player: Player name to filter games
+
+    Returns:
+        Dictionary containing stats of the last nbGame games for the player
+    """
+    # Filter games where the player participated
+    player_games = []
+    for g in games:
+        for p in g["players"]:
+            if p["name"] == player:
+                player_games.append(g)
+                break
+
+    # Sort by time if available (newest first)
+    if player_games and "time" in player_games[0]:
+        player_games.sort(key=lambda x: x.get("time", ""), reverse=True)
+
+    # Limit to the requested number of games
+    player_games = player_games[:nbGame]
+
+    # Analyze the filtered games
+    stats = {
+        "gamesPlayed": len(player_games),
+        "wins": 0,
+        "losses": 0,
+        "failedContracts": 0,
+        "score": 0,
+        "games": []  # Will contain basic info about each game
+    }
+
+    for g in player_games:
+        game_info = {
+            "id": g.get("id", "Unknown"),
+            "time": g.get("time", "Unknown"),
+            "score": g["score"],
+            "playerTeam": None,
+            "won": False
+        }
+
+        # Find player's team
+        for p in g["players"]:
+            if p["name"] == player:
+                player_team = p["team"]
+                game_info["playerTeam"] = player_team
+
+                # Check if player won
+                if g["score"][player_team] > g["score"][not player_team]:
+                    stats["wins"] += 1
+                    game_info["won"] = True
+                else:
+                    stats["losses"] += 1
+
+                # Add player's score
+                stats["score"] += g["score"][player_team]
+                break
+
+        # Count failed contracts
+        for r in g["round_score"]:
+            talk_team = r["talk"]["team"]
+            talk_value = r["talk"]["value"]
+
+            # If player's team made the contract but failed
+            if game_info["playerTeam"] == talk_team and (r["score"][talk_team] <= 80 or r["score"][talk_team] < talk_value):
+                stats["failedContracts"] += 1
+
+        stats["games"].append(game_info)
+
+    # Calculate win ratio if games were played
+    if stats["gamesPlayed"] > 0:
+        stats["winRate"] = (stats["wins"] / stats["gamesPlayed"]) * 100
+    else:
+        stats["winRate"] = 0
+
+    return stats
 
 def _analyseGamesDump(games):
     out = {
