@@ -19,7 +19,7 @@ def socketio_admin_required(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
         if not current_user.is_authenticated or not current_user.is_admin:
-            logger.warning(f"User {current_user.username if hasattr(current_user, "username") else "Unknown"} tried to access admin namespace")
+            logger.warning(f"User {current_user.username if hasattr(current_user, 'username') else 'Unknown'} tried to access admin namespace")
             disconnect()
         else:
             return f(*args, **kwargs)
