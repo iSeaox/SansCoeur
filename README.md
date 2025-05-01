@@ -5,15 +5,14 @@
 
 ## Table des matières
 
-- [SansCoeur](#sanscoeur)
-  - [Table des matières](#table-des-matières)
-  - [Description](#description)
-  - [Fonctionnalités](#fonctionnalités)
-  - [Prérequis](#prérequis)
-  - [Installation](#installation)
-  - [Utilisation](#utilisation)
-  - [Structure du projet](#structure-du-projet)
-  - [Contribuer](#contribuer)
+- [Table des matières](#table-des-matières)
+- [Description](#description)
+- [Fonctionnalités](#fonctionnalités)
+- [Prérequis](#prérequis)
+- [Installation](#installation)
+- [Utilisation](#utilisation)
+- [Structure du projet](#structure-du-projet)
+- [Contribuer](#contribuer)
 
 ## Description
 
@@ -90,15 +89,23 @@ Le projet est organisé comme suit :
         └── dashboard.html
         └── index.html
         └── login.html
+        └── games.html              # Page listant les parties
+        └── profile.html            # Page de profil utilisateur
     └── .gitignore
     └── app.py                      # Point d'entrée de l'application Flask
     └── auth.py                     # Gestion de l'authentification
     └── config.py                   # Configuration de l'application
     └── game.py                     # Logique du jeu
+    └── gameManager.py              # Gestion des parties
+    └── logManager.py               # Gestion des logs de jeu et chat
     └── player.py                   # Gestion des joueurs
     └── README.md
     └── requirement.txt             # Liste des dépendances Python
     └── round.py                    # Gestion des tours de jeu
+    └── roundManager.py             # Gestion des manches de jeu
+    └── statisticManager.py         # Analyse statistique des parties
+    └── chat.py                     # Système de chat en jeu
+    └── TODO.md                     # Liste des améliorations futures
 ```
 
 ## Contribuer
