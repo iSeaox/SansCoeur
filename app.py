@@ -85,16 +85,6 @@ from socket_handlers import init_socket_handlers
 init_socket_handlers(socketio, currentlogManager, currentGameManager, currentDBManager, currentSocketMonitor)
 
 # ################################################
-# IPC Command
-import commandHandler
-
-currentCommandHandler = commandHandler.CommandHandler(currentGameManager)
-currentCommandHandler.start()
-
-import atexit
-atexit.register(currentCommandHandler.stop)
-
-# ################################################
 # App routine
 
 # ___________________________________________
