@@ -245,8 +245,9 @@ def _getLastGame(games, nbGame, player):
     if player_games and "time" in player_games[0]:
         player_games.sort(key=lambda x: x.get("time", ""), reverse=True)
 
+
     # Limit to the requested number of games
-    player_games = player_games[:nbGame]
+    player_games = player_games[-nbGame:]
 
     # Analyze the filtered games
     stats = {
