@@ -4,6 +4,7 @@ GRAPH_TYPE_LOOSE_TALK = 2
 GRAPH_TYPE_RATIO_LOOSE_PLAYED = 3
 PROFILE_STATISTIC = 4
 GRAPH_PROFILE_STATISTIC = 5
+GRAPH_AVERAGE_REACTION_TIME = 6
 
 COLORS_TYPE_0 = [
     "rgba(204, 92, 74)",
@@ -54,6 +55,19 @@ COLORS_TYPE_3 = [
     "rgba(239, 234, 90)",
     "rgba(241, 196, 83)",
     "rgba(242, 158, 76)",
+]
+
+COLORS_TYPE_4 = [
+    "rgba(122, 1, 3)",
+    "rgba(142, 1, 3)",
+    "rgba(165, 1, 4)",
+    "rgba(184, 23, 2)",
+    "rgba(236, 63, 19)",
+    "rgba(250, 94, 31)",
+    "rgba(255, 126, 51)",
+    "rgba(255, 147, 31)",
+    "rgba(255, 173, 51)",
+    "rgba(255, 185, 80)",
 ]
 
 DATA_MODEL = {
@@ -219,6 +233,20 @@ def dumpData(logManager, type, player=None):
         data_model["options"]["scales"]["y"]["min"] = 0
         data_model["options"]["scales"]["y"]["max"] = 100
 
+    elif type == GRAPH_AVERAGE_REACTION_TIME:
+        sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["reaction_time"], reverse=True))
+        if len(sorted_players) > 10:
+            sorted_players = sorted_players[:11]
+        data_model = DATA_MODEL.copy()
+        data_model["type"] = "bar"
+        data_model["data"]["labels"] = [player for player in sorted_players.keys()]
+        data_model["data"]["datasets"][0]["label"] = "Top 10 des temps de réaction moyens [s]"
+        data_model["data"]["datasets"][0]["data"] = [player_data["reaction_time"] for player_data in sorted_players.values()]
+        data_model["data"]["datasets"][0]["backgroundColor"] = COLORS_TYPE_4[:len(sorted_players)]
+        data_model["data"]["datasets"][0]["borderColor"] = COLORS_TYPE_4[:len(sorted_players)]
+        data_model["data"]["datasets"][0]["borderWidth"] = 0
+        data_model["options"] = {"scales": {"y": {"beginAtZero": True,}}}
+
     return data_model
 
 def _getLastGame(games, nbGame, player):
@@ -325,11 +353,16 @@ def _analyseGamesDump(games):
                     "played_round": 0,
                     "nbGamePlayed": 0,
                     "winGame": 0,
-                    "timePlayed": 0
+                    "timePlayed": 0,
+                    "reaction_time": [],
                 }
 
             if g["score"][currentTeam] > g["score"][not(currentTeam)]:
                 out["players"][p["name"]]["winGame"] += 1
+
+            if "reaction_time" in p:
+                for rt in p["reaction_time"]:
+                    out["players"][p["name"]]["reaction_time"].append(rt)
 
             out["players"][p["name"]]["nbGamePlayed"] += 1
             out["players"][p["name"]]["totalScore"] += g["score"][currentTeam]
@@ -359,5 +392,12 @@ def _analyseGamesDump(games):
         minutes = (seconds % 3600) // 60
         seconds = seconds % 60
         player["timePlayed"] = f"{int(hours)}h {int(minutes)}min {int(seconds)}s"
+
+    # Compute average reaction time
+    for player_name, player_value in out["players"].items():
+        if len(player_value["reaction_time"]) > 0:
+            player_value["reaction_time"] = sum(player_value["reaction_time"]) / len(player_value["reaction_time"])
+        else:
+            player_value["reaction_time"] = 0
     return out
 
