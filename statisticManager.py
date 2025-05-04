@@ -141,7 +141,8 @@ def dumpData(logManager, type, player=None):
         NB_GAME = 20
         winRates = {}
         for player, _ in out["players"].items():
-            winRates[player] = _getLastGame(games, NB_GAME, player)["winRate"]
+            last_games = _getLastGame(games, NB_GAME, player)
+            winRates[player] = last_games["winGame"] / last_games["nbGamePlayed"] * 100
 
         sorted_players = dict(sorted(winRates.items(), key=lambda item: winRates[item[0]], reverse=True))
 
@@ -250,18 +251,6 @@ def dumpData(logManager, type, player=None):
     return data_model
 
 def _getLastGame(games, nbGame, player):
-    """
-    Get statistics from the last nbGame games of a specific player
-
-    Args:
-        games: List of all games data
-        nbGame: Number of games to analyze
-        player: Player name to filter games
-
-    Returns:
-        Dictionary containing stats of the last nbGame games for the player
-    """
-    # Filter games where the player participated
     player_games = []
     for g in games:
         for p in g["players"]:
@@ -269,68 +258,14 @@ def _getLastGame(games, nbGame, player):
                 player_games.append(g)
                 break
 
-    # Sort by time if available (newest first)
     if player_games and "time" in player_games[0]:
         player_games.sort(key=lambda x: x.get("time", ""), reverse=True)
 
-
-    # Limit to the requested number of games
     player_games = player_games[-nbGame:]
 
-    # Analyze the filtered games
-    stats = {
-        "gamesPlayed": len(player_games),
-        "wins": 0,
-        "losses": 0,
-        "failedContracts": 0,
-        "score": 0,
-        "games": []  # Will contain basic info about each game
-    }
+    out = _analyseGamesDump(player_games)
+    return out["players"][player]
 
-    for g in player_games:
-        game_info = {
-            "id": g.get("id", "Unknown"),
-            "time": g.get("time", "Unknown"),
-            "score": g["score"],
-            "playerTeam": None,
-            "won": False
-        }
-
-        # Find player's team
-        for p in g["players"]:
-            if p["name"] == player:
-                player_team = p["team"]
-                game_info["playerTeam"] = player_team
-
-                # Check if player won
-                if g["score"][player_team] > g["score"][not player_team]:
-                    stats["wins"] += 1
-                    game_info["won"] = True
-                else:
-                    stats["losses"] += 1
-
-                # Add player's score
-                stats["score"] += g["score"][player_team]
-                break
-
-        # Count failed contracts
-        for r in g["round_score"]:
-            talk_team = r["talk"]["team"]
-            talk_value = r["talk"]["value"]
-
-            # If player's team made the contract but failed
-            if game_info["playerTeam"] == talk_team and (r["score"][talk_team] <= 80 or r["score"][talk_team] < talk_value):
-                stats["failedContracts"] += 1
-
-        stats["games"].append(game_info)
-
-    # Calculate win ratio if games were played
-    if stats["gamesPlayed"] > 0:
-        stats["winRate"] = (stats["wins"] / stats["gamesPlayed"]) * 100
-    else:
-        stats["winRate"] = 0
-
-    return stats
 
 def _analyseGamesDump(games):
     out = {
