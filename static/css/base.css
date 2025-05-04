@@ -5,19 +5,20 @@ nav {
 }
 
 #logout-svg {
-  width: 85px;
-  height: auto;
   cursor: pointer;
-  padding-right: 30px;
-  padding-top: 70px;
+  padding-right: 60px;
+  font-size: 40px;
 }
 
-#profile-svg {
-  width: 85px;
-  height: auto;
+#profile-svg, #home-svg, #admin-svg {
   cursor: pointer;
   padding-right: 30px;
-  padding-top: 40px;
+  font-size: 40px;
+}
+
+#logout-svg, #profile-svg, #home-svg, #admin-svg {
+  color: #fff;
+  text-decoration: none;
 }
 
 .navbar-logo {
@@ -86,14 +87,22 @@ nav {
   }
   #logout-svg {
     width: 50px;
-    padding-right: 0px;
-    padding-top: 30px;
+    padding-right: 30px;
   }
 
   #profile-svg {
     width: 50px;
-    padding-right: 0px;
-    padding-top: 0px;
+    padding-right: 30px;
+  }
+
+  #profile-svg {
+    width: 50px;
+    padding-right: 30px;
+  }
+
+  #home-svg {
+    width: 50px;
+    padding-right: 30px;
   }
 
   #music-btn {
