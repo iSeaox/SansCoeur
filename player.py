@@ -8,9 +8,10 @@ class Player:
         self.team = team
         self.sid = sid
         self.cards = []
+        self.cardReactionTime = []
 
     def dump(self):
-         return {"name": self.name, "team": self.team, "sid": self.sid}
+         return {"name": self.name, "team": self.team, "sid": self.sid, "reaction_time": self.cardReactionTime}
 
     def sendDeck(self):
         self.emit("update_deck", self.cards)

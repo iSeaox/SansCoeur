@@ -4,6 +4,8 @@ import time
 import logging
 logger = logging.getLogger(f"app.{__name__}")
 
+from encoder.gameDataEncoder import GameDataEncoder
+
 class LogManager:
     def __init__(self, path, game_filename, chat_filename):
         self.path = path
@@ -44,11 +46,14 @@ class LogManager:
         game_data.update({"time": current_time})
         game_data.update({"duration": duration})
 
+        logs = []
         with open(self.game_file_path, "r+") as file:
             logs = json.load(file)
+
+        if logs != []:
             logs.append(game_data)
-            file.seek(0)
-            json.dump(logs, file, indent=4)
+            with open(self.game_file_path, "w") as file:
+                json.dump(logs, file, indent=4, cls=GameDataEncoder)
 
         self.printGameSummary(game_data)
 

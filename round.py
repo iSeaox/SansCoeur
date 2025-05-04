@@ -2,6 +2,7 @@ from flask_socketio import emit
 from flask import current_app
 import time
 import logging
+import random
 logger = logging.getLogger(f"app.{__name__}")
 
 ROUND_STATE_SETUP = 0
@@ -46,6 +47,7 @@ class Round:
 
         self.needTableAck = 0 # ACK to remove cards from the table
         self.tableAckTime = 0
+        self.cardReactionTimeBegin = 0
 
         # Hand variable
         self.cardOnTable = []
@@ -174,6 +176,7 @@ class Round:
 
                 self.state = ROUND_STATE_PLAYING
                 self.talk =  {"color": 2, "value": 100, "player": self.players[0]}
+                self.cardReactionTimeBegin = time.time()
 
                 for p in self.players:
                     p.cards = sorted(p.cards, key=lambda x: (x["color"], getBeloteValue(x, self.talk["color"])), reverse=True)
@@ -189,6 +192,9 @@ class Round:
                 self.needTableAck = 1
                 self.heapTeam = [[[{'card': {'color': 3, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 10}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 12}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 0, 'value': 13}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 0, 'value': 8}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 2, 'value': 14}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 2, 'value': 9}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 11}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 2, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}], [{'card': {'color': 0, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 3, 'value': 13}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 2, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}], [{'card': {'color': 2, 'value': 13}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 7}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 2, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 10}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}]], [[{'card': {'color': 1, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 1, 'value': 11}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 1, 'value': 13}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 1, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 3, 'value': 14}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 3, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 3, 'value': 11}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}, {'card': {'color': 3, 'value': 8}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}], [{'card': {'color': 0, 'value': 7}, 'player': {'name': 'magathe', 'team': 0, 'sid': 'bxRbaqkv4dguxVOVAAAH'}}, {'card': {'color': 1, 'value': 9}, 'player': {'name': 'guillaume', 'team': 1, 'sid': 'qdwderwekmSIvEBaAAAB'}}, {'card': {'color': 0, 'value': 12}, 'player': {'name': 'mathias', 'team': 0, 'sid': '1j5fKRlJ9RyKONgJAAAD'}}, {'card': {'color': 0, 'value': 10}, 'player': {'name': 'helios', 'team': 1, 'sid': 'J1RTyB8TaKd9NxSmAAAF'}}]]]
                 self.cardOnTable = []
+
+                for p in self.players:
+                    p.cardReactionTime = [random.randint(2, 20) for _ in range(4 * 8)]
 
                 if current_app.config["DEBUG_MODE_FAKE_BELOTE"] != -1:
                     self.belote = current_app.config["DEBUG_MODE_FAKE_BELOTE"]
@@ -278,6 +284,7 @@ class Round:
                             logger.info("Belote détectée (TEAM %d)", p.team)
                             self.belote = p.team
 
+                    self.cardReactionTimeBegin = time.time()
                     self.sendRoundInfo()
 
     @staticmethod
@@ -354,6 +361,7 @@ class Round:
                 self.needTableAck = 0
                 self.tableAckTime = time.time_ns()
                 self.cardOnTable = []
+                self.cardReactionTimeBegin = time.time()
 
                 if len(self.heapTeam[0]) + len(self.heapTeam[1]) >= 8:
                     score = [0, 0]
@@ -390,6 +398,9 @@ class Round:
                 #Verifier si la carte est dans le jeu du joueur
                 if card == player.cards[index]:
                     result = self.computeNewCard(player, card)
+                    self.nextTurn.cardReactionTime.append(time.time() - self.cardReactionTimeBegin)
+                    self.cardReactionTimeBegin = time.time()
+                    print(f"Reaction time: {self.nextTurn.cardReactionTime[-1]}")
                     if result:
                         played_card = player.cards.pop(index)
                         player.sendDeck()
@@ -403,6 +414,8 @@ class Round:
                             self.sendRoundInfo()
                             return
 
+
+
                         self.nextTurnIndex = (self.nextTurnIndex + 1) % 4
                         self.nextTurn = self.players[self.nextTurnIndex]
-                self.sendRoundInfo()#
+                self.sendRoundInfo()
