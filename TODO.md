@@ -4,4 +4,4 @@ Ce document recense les tâches et améliorations à apporter au projet SansCoeu
 
 ## Prochaines fonctionnalités
 
-- Calcul du temps de réaction par joueur
+- Ajouter l'affichage du temps moyen de réaction
