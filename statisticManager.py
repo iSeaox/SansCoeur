@@ -96,8 +96,6 @@ def dumpData(logManager, type, player=None):
     out = _analyseGamesDump(games)
     if type == GRAPH_TYPE_TOTAL_POINT:
         sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["totalScore"], reverse=True))
-        if len(sorted_players) > 10:
-            sorted_players = sorted_players[:11]
 
         data_model = DATA_MODEL.copy()
         data_model["type"] = "bar"
@@ -111,8 +109,7 @@ def dumpData(logManager, type, player=None):
 
     elif type == GRAPH_TYPE_AVERAGE_POINT:
         sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["totalScore"] / item[1]["nbGamePlayed"], reverse=True))
-        if len(sorted_players) > 10:
-            sorted_players = sorted_players[:11]
+
         data_model = DATA_MODEL.copy()
         data_model["type"] = "bar"
         data_model["data"]["labels"] = [player for player in sorted_players.keys()]
@@ -125,8 +122,7 @@ def dumpData(logManager, type, player=None):
 
     elif type == GRAPH_TYPE_LOOSE_TALK:
         sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["looseTalk"], reverse=True))
-        if len(sorted_players) > 10:
-            sorted_players = sorted_players[:11]
+
         data_model = DATA_MODEL.copy()
         data_model["type"] = "bar"
         data_model["data"]["labels"] = [player for player in sorted_players.keys()]
