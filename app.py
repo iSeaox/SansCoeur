@@ -85,6 +85,13 @@ from socket_handlers import init_socket_handlers
 init_socket_handlers(socketio, currentlogManager, currentGameManager, currentDBManager, currentSocketMonitor)
 
 # ################################################
+# Discord Bot
+from botDiscord import BotDiscord
+
+current_bot_discord = BotDiscord()
+current_bot_discord.start()
+
+# ################################################
 # App routine
 
 # ___________________________________________

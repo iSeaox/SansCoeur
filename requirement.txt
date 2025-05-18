@@ -4,3 +4,4 @@ flask-socketio
 werkzeug
 python-dotenv
 sqlite3
+discord.py

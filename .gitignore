@@ -5,3 +5,4 @@ logs/
 sanscoeur-gunicorn.service
 env/
 config.js
+private_token.py
