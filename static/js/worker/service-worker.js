@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanscoeur-v0.0.2';
+const CACHE_NAME = 'sanscoeur-v0.0.3';
 const CACHE_URLS = [
   '/static/js/worker/service-worker.js',
   '/static/img/sco_logo_500.png',
@@ -23,16 +23,5 @@ self.addEventListener('activate', event => {
         })
       );
     })
-  );
-});
-
-self.addEventListener('push', function(event) {
-  const data = event.data.json();
-  const options = {
-    body: data.body,
-    icon: '/static/img/sco_logo_500.png',
-  }
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
   );
 });
