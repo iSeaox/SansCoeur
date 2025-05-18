@@ -94,6 +94,11 @@
 
       if ('serviceWorker' in navigator && 'PushManager' in window) {
         console.log('Push is supported!');
+        window.open(
+          window.location.href,
+          '_blank',
+          'toolbar=0,location=0,menubar=0,width=375,height=700'
+        );
       }
 
       window.addEventListener("load", () => {
