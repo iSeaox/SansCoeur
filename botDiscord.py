@@ -9,8 +9,6 @@ logger = logging.getLogger(f"app.{__name__}")
 
 COMMAND_PREFIX = '!'
 
-bot_lock = False
-
 class BotDiscord:
     def __init__(self):
         self._intents = discord.Intents.default()
@@ -26,10 +24,6 @@ class BotDiscord:
                 logger.info(f"Channel with ID {chan} not found.")
 
     def start(self):
-        bot_lock = True
-        if not bot_lock:
-            logger.error("Bot is already running.")
-            return
         threading.Thread(target=self.bot.run, args=(private_token.DISCORD_TOKEN,), daemon=True).start()
 
         @self.bot.event
