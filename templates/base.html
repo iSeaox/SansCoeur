@@ -84,7 +84,14 @@
 
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('static/js/worker/service-worker.js');
+
+        navigator.serviceWorker.getRegistration().then(registration => {
+            if (registration) {
+                registration.update();
+            }
+        });
       }
+
 
       window.addEventListener("load", () => {
         document.querySelectorAll(".toast").forEach((toastNode) => {
