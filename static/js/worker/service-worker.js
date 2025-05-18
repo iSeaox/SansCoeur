@@ -1,9 +1,27 @@
+const CACHE_NAME = 'sanscoeur-v0.0.2';
+const CACHE_URLS = [
+  '/static/js/worker/service-worker.js',
+  '/static/img/sco_logo_500.png',
+];
+
 self.addEventListener('install', event => {
-  // Installation réussie, rien à faire
-  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(CACHE_URLS);
+    })
+  );
 });
 
 self.addEventListener('activate', event => {
-  // Activation réussie, rien à faire
-  self.clients.claim();
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
 });

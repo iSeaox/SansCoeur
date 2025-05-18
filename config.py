@@ -1,6 +1,6 @@
 import os
 
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 
 SECRET_KEY = os.environ.get("SECRET_KEY") or os.urandom(32)
 MANIFEST_JSON = f"manifest/manifest.json"
