@@ -80,8 +80,8 @@ currentGameManager.registerNewGame()
 # Discord Bot
 from botDiscord import BotDiscord
 
-current_bot_discord = BotDiscord()
-current_bot_discord.start()
+currentBotDiscord = BotDiscord(currentDBManager)
+currentBotDiscord.start()
 
 # ################################################
 # Socket Handlers
@@ -89,7 +89,7 @@ from socketMonitoring import SocketMonitor
 currentSocketMonitor = SocketMonitor()
 
 from socket_handlers import init_socket_handlers
-init_socket_handlers(socketio, currentlogManager, currentGameManager, currentDBManager, currentSocketMonitor, current_bot_discord)
+init_socket_handlers(socketio, currentlogManager, currentGameManager, currentDBManager, currentSocketMonitor, currentBotDiscord)
 
 # ################################################
 # App routine

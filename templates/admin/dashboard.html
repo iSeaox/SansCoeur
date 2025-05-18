@@ -52,6 +52,47 @@
             </button>
         </div>
     </div>
+    <div class="card shadow-sm mt-5">
+        <div class="card-header text-center">
+            <h3 class="card-title mb-0">Liste des comptes discords</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Discord ID</th>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Mute</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="discord-list">
+                        <tr>
+                            <td colspan="5" class="text-center">Chargement des données...</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <tfoot>
+                    <tr>
+                        <td colspan="5">
+                            <div class="input-group">
+                                <input type="text" id="new-discord-id" class="form-control" placeholder="Discord ID" />
+                                <input type="text" id="new-discord-user" class="form-control" placeholder="Username" />
+                                <button id="add-discord" class="btn btn-success input-group-append">
+                                    <i class="bi bi-plus-circle"></i> Ajouter
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </div>
+            <button id="refresh-discord" class="btn btn-primary mt-3" onclick="window.fetchDiscordList()">
+                <i class="bi bi-arrow-clockwise"></i> <span class="text-white">Rafraîchir</span>
+            </button>
+        </div>
+    </div>
 
     <!-- Nouvelle section pour les parties -->
     <div class="card shadow-sm mt-5">

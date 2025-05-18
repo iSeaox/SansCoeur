@@ -12,6 +12,10 @@ function fetchPlayersList() {
   admin_socket.emit("get_players");
 }
 
+function fetchDiscordList() {
+  admin_socket.emit("get_discord");
+}
+
 function fetchGamesList() {
   admin_socket.emit("get_games");
 }
@@ -145,6 +149,12 @@ function renderPlayersList(players) {
     </tr>
   `).join('');
 }
+
+admin_socket.on("discord_list", data => {
+  console.log("Received discord data:", data);
+  renderDiscordList(data.discord_list);
+});
+
 
 // Écouter l'événement de réception de la liste des joueurs
 admin_socket.on("players_list", data => {
@@ -283,7 +293,6 @@ document.addEventListener("DOMContentLoaded", function () {
     titleElement.appendChild(span);
   }
 
-  // Ajouter l'événement de clic sur le bouton de rafraîchissement
   const refreshButton = document.getElementById("refresh-players");
   if (refreshButton) {
     refreshButton.addEventListener("click", fetchPlayersList);
@@ -291,12 +300,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   fetchPlayersList();
   fetchGamesList();
-  fetchConnectionsList(); // Ajouter cette ligne pour charger les connexions
-  
+  fetchConnectionsList();
+  fetchDiscordList();
+
   // Configurer les rafraîchissements périodiques
   setInterval(() => {
     fetchPlayersList();
     fetchGamesList();
+    fetchDiscordList();
     fetchConnectionsList(); // Ajouter cette ligne pour rafraîchir régulièrement
   }, 30000); // Rafraîchir toutes les 30 secondes
 });
@@ -314,5 +325,68 @@ btnAddPlayer.addEventListener("click", function () {
   }
 });
 
+const btnAddDiscord = document.getElementById("add-discord");
+const idAddDiscord = document.getElementById("new-discord-id");
+const userAddDiscord = document.getElementById("new-discord-user");
+
+btnAddDiscord.addEventListener("click", function () {
+  const username = userAddDiscord.value.trim();
+  const discordId = idAddDiscord.value.trim();
+  if (username && discordId) {
+    admin_socket.emit("add_discord", { username, discordId});
+    idAddDiscord.value = "";
+    userAddDiscord.value = "";
+  } else {
+    sendToast("Veuillez entrer des champs valides.", "danger");
+  }
+});
 // Exposer les fonctions de récupération des connexions
 window.fetchConnectionsList = fetchConnectionsList;
+
+// ###########################################################################################
+function renderDiscordList(discord_list) {
+  const discoreListElement = document.getElementById("discord-list");
+
+  if (!discord_list || discord_list.length === 0) {
+    discoreListElement.innerHTML = `
+      <tr>
+        <td colspan="5" class="text-center">Aucun joueur trouvé</td>
+      </tr>
+    `;
+    return;
+  }
+
+  discoreListElement.innerHTML = discord_list.map(player => `
+    <tr>
+      <td>${player.discord_id}</td>
+      <td>${player.user_id}</td>
+      <td>${player.username}</td>
+      <td>${player.mute}</td>
+      <td>
+        <div class="btn-group btn-group-sm" role="group">
+          <button type="button" class="btn btn-mute" data-username="${player.username}" onclick="mute('${player.discord_id}')">
+            <i class="bi bi-mic-mute text-white"></i>
+          </button>
+          <button type="button" class="btn btn-unmute" data-username="${player.username}" onclick="unmute('${player.discord_id}')">
+            <i class="bi bi-mic-fill text-white"></i>
+          </button>
+          <button type="button" class="btn btn-delete" data-username="${player.username}" onclick="deleteDiscord('${player.username}')">
+            <i class="bi bi-trash-fill text-white"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+window.mute = function(discord_id) {
+  admin_socket.emit("discord_mute", { discord_id });
+};
+
+window.unmute = function(discord_id) {
+  admin_socket.emit("discord_unmute", { discord_id });
+};
+
+window.deleteDiscord = function(username) {
+  admin_socket.emit("discord_delete", { username });
+};

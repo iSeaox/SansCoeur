@@ -25,6 +25,17 @@ def _formatUserData(users):
         })
     return formatted_data
 
+def _formatDiscordData(discord_ids, dbManager):
+    discord_data = []
+    for line in discord_ids:
+        discord_data.append({
+            "discord_id": line[0],
+            "user_id": line[1],
+            "username": dbManager.getUser(line[1]).username,
+            "mute": line[2]
+        })
+    return discord_data
+
 
 def register_handlers(socketio, logManager, gameManager, dbManager, socketMonitor):
 
@@ -44,19 +55,7 @@ def register_handlers(socketio, logManager, gameManager, dbManager, socketMonito
     @socketio_admin_required
     def handle_get_players():
         """Récupère la liste des joueurs inscrits"""
-        users = dbManager.getAllUsers()
-
-        players_data = []
-        for user in users:
-            players_data.append({
-                "username": user.username,
-                "registered_on": user.creation_time if user.creation_time else "N/A",
-                "last_login": user.last_connection if user.last_connection else "N/A",
-                "is_admin": user.is_admin,
-                "password_needs_update": user.password_needs_update,
-            })
-
-        emit("players_list", {"players": players_data}, namespace="/admin")
+        emit("players_list", {"players": _formatUserData(dbManager.getAllUsers())}, namespace="/admin")
 
     @socketio.on("delete_player", namespace="/admin")
     @socketio_admin_required
@@ -160,3 +159,88 @@ def register_handlers(socketio, logManager, gameManager, dbManager, socketMonito
         game.score = score
         emit("launch-toast", {"message": f"Game {gameID} updated successfully", "category": "success"}, namespace="/info", room=current_user.username)
         emit("games_list", {"games": gameManager.getGames()}, namespace="/admin")
+
+    @socketio.on("get_discord", namespace="/admin")
+    @socketio_admin_required
+    def handle_get_players():
+        emit("discord_list", {"discord_list": _formatDiscordData(dbManager.getAllDiscordIds(), dbManager)}, namespace="/admin")
+
+    @socketio.on("add_discord", namespace="/admin")
+    @socketio_admin_required
+    def handle_add_player(data):
+        username = data.get("username")
+        discordID = data.get("discordId")
+        if not username:
+            emit("launch-toast", {"message": "Username is required", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+
+        if not discordID:
+            emit("launch-toast", {"message": "DiscordID is required", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+
+        existing_user = dbManager.getUserByName(username)
+        if existing_user:
+            if existing_user.discord_id:
+                emit("launch-toast", {"message": f"Discord entry for {username} already exists", "category": "danger"}, namespace="/info", room=current_user.username)
+                return
+        else:
+            emit("launch-toast", {"message": f"User {username} not found", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+
+        ret, err = dbManager.linkDiscordId(discordID, existing_user.id)
+        if not ret:
+            emit("launch-toast", {"message": f"Error adding discord entry for user: {err}", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+        emit("launch-toast", {"message": f"Discord entry for {username} added successfully", "category": "success"}, namespace="/info", room=current_user.username)
+        emit("discord_list", {"discord_list": _formatDiscordData(dbManager.getAllDiscordIds(), dbManager)}, namespace="/admin")
+
+    @socketio.on("discord_delete", namespace="/admin")
+    @socketio_admin_required
+    def handle_delete_player(data):
+        username = data.get("username")
+        if not username:
+            emit("launch-toast", {"message": "Username is required", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+
+        existing_user = dbManager.getUserByName(username)
+        if existing_user:
+            print(existing_user.discord_id)
+            if existing_user.discord_id:
+                ret, err = dbManager.unlinkDiscordId(existing_user.discord_id)
+                if not ret:
+                    emit("launch-toast", {"message": f"Error deleting user: {err}", "category": "danger"}, namespace="/info", room=current_user.username)
+                    return
+                emit("launch-toast", {"message": f"Discord entry for {username} deleted successfully", "category": "success"}, namespace="/info", room=current_user.username)
+                emit("discord_list", {"discord_list": _formatDiscordData(dbManager.getAllDiscordIds(), dbManager)}, namespace="/admin")
+            else:
+                emit("launch-toast", {"message": f"User {username} has no discord entry", "category": "danger"}, namespace="/info", room=current_user.username)
+
+    @socketio.on("discord_unmute", namespace="/admin")
+    @socketio_admin_required
+    def handle_unmute_flag(data):
+        discord_id = data.get("discord_id")
+        if not discord_id:
+            emit("launch-toast", {"message": "DiscordID is required", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+
+        ret, err = dbManager.discordMute(discord_id, 0)
+        if not ret:
+            emit("launch-toast", {"message": f"Error updating user: {err}", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+        emit("launch-toast", {"message": f"User {discord_id} unmuted successfully", "category": "success"}, namespace="/info", room=current_user.username)
+        emit("discord_list", {"discord_list": _formatDiscordData(dbManager.getAllDiscordIds(), dbManager)}, namespace="/admin")
+
+    @socketio.on("discord_mute", namespace="/admin")
+    @socketio_admin_required
+    def handle_mute_flag(data):
+        discord_id = data.get("discord_id")
+        if not discord_id:
+            emit("launch-toast", {"message": "DiscordID is required", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+
+        ret, err = dbManager.discordMute(discord_id, 1)
+        if not ret:
+            emit("launch-toast", {"message": f"Error updating user: {err}", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+        emit("launch-toast", {"message": f"User {discord_id} muted successfully", "category": "success"}, namespace="/info", room=current_user.username)
+        emit("discord_list", {"discord_list": _formatDiscordData(dbManager.getAllDiscordIds(), dbManager)}, namespace="/admin")

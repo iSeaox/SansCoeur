@@ -22,7 +22,7 @@
   color: white
 }
 
-.btn-unlock, .btn-score {
+.btn-unlock, .btn-score, .btn-mute {
   background-color: #ff7d00;
 }
 
@@ -30,6 +30,6 @@
   background-color: #78290f;
 }
 
-.btn-goto {
+.btn-goto, .btn-unmute {
   background-color: #15616d;
 }
