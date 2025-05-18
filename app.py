@@ -198,6 +198,12 @@ def profile():
 def admin():
     return render_template("/admin/dashboard.html", username=current_user.username)
 
+@app.route("/manifest.json")
+def manifest():
+    with open(app.config["MANIFEST_JSON"], "r", encoding="utf-8") as f:
+        manifest_json = json.load(f)
+    return manifest_json
+
 # ################################################
 # Main
 

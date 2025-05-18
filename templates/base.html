@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="manifest" href="{{ url_for('static', filename='manifest/manifest.json') }}">
+    <link rel="manifest" href="{{ config['MANIFEST_PUBLIC_PATH']}}?v={{ config['VERSION'] }}" />
     <meta name="theme-color" content="#0f7c21">
     <!-- For iOS -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -81,6 +81,11 @@
     {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('static/js/worker/service-worker.js');
+      }
+
       window.addEventListener("load", () => {
         document.querySelectorAll(".toast").forEach((toastNode) => {
           new bootstrap.Toast(toastNode, { delay: 2000 }).show();
