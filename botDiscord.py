@@ -32,3 +32,4 @@ class BotDiscord:
 
             for channel in self.bot_channels:
                 logger.info(f"Connected to channel: {channel.name} (ID: {channel.id})")
+                await channel.send("SansCoeur a été mis à jour !")
