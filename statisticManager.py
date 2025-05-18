@@ -95,7 +95,14 @@ def dumpData(logManager, type, player=None):
     games = logManager.dumpGameLogs()
     out = _analyseGamesDump(games)
     if type == GRAPH_TYPE_TOTAL_POINT:
-        sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["totalScore"], reverse=True))
+        sorted_players_tot = dict(sorted(out["players"].items(), key=lambda item: item[1]["totalScore"], reverse=True))
+        idx = 0
+        sorted_players = {}
+        for player, p_data in sorted_players_tot.items():
+            if idx > 9:
+                break
+            idx += 1
+            sorted_players[player] = p_data
 
         data_model = DATA_MODEL.copy()
         data_model["type"] = "bar"
@@ -108,7 +115,14 @@ def dumpData(logManager, type, player=None):
         data_model["options"] = {"scales": {"y": {"beginAtZero": True,}}}
 
     elif type == GRAPH_TYPE_AVERAGE_POINT:
-        sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["totalScore"] / item[1]["nbGamePlayed"], reverse=True))
+        sorted_players_tot = dict(sorted(out["players"].items(), key=lambda item: item[1]["totalScore"] / item[1]["nbGamePlayed"], reverse=True))
+        idx = 0
+        sorted_players = {}
+        for player, p_data in sorted_players_tot.items():
+            if idx > 9:
+                break
+            idx += 1
+            sorted_players[player] = p_data
 
         data_model = DATA_MODEL.copy()
         data_model["type"] = "bar"
@@ -121,7 +135,14 @@ def dumpData(logManager, type, player=None):
         data_model["options"] = {"scales": {"y": {"beginAtZero": True,}}}
 
     elif type == GRAPH_TYPE_LOOSE_TALK:
-        sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["looseTalk"], reverse=True))
+        sorted_players_tot = dict(sorted(out["players"].items(), key=lambda item: item[1]["looseTalk"], reverse=True))
+        idx = 0
+        sorted_players = {}
+        for player, p_data in sorted_players_tot.items():
+            if idx > 9:
+                break
+            idx += 1
+            sorted_players[player] = p_data
 
         data_model = DATA_MODEL.copy()
         data_model["type"] = "bar"
@@ -140,7 +161,14 @@ def dumpData(logManager, type, player=None):
             last_games = _getLastGame(games, NB_GAME, player)
             winRates[player] = last_games["winGame"] / last_games["nbGamePlayed"] * 100
 
-        sorted_players = dict(sorted(winRates.items(), key=lambda item: winRates[item[0]], reverse=True))
+        sorted_players_tot = dict(sorted(winRates.items(), key=lambda item: winRates[item[0]], reverse=True))
+        idx = 0
+        sorted_players = {}
+        for player, p_data in sorted_players_tot.items():
+            if idx > 9:
+                break
+            idx += 1
+            sorted_players[player] = p_data
 
         data_model = DATA_MODEL.copy()
         data_model["type"] = "bar"
@@ -231,9 +259,15 @@ def dumpData(logManager, type, player=None):
         data_model["options"]["scales"]["y"]["max"] = 100
 
     elif type == GRAPH_AVERAGE_REACTION_TIME:
-        sorted_players = dict(sorted(out["players"].items(), key=lambda item: item[1]["reaction_time"], reverse=True))
-        if len(sorted_players) > 10:
-            sorted_players = sorted_players[:11]
+        sorted_players_tot = dict(sorted(out["players"].items(), key=lambda item: item[1]["reaction_time"], reverse=True))
+        idx = 0
+        sorted_players = {}
+        for player, p_data in sorted_players_tot.items():
+            if idx > 9:
+                break
+            idx += 1
+            sorted_players[player] = p_data
+
         data_model = DATA_MODEL.copy()
         data_model["type"] = "bar"
         data_model["data"]["labels"] = [player for player in sorted_players.keys()]
