@@ -3,11 +3,12 @@ from flask import request, url_for
 from auth import socketio_login_required
 from flask_login import current_user
 import statisticManager
+from botDiscord import BotDiscord
 import re
 import logging
 logger = logging.getLogger(f"app.{__name__}")
 
-def register_handlers(socketio, logManager, gameManager, socketMonitor):
+def register_handlers(socketio, logManager, gameManager, socketMonitor, currentBotDiscord):
 
     @socketio.on("connect")
     @socketio_login_required
@@ -81,6 +82,22 @@ def register_handlers(socketio, logManager, gameManager, socketMonitor):
                 gameManager.roomManager.remove_player_from_room(f"game-{game.id}", name, request.sid)
                 game.broadcastGameInfo()
                 gameManager.updateClients()
+
+    @socketio.on("invite_game")
+    @socketio_login_required
+    def handle_invite_game():
+        name = current_user.username
+        game = gameManager.getGameByPlayerName(current_user.username)
+        if game:
+            formatted_message = BotDiscord.format_message("invite",
+                sender=name,
+                nbPlayer=len(game._players),
+                invite_link=f"{url_for('dashboard', id=game.id, _external=True)}"
+            )
+            result, message = BotDiscord.send_on_channels(formatted_message, currentBotDiscord)
+            if not result:
+                r_manager = gameManager.roomManager
+                r_manager.broadcast_to_room(f"game-{game.id}", "launch-toast",{"message": message, "category": "danger"})
 
     @socketio.on("start_game")
     @socketio_login_required

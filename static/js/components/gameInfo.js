@@ -7,10 +7,15 @@ const lastGameInfoDiv = document.getElementById("lastGameInfo");
 const startGameBtn = document.getElementById("startGameBtn");
 const quitGameSection = document.getElementById("quitGameSection");
 const quitGameBtn = document.getElementById("quitGameBtn");
+const inviteGameBtn = document.getElementById("inviteGameBtn");
 const startGameSection = document.getElementById("startGameSection");
 const scoreTableDiv = document.getElementById("scoreTable");
 
 let lastGameInfoData = null;
+
+inviteGameBtn.addEventListener("click", () => {
+  socket.emit("invite_game");
+});
 
 quitGameBtn.addEventListener("click", () => {
   socket.emit("quit_game");
