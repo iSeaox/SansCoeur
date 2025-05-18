@@ -1,3 +1,7 @@
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('static/js/worker/service-worker.js');
+}
+
 window.socket = io({
   withCredentials: true
 });
