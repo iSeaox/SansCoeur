@@ -3,8 +3,8 @@
   "short_name": "SansCoeur",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0f7c21f6",
+  "background_color": "#0f7c21",
+  "theme_color": "#0f7c21",
   "icons": [
     {
       "src": "/static/img/sco_logo_500.png",
