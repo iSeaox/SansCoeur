@@ -92,6 +92,9 @@
         });
       }
 
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        console.log('Push is supported!');
+      }
 
       window.addEventListener("load", () => {
         document.querySelectorAll(".toast").forEach((toastNode) => {

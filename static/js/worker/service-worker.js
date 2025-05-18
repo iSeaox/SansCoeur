@@ -25,3 +25,14 @@ self.addEventListener('activate', event => {
     })
   );
 });
+
+self.addEventListener('push', function(event) {
+  const data = event.data.json();
+  const options = {
+    body: data.body,
+    icon: '/static/img/sco_logo_500.png',
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
