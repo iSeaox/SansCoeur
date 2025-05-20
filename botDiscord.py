@@ -44,13 +44,7 @@ class BotDiscord:
                 return False, "Une erreur est survenue lors de l'envoi du message."
             return True, ""
         future = asyncio.run_coroutine_threadsafe(send_to(player_id), bot_instance.bot.loop)
-        try:
-            future.result()
-        except Exception as e:
-            logger.error(f"Error while sending message: {e}")
-            return False, "Une erreur est survenue lors de l'envoi du message."
-
-        return True, ""
+        return future.result()
 
     @staticmethod
     def send_to_all_players(message, dbManager, bot_instance):
@@ -75,11 +69,9 @@ class BotDiscord:
         for player in players:
             if player.discord_id is not None and player.discord_mute is False:
                 future = asyncio.run_coroutine_threadsafe(send_to(player.discord_id), bot_instance.bot.loop)
-                try:
-                    future.result()
-                except Exception as e:
-                    logger.error(f"Error while sending message: {e}")
-                    return False, "Une erreur est survenue lors de l'envoi du message."
+                ret, msg = future.result()
+                if not ret:
+                    logger.error(f"Failed to send message to user {player.discord_id}: {msg}")
 
         return True, ""
 
