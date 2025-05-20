@@ -8,6 +8,9 @@ import re
 import logging
 logger = logging.getLogger(f"app.{__name__}")
 
+import time
+LAST_INVITE_REQUEST = 0
+
 def register_handlers(socketio, logManager, gameManager, socketMonitor, currentBotDiscord, dbManager):
 
     @socketio.on("connect")
@@ -89,15 +92,26 @@ def register_handlers(socketio, logManager, gameManager, socketMonitor, currentB
         name = current_user.username
         game = gameManager.getGameByPlayerName(current_user.username)
         if game:
+            global LAST_INVITE_REQUEST
+            if time.time() - LAST_INVITE_REQUEST < 15 * 60:
+                remaining = int(15 * 60 - (time.time() - LAST_INVITE_REQUEST))
+                minutes = remaining // 60
+                seconds = remaining % 60
+                emit("launch-toast", {"message": f"Vous devez attendre {minutes} min et {seconds} entre chaque invitation", "category": "danger"})
+                return
+
             formatted_message = BotDiscord.format_message("invite",
                 sender=name,
                 nbPlayer=len(game._players),
                 invite_link=f"{url_for('dashboard', id=game.id, _external=True)}"
             )
             result, message = BotDiscord.send_to_all_players(formatted_message, dbManager, currentBotDiscord)
+            print("AAAAAAAAAAAAAAAAHH")
             if not result:
                 r_manager = gameManager.roomManager
                 r_manager.broadcast_to_room(f"game-{game.id}", "launch-toast",{"message": message, "category": "danger"})
+            else:
+                LAST_INVITE_REQUEST = time.time()
 
     @socketio.on("start_game")
     @socketio_login_required
