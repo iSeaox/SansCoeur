@@ -21,7 +21,7 @@ class BotDiscord:
                    f"Vous pouvez rejoindre la partie en cliquant sur le lien ci-dessus. (Tapez !chut pour me faire taire)"
 
         elif type == "test":
-            return f"Ceci est un message de test.\nSi vous le voyez, ce que l'administrateur du site cherche à faire quelquechose\n" \
+            return f"Ceci est un message de test.\nSi vous le voyez, ce que l'administrateur du site cherche à faire quelque chose\n" \
                    f"Je vous invite à le prévenir.\n\n" \
                    f"Merci d'avance :)"
 
