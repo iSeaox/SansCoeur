@@ -8,5 +8,5 @@ def init_socket_handlers(socketio, clients, gManager, dbManager, socketMonitor, 
     socketMonitor.add_socket("/info")
 
     game_handlers.register_handlers(socketio, clients, gManager, socketMonitor, currentBotDiscord, dbManager)
-    admin_handlers.register_handlers(socketio, clients, gManager, dbManager, socketMonitor)
+    admin_handlers.register_handlers(socketio, clients, gManager, dbManager, socketMonitor, currentBotDiscord)
     info_handlers.register_handlers(socketio, socketMonitor)

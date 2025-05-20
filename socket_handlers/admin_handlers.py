@@ -5,7 +5,7 @@ from flask_login import current_user
 
 from werkzeug.security import generate_password_hash
 
-import statisticManager
+from botDiscord import BotDiscord
 import re
 import logging
 logger = logging.getLogger(f"app.{__name__}")
@@ -37,7 +37,7 @@ def _formatDiscordData(discord_ids, dbManager):
     return discord_data
 
 
-def register_handlers(socketio, logManager, gameManager, dbManager, socketMonitor):
+def register_handlers(socketio, logManager, gameManager, dbManager, socketMonitor, discordBot):
 
     @socketio.on("connect", namespace="/admin")
     @socketio_admin_required
@@ -244,3 +244,17 @@ def register_handlers(socketio, logManager, gameManager, dbManager, socketMonito
             return
         emit("launch-toast", {"message": f"User {discord_id} muted successfully", "category": "success"}, namespace="/info", room=current_user.username)
         emit("discord_list", {"discord_list": _formatDiscordData(dbManager.getAllDiscordIds(), dbManager)}, namespace="/admin")
+
+    @socketio.on("discord_test", namespace="/admin")
+    @socketio_admin_required
+    def handle_mute_flag(data):
+        discord_id = data.get("discord_id")
+        if not discord_id:
+            emit("launch-toast", {"message": "DiscordID is required", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+
+        ret, err = BotDiscord.send_to_player(BotDiscord.format_message("test"), discord_id, discordBot)
+        if not ret:
+            emit("launch-toast", {"message": f"Error sending test to user: {err}", "category": "danger"}, namespace="/info", room=current_user.username)
+            return
+        emit("launch-toast", {"message": f"Send TEST to {discord_id}", "category": "success"}, namespace="/info", room=current_user.username)

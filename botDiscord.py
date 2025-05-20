@@ -18,7 +18,39 @@ class BotDiscord:
             return f"{'-' * 20}\n" \
                    f"{name} vous invite à rejoindre la partie ({kwargs['nbPlayer']} / 4)\n\n" \
                    f"Voici le lien de la partie: {kwargs['invite_link']}\n" \
-                   f"Vous pouvez rejoindre la partie en cliquant sur le lien ci-dessus. (Tapez !chut pour me faire taire)" \
+                   f"Vous pouvez rejoindre la partie en cliquant sur le lien ci-dessus. (Tapez !chut pour me faire taire)"
+
+        elif type == "test":
+            return f"Ceci est un message de test.\nSi vous le voyez, ce que l'administrateur du site cherche à faire quelquechose\n" \
+                   f"Je vous invite à le prévenir.\n\n" \
+                   f"Merci d'avance :)"
+
+    @staticmethod
+    def send_to_player(message, player_id, bot_instance):
+        async def send_to(user_id):
+            await bot_instance.bot.wait_until_ready()
+            try:
+                user = await bot_instance.bot.fetch_user(user_id)
+                if user:
+                    await user.send(message)
+            except discord.Forbidden:
+                logger.error(f"Permission denied to send message to user {user_id}")
+                return False, "Une erreur est survenue lors de l'envoi du message."
+            except discord.HTTPException as e:
+                logger.error(f"Failed to send message to user {user_id}: {e}")
+                return False, "Une erreur est survenue lors de l'envoi du message."
+            except Exception as e:
+                logger.error(f"Unexpected error while sending message to user {user_id}: {e}")
+                return False, "Une erreur est survenue lors de l'envoi du message."
+            return True, ""
+        future = asyncio.run_coroutine_threadsafe(send_to(player_id), bot_instance.bot.loop)
+        try:
+            future.result()
+        except Exception as e:
+            logger.error(f"Error while sending message: {e}")
+            return False, "Une erreur est survenue lors de l'envoi du message."
+
+        return True, ""
 
     @staticmethod
     def send_to_all_players(message, dbManager, bot_instance):

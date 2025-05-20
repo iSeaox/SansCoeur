@@ -370,6 +370,9 @@ function renderDiscordList(discord_list) {
           <button type="button" class="btn btn-unmute" data-username="${player.username}" onclick="unmute('${player.discord_id}')">
             <i class="bi bi-mic-fill text-white"></i>
           </button>
+          <button type="button" class="btn btn-test" data-username="${player.username}" onclick="testID('${player.discord_id}')">
+            <i class="bi bi-send-exclamation text-white"></i>
+          </button>
           <button type="button" class="btn btn-delete" data-username="${player.username}" onclick="deleteDiscord('${player.username}')">
             <i class="bi bi-trash-fill text-white"></i>
           </button>
@@ -387,6 +390,12 @@ window.unmute = function(discord_id) {
   admin_socket.emit("discord_unmute", { discord_id });
 };
 
+window.testID = function(discord_id) {
+  admin_socket.emit("discord_test", { discord_id });
+};
+
 window.deleteDiscord = function(username) {
   admin_socket.emit("discord_delete", { username });
 };
+
+
