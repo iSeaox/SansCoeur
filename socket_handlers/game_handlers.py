@@ -106,7 +106,6 @@ def register_handlers(socketio, logManager, gameManager, socketMonitor, currentB
                 invite_link=f"{url_for('dashboard', id=game.id, _external=True)}"
             )
             result, message = BotDiscord.send_to_all_players(formatted_message, dbManager, currentBotDiscord)
-            print("AAAAAAAAAAAAAAAAHH")
             if not result:
                 r_manager = gameManager.roomManager
                 r_manager.broadcast_to_room(f"game-{game.id}", "launch-toast",{"message": message, "category": "danger"})
