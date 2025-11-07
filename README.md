@@ -1,6 +1,6 @@
 <div  id="sanscoeur" align="center">
   <img src="https://github.com/user-attachments/assets/d086a10b-e21c-401d-aca7-d9b09b41ebd6" alt="Sans Coeur">
-  <p>Jeu de contrée en ligne développé avec Python, HTML, JavaScript et CSS.</p>
+  <p>Jeu de contrée en ligne développé avec Python, HTML, CSS et JavaScript.</p>
 </div>
 
 ## Table des matières
