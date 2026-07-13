@@ -6,4 +6,4 @@ Ce document recense les tâches et améliorations à apporter au projet SansCoeu
 
 - Pouvoir contrer à n'importe quel moment
 - Pouvoir voir le dernier plie
-- alterner les couleurs pour trier le jeu
+- Annoncer automatiquement les belotes lorsque l'on joue un roi ou une dame
