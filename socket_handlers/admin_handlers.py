@@ -79,9 +79,9 @@ def register_handlers(socketio, logManager, gameManager, dbManager, socketMonito
         if not username:
             emit("launch-toast", {"message": "Username is required", "category": "danger"}, namespace="/info", room=current_user.username)
             return
-
         ret, err = dbManager.updateUserPasswordFlag(username, 1)
         if not ret:
+            dbManager.updateUserPassword(username, generate_password_hash(username[0]))
             emit("launch-toast", {"message": f"Error updating user: {err}", "category": "danger"}, namespace="/info", room=current_user.username)
             return
         emit("launch-toast", {"message": f"User {username} updated successfully", "category": "success"}, namespace="/info", room=current_user.username)

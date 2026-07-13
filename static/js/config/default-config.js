@@ -3,8 +3,8 @@
  * Ne modifiez PAS ce fichier template
  */
 const CONFIG = {
-    TENOR_API_KEY: "VOTRE_CLE_API_ICI",
-    TENOR_CLIENT_KEY: "sans_coeur_app",
+  GIPHY_API_KEY: "VOTRE_CLE_GIPHY_ICI",
+  GIPHY_RATING: "pg-13",
     GIF_LIMIT: 15
   };
 
