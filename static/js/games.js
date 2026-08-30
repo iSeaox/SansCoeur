@@ -92,6 +92,10 @@ socket.emit('request_last_game_data');
 
 socket.on('last_game_data_update', (data) => {
     console.log(data)
+    if(!data || !data.players || !data.round_score || !data.score) {
+        lastGameDiv.innerHTML = "<p>Aucune partie récente disponible.</p>";
+        return;
+    }
     lastGameDiv.innerHTML = "";
 
     const team0Players = data.players.filter(player => player.team === 0).map(player => player.name).join(' - ');

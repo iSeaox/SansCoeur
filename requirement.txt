@@ -5,3 +5,5 @@ werkzeug
 python-dotenv
 gunicorn
 discord.py
+eventlet
+

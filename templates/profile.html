@@ -48,7 +48,7 @@
         </div>
 
         <div class="stat-card">
-          <div class="stat-value">{{ "%0.2f"|format(statistics["winGame"] / statistics["nbGamePlayed"] * 100)}}%</div>
+          <div class="stat-value">{{ "%0.2f"|format((statistics["winGame"] / statistics["nbGamePlayed"] * 100) if statistics["nbGamePlayed"] else 0) }}%</div>
           <div class="stat-label">Ratio de victoires</div>
         </div>
         <div class="stat-card">

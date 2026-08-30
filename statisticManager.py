@@ -199,7 +199,16 @@ def dumpData(logManager, type, player=None):
         }
 
     elif type == PROFILE_STATISTIC:
-        return out["players"][player]
+        return out["players"].get(player, {
+            "totalScore": 0,
+            "looseTalk": 0,
+            "winTalk": 0,
+            "played_round": 0,
+            "nbGamePlayed": 0,
+            "winGame": 0,
+            "timePlayed": "0h 0min 0s",
+            "reaction_time": 0,
+        })
 
     elif type == GRAPH_PROFILE_STATISTIC:
         player_data = out["players"][player]

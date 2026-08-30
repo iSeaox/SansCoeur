@@ -87,4 +87,4 @@ class LogManager:
             logs = json.load(file)
         if logs:
             return logs
-        return None
+        return []

@@ -3,6 +3,7 @@ instance/
 logs/
 .vscode/
 sanscoeur-gunicorn.service
+gunicron-sanscoeur.service
 env/
 config.js
 private_token.py
