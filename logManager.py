@@ -50,7 +50,7 @@ class LogManager:
         with open(self.game_file_path, "r+") as file:
             logs = json.load(file)
 
-        if logs != []:
+        if logs != None:
             logs.append(game_data)
             with open(self.game_file_path, "w") as file:
                 json.dump(logs, file, indent=4, cls=GameDataEncoder)
