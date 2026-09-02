@@ -268,4 +268,4 @@ if __name__ == "__main__":
     if app.config["DEBUG_MODE"]:
         logger.warning("GAME STARTED IN DEBUG MODE")
 
-    socketio.run(app, debug=True, host="0.0.0.0", port=8002)
+    socketio.run(app, debug=True, host="0.0.0.0", port=8002, log_output=False) 
